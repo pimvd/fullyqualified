@@ -17,6 +17,7 @@ public class JobRunner(IServiceProvider sp, IConfiguration cfg, ILogger<JobRunne
             try
             {
                 using var scope = sp.CreateScope();
+                scope.ServiceProvider.GetRequiredService<TenantScope>().All = true; // background work spans all tenants
                 if (scheduler && DateTimeOffset.UtcNow >= nextSchedule)
                 {
                     await scope.ServiceProvider.GetRequiredService<JobQueue>().EnqueueDueAsync(ct);

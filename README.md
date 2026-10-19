@@ -49,9 +49,23 @@ Environment variables (use `__` for `:`):
 | `Alerts:Webhook` | unset | Generic JSON webhook |
 | `Alerts:Email:Host/Port/Ssl/User/Password/From/To` | unset | SMTP |
 
+## Organizations (tenants)
+
+Every account belongs to a tenant, which owns its own assets, results, users and alarm settings; tenants cannot see each other's data. The first tenant created, during `/setup`, is the **management tenant**. Its admins get a Tenants screen with every tenant (users, assets, certificates, expiring certificates, problems, last scan, last sign-in), can create new tenants and invite their first admin, and can help users in any tenant. A self-hosted install for one company simply has one tenant.
+
 ## Sign in
 
-The first visit opens `/setup`, where you create the first account (an administrator) with a passkey; there are no passwords. After that, admins invite people from the Users page with a single-use link and a role: viewer (read), member (also manage assets) or admin (also manage people). OpenID Connect single sign-on is optional, see the `Sso:*` settings. Passkeys need HTTPS, except on `localhost`.
+The first visit opens `/setup`, where you create the first account (an administrator) with a passkey; there are no passwords. After that, admins invite people from the Users page with a single-use link and a role (management admins can invite into any tenant): viewer (read), member (also manage assets) or admin (also manage people). OpenID Connect single sign-on is optional, see the `Sso:*` settings. Passkeys need HTTPS, except on `localhost`.
+
+**Lost a passkey?** An admin chooses *Reset passkey* next to the user: a single-use link (24 hours) sets up a new passkey and removes the old ones. If nobody who could do that can sign in, the person running the server prints a link from the command line:
+
+```sh
+docker compose exec app dotnet FullyQualified.Web.dll recover alice@example.com --url https://fq.example.com
+```
+
+## Alarms and the log
+
+Admins set where alarms go on the **Alarms** page: a Slack webhook, a generic webhook (PagerDuty, Opsgenie), email recipients, the lowest status that should alarm, and whether recoveries and drift are reported. Webhook addresses are stored encrypted, a tenant cannot point them at private networks when `Scanning:AllowPrivateAddresses` is false, and *Send a test alarm* shows what happened per channel. Without settings, the server-wide `Alerts:*` configuration is used. The **Log** page shows check results and delivered or failed alarms over 7, 30 or 90 days, with charts per day, per check and for changes, filters, and a table view of the chart data.
 
 ## Website
 
@@ -62,6 +76,8 @@ The marketing site is plain static files in [`site/`](site), in English and Dutc
 ```sh
 dotnet test
 ```
+
+The database tests (tenant isolation, platform screens, alarms, recovery) run when `FQ_TEST_DB` points at a Postgres server, for example `FQ_TEST_DB="Host=localhost;Username=postgres;Password=postgres" dotnet test`; they create and drop their own databases. Without it they are skipped. CI sets it.
 
 Not built yet: cloud connectors (Azure first), multi-tenant hosting, automated renewal. Rules for contributors and agents are in [AGENTS.md](AGENTS.md).
 

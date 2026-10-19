@@ -1,0 +1,59 @@
+@page "/tenants"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Policy = Roles.Platform)]
+@inject IStringLocalizer<SharedResource> L
+@inject TenantStats Stats
+
+<PageTitle>@L["Nav_Tenants"]</PageTitle>
+<h1>@L["Tenants_Title"]</h1>
+<AdminRoot>
+    <section class="card">
+        <h2>@L["Tenants_New"]</h2>
+        <p>@L["Tenants_NewIntro"]</p>
+        <p class="inline">
+            <input id="adm-tenant-name" maxlength="100" placeholder="@L["Tenants_Name"]" autocomplete="off" />
+            <input id="adm-email" type="email" maxlength="254" placeholder="@L["Tenants_AdminEmail"]" autocomplete="off" />
+            <button type="button" data-admin="tenant">@L["Tenants_Create"]</button>
+        </p>
+        <p><input id="adm-link" readonly hidden style="width:100%" /></p>
+        <p id="adm-note" class="muted" hidden></p>
+    </section>
+
+    <section class="tiles">
+        <div class="tile"><b>@stats.Count</b><span>@L["Tenants_Count"]</span></div>
+        <div class="tile"><b>@stats.Sum(s => s.Users)</b><span>@L["Tenants_Users"]</span></div>
+        <div class="tile"><b>@stats.Sum(s => s.Assets)</b><span>@L["Tile_Assets"]</span></div>
+        <div class="tile @(stats.Sum(s => s.Problems) > 0 ? "bad" : "")"><b>@stats.Sum(s => s.Problems)</b><span>@L["Tile_Problems"]</span></div>
+    </section>
+
+    <section class="card">
+        <table>
+            <thead><tr>
+                <th>@L["Col_Name"]</th><th>@L["Tenants_Users"]</th><th>@L["Tile_Assets"]</th><th>@L["Nav_Certificates"]</th>
+                <th>@L["Col_Expiring"]</th><th>@L["Tile_Problems"]</th><th>@L["Col_LastScan"]</th><th>@L["Col_LastLogin"]</th><th>@L["Col_Created"]</th>
+            </tr></thead>
+            <tbody>
+            @foreach (var s in stats)
+            {
+                <tr>
+                    <td><a href="/tenants/@s.Tenant.Id">@s.Tenant.Name</a> @if (s.Tenant.IsManagement) { <span class="badge pending">@L["Tenants_Management"]</span> }</td>
+                    <td>@s.Users</td>
+                    <td>@s.Assets <span class="muted">(@s.Domains / @s.Endpoints)</span></td>
+                    <td>@s.Certificates</td>
+                    <td class="@(s.Expiring > 0 ? "warn-text" : "")">@s.Expiring</td>
+                    <td class="@(s.Problems > 0 ? "bad-text" : "")">@s.Problems</td>
+                    <td class="nowrap">@(s.LastScan?.ToString("yyyy-MM-dd HH:mm") ?? "—")</td>
+                    <td class="nowrap">@(s.LastLogin?.ToString("yyyy-MM-dd HH:mm") ?? L["Passkeys_Never"].Value)</td>
+                    <td class="nowrap">@s.Tenant.CreatedAt.ToString("yyyy-MM-dd")</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        <p class="muted"><small>@L["Tenants_AssetsLegend"]</small></p>
+    </section>
+</AdminRoot>
+
+@code {
+    List<TenantStat> stats = [];
+    protected override async Task OnInitializedAsync() => stats = await Stats.ForAsync();
+}

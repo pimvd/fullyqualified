@@ -43,14 +43,14 @@ public class CheckRunner(AppDbContext db, JobQueue queue, IEnumerable<ICheck> ch
 
         db.Results.Add(new CheckResult
         {
-            AssetId = asset.Id, CheckType = check.Type, Status = outcome.Status, Summary = outcome.Summary,
+            TenantId = asset.TenantId, AssetId = asset.Id, CheckType = check.Type, Status = outcome.Status, Summary = outcome.Summary,
             ValuesJson = JsonSerializer.Serialize(outcome.Values),
         });
         foreach (var (key, before, after) in diff)
-            db.Changes.Add(new Change { AssetId = asset.Id, CheckType = check.Type, Key = key, Before = before, After = after });
+            db.Changes.Add(new Change { TenantId = asset.TenantId, AssetId = asset.Id, CheckType = check.Type, Key = key, Before = before, After = after });
 
         if (outcome.Certs is not null) await StoreCertsAsync(asset, outcome.Certs, ct);
-        if (outcome.DiscoveredHosts is not null) await AddDiscoveredAsync(outcome.DiscoveredHosts, ct);
+        if (outcome.DiscoveredHosts is not null) await AddDiscoveredAsync(asset, outcome.DiscoveredHosts, ct);
         await db.SaveChangesAsync(ct);
 
         await AlertAsync(asset, check.Type, previous?.Status, outcome, diff, ct);
@@ -69,35 +69,35 @@ public class CheckRunner(AppDbContext db, JobQueue queue, IEnumerable<ICheck> ch
             if (existing is not null) { existing.SeenAt = DateTimeOffset.UtcNow; continue; }
             db.Certificates.Add(new CertificateRecord
             {
-                AssetId = asset.Id, Source = c.Source, Host = c.Host, Subject = c.Subject, Issuer = c.Issuer,
+                TenantId = asset.TenantId, AssetId = asset.Id, Source = c.Source, Host = c.Host, Subject = c.Subject, Issuer = c.Issuer,
                 Fingerprint = c.Fingerprint, NotBefore = c.NotBefore, NotAfter = c.NotAfter, Renewal = c.Renewal,
             });
         }
     }
 
-    async Task AddDiscoveredAsync(List<string> hosts, CancellationToken ct)
+    async Task AddDiscoveredAsync(Asset origin, List<string> hosts, CancellationToken ct)
     {
-        var known = (await db.Assets.Select(a => a.Name).ToListAsync(ct)).ToHashSet();
-        var room = MaxDiscoveredAssets - await db.Assets.CountAsync(a => a.Discovered, ct);
+        // Background work sees every tenant, so limits and duplicates are measured within the tenant that owns the asset.
+        var mine = db.Assets.Where(a => a.TenantId == origin.TenantId);
+        var known = (await mine.Select(a => a.Name).ToListAsync(ct)).ToHashSet();
+        var room = MaxDiscoveredAssets - await mine.CountAsync(a => a.Discovered, ct);
         foreach (var host in hosts.Where(h => !known.Contains(h)).Take(Math.Max(room, 0)))
         {
-            var asset = new Asset { Kind = AssetKind.Endpoint, Name = host, Discovered = true };
+            var asset = new Asset { TenantId = origin.TenantId, Kind = AssetKind.Endpoint, Name = host, Discovered = true };
             db.Assets.Add(asset);
             foreach (var c in checks.Where(c => c.AppliesTo(asset)))
-                db.Jobs.Add(new Job { AssetId = asset.Id, CheckType = c.Type });
+                db.Jobs.Add(new Job { TenantId = asset.TenantId, AssetId = asset.Id, CheckType = c.Type });
         }
     }
 
     async Task AlertAsync(Asset asset, string type, CheckStatus? before, CheckOutcome outcome,
         List<(string Key, string Before, string After)> diff, CancellationToken ct)
     {
-        if (!alerts.HasChannels) return;
-        var worsened = outcome.Status >= CheckStatus.Warning && outcome.Status > (before ?? CheckStatus.Ok);
-        var recovered = outcome.Status == CheckStatus.Ok && before >= CheckStatus.Warning;
-        if (!worsened && !recovered && diff.Count == 0) return;
+        var config = await alerts.ConfigFor(asset.TenantId, ct);
+        if (!AlertPolicy.ShouldAlert(config, before, outcome.Status, diff.Count)) return;
 
         var lines = new List<string> { $"{asset.Name} [{type}] {before?.ToString() ?? "new"} -> {outcome.Status}", outcome.Summary.Replace('|', ' ') };
         lines.AddRange(diff.Select(d => $"{d.Key}: '{d.Before}' -> '{d.After}'"));
-        await alerts.SendAsync($"FullyQualified: {asset.Name} {outcome.Status}", string.Join("\n", lines), ct);
+        await alerts.SendAsync(asset.TenantId, $"FullyQualified: {asset.Name} {outcome.Status}", string.Join("\n", lines), ct);
     }
 }

@@ -11,13 +11,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FullyQualified.Web;
 
-public record RegisterRequest(string? Name, string? InviteToken, string? SetupCode);
+public record RegisterRequest(string? Name, string? InviteToken, string? SetupCode, string? Organization);
 public record LabelRequest(string? Label);
 
 /// <summary>Challenge state kept between the options and the completion call, in a short-lived protected cookie.</summary>
-record Pending(string OptionsJson, string Name, Guid UserId, Guid? InviteId);
+record Pending(string OptionsJson, string Name, Guid UserId, Guid? InviteId, string? Organization = null, bool Recovery = false);
 
-public class PasskeyService(AppDbContext db, IDataProtectionProvider dp, IConfiguration cfg)
+public class PasskeyService(AppDbContext db, Session session, IDataProtectionProvider dp, IConfiguration cfg)
 {
     const string StateCookie = "fq_pk";
     readonly ITimeLimitedDataProtector protector = dp.CreateProtector("fq.passkey.state").ToTimeLimitedDataProtector();
@@ -64,31 +64,53 @@ public class PasskeyService(AppDbContext db, IDataProtectionProvider dp, IConfig
 
     public async Task<IResult> RegisterOptions(HttpContext ctx, RegisterRequest req)
     {
-        var name = req.Name?.Trim() ?? "";
-        if (name.Length is 0 or > 100) return Fail(400, "invalid_name");
-
+        // Registration starts before anyone is signed in, so these lookups are across tenants by design.
         Guid? inviteId = null;
-        if (!await db.Users.AnyAsync())
+        string name;
+        Guid userId;
+        string? organization = null;
+        var recovery = false;
+        List<PublicKeyCredentialDescriptor> exclude = [];
+
+        if (!await db.AcrossTenants<User>().AnyAsync())
         {
+            name = req.Name?.Trim() ?? "";
+            if (name.Length is 0 or > 100) return Fail(400, "invalid_name");
+            organization = req.Organization?.Trim() is { Length: > 0 } o ? o : "Management";
+            if (organization.Length > 100) return Fail(400, "invalid_name");
             var code = cfg["Auth:SetupCode"];
             if (!string.IsNullOrEmpty(code) && !CryptographicOperations.FixedTimeEquals(Hash(req.SetupCode ?? ""), Hash(code)))
                 return Fail(403, "invalid_setup_code");
+            userId = Guid.NewGuid();
         }
         else
         {
-            inviteId = (await FindInvite(req.InviteToken))?.Id;
-            if (inviteId is null) return Fail(403, "invalid_invite");
+            var invite = await FindInvite(req.InviteToken, recovery: null);
+            if (invite is null) return Fail(403, "invalid_invite");
+            inviteId = invite.Id;
+            if (invite.RecoveryForUser is { } target)
+            {
+                // A recovery link sets up a new passkey for an existing user, whose old passkeys are replaced.
+                recovery = true;
+                userId = target;
+                name = (await db.AcrossTenants<User>().SingleAsync(u => u.Id == target)).Name;
+            }
+            else
+            {
+                name = req.Name?.Trim() ?? "";
+                if (name.Length is 0 or > 100) return Fail(400, "invalid_name");
+                userId = Guid.NewGuid();
+            }
         }
 
-        var userId = Guid.NewGuid();
         var options = Fido(ctx).RequestNewCredential(new RequestNewCredentialParams
         {
             User = new Fido2User { Id = userId.ToByteArray(), Name = name, DisplayName = name },
-            ExcludeCredentials = [],
+            ExcludeCredentials = exclude,
             AuthenticatorSelection = Selection,
             AttestationPreference = AttestationConveyancePreference.None,
         });
-        SaveState(ctx, new Pending(options.ToJson(), name, userId, inviteId));
+        SaveState(ctx, new Pending(options.ToJson(), name, userId, inviteId, organization, recovery));
         return Results.Content(options.ToJson(), "application/json");
     }
 
@@ -125,7 +147,7 @@ public class PasskeyService(AppDbContext db, IDataProtectionProvider dp, IConfig
                 AttestationResponse = response,
                 OriginalOptions = CredentialCreateOptions.FromJson(state.OptionsJson),
                 IsCredentialIdUniqueToUserCallback = async (args, ct) =>
-                    !await db.Passkeys.IgnoreQueryFilters().AnyAsync(p => p.CredentialId == args.CredentialId, ct),
+                    !await db.AcrossTenants<Passkey>().AnyAsync(p => p.CredentialId == args.CredentialId, ct),
             });
         }
         catch (Fido2VerificationException) { return Fail(400, "verification_failed"); }
@@ -137,33 +159,45 @@ public class PasskeyService(AppDbContext db, IDataProtectionProvider dp, IConfig
         User user;
         if (addToExisting)
             user = await db.Users.SingleAsync(u => u.Id == state.UserId);
+        else if (!await db.AcrossTenants<User>().AnyAsync())
+        {
+            // The first account creates the first tenant, which becomes the management tenant.
+            var tenant = await db.Tenants.SingleOrDefaultAsync(t => t.IsManagement); // an upgrade may already have created it for existing data
+            if (tenant is null) db.Tenants.Add(tenant = new Tenant { Name = state.Organization ?? "Management", IsManagement = true });
+            user = new User { Id = state.UserId, TenantId = tenant.Id, Name = state.Name, Role = Role.Admin };
+            db.Users.Add(user);
+        }
         else
         {
-            // The first account is the administrator; everyone after that joins through an invitation with a role.
-            var role = Role.Admin;
-            string? email = null;
-            if (await db.Users.AnyAsync())
+            var invite = state.InviteId is { } id
+                ? await db.AcrossTenants<Invite>().SingleOrDefaultAsync(i => i.Id == id && i.UsedAt == null && i.ExpiresAt > DateTimeOffset.UtcNow)
+                : null;
+            if (invite is null) return Fail(403, "invalid_invite");
+            invite.UsedAt = DateTimeOffset.UtcNow;
+            if (state.Recovery)
             {
-                var invite = state.InviteId is { } id ? await db.Invites.SingleOrDefaultAsync(i => i.Id == id && i.UsedAt == null && i.ExpiresAt > DateTimeOffset.UtcNow) : null;
-                if (invite is null) return Fail(403, "invalid_invite");
-                invite.UsedAt = DateTimeOffset.UtcNow;
-                role = invite.Role;
-                email = invite.Email;
+                if (invite.RecoveryForUser != state.UserId) return Fail(403, "invalid_invite");
+                user = await db.AcrossTenants<User>().SingleAsync(u => u.Id == state.UserId);
+                // Whatever passkeys the person still had are revoked: the point of recovery is that the old ones are gone or untrusted.
+                db.Passkeys.RemoveRange(await db.AcrossTenants<Passkey>().Where(p => p.UserId == user.Id).ToListAsync());
             }
-            user = new User { Id = state.UserId, Name = state.Name, Role = role, Email = email };
-            db.Users.Add(user);
+            else
+            {
+                user = new User { Id = state.UserId, TenantId = invite.TenantId, Name = state.Name, Role = invite.Role, Email = invite.Email };
+                db.Users.Add(user);
+            }
         }
 
         db.Passkeys.Add(new Passkey
         {
-            UserId = user.Id, CredentialId = credential.Id, PublicKey = credential.PublicKey, SignCount = credential.SignCount,
+            TenantId = user.TenantId, UserId = user.Id, CredentialId = credential.Id, PublicKey = credential.PublicKey, SignCount = credential.SignCount,
             Name = addToExisting ? state.Name : "Passkey",
         });
         try { await db.SaveChangesAsync(); }
         catch (DbUpdateException) { return Fail(409, "email_exists"); }
         await tx.CommitAsync();
 
-        if (!addToExisting) await Session.SignIn(ctx, user);
+        if (!addToExisting) await session.SignIn(ctx, user);
         return Results.Ok(new { redirect = "/" });
     }
 
@@ -196,7 +230,7 @@ public class PasskeyService(AppDbContext db, IDataProtectionProvider dp, IConfig
     {
         var state = TakeState<Pending>(ctx);
         if (state is null) return Fail(400, "expired");
-        var passkey = await db.Passkeys.SingleOrDefaultAsync(p => p.CredentialId == response.RawId);
+        var passkey = await db.AcrossTenants<Passkey>().SingleOrDefaultAsync(p => p.CredentialId == response.RawId);
         if (passkey is null) return Fail(401, "unknown_passkey");
 
         VerifyAssertionResult result;
@@ -217,17 +251,19 @@ public class PasskeyService(AppDbContext db, IDataProtectionProvider dp, IConfig
         passkey.SignCount = result.SignCount;
         passkey.LastUsedAt = DateTimeOffset.UtcNow;
         await db.SaveChangesAsync();
-        await Session.SignIn(ctx, await db.Users.SingleAsync(u => u.Id == passkey.UserId));
+        await session.SignIn(ctx, await db.AcrossTenants<User>().SingleAsync(u => u.Id == passkey.UserId));
         return Results.Ok(new { redirect = "/" });
     }
 
     // ---- invitations are created by administrators, see AdminEndpoints ----
 
-    public async Task<Invite?> FindInvite(string? token)
+    /// <param name="recovery">true: only recovery links, false: only invitations, null: either.</param>
+    public async Task<Invite?> FindInvite(string? token, bool? recovery)
     {
         if (string.IsNullOrEmpty(token)) return null;
         var hash = Hash(token);
-        return await db.Invites.SingleOrDefaultAsync(i => i.TokenHash == hash && i.UsedAt == null && i.ExpiresAt > DateTimeOffset.UtcNow);
+        var invite = await db.AcrossTenants<Invite>().SingleOrDefaultAsync(i => i.TokenHash == hash && i.UsedAt == null && i.ExpiresAt > DateTimeOffset.UtcNow);
+        return invite is null || (recovery is { } r && r != (invite.RecoveryForUser is not null)) ? null : invite;
     }
 }
 

@@ -1,0 +1,73 @@
+@page "/alerts"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Policy = Roles.Admin)]
+@inject IStringLocalizer<SharedResource> L
+@inject AlertSettingsService Settings
+@inject AlertService AlertSvc
+@inject IConfiguration Config
+
+<PageTitle>@L["Nav_Alerts"]</PageTitle>
+<h1>@L["Alerts_Title"]</h1>
+<AdminRoot>
+    <section class="card narrow wide" id="alerts-form"
+             data-saved="@L["Alerts_Saved"]" data-test-ok="@L["Alerts_TestOk"]" data-test-failed="@L["Alerts_TestFailed"]" data-test-none="@L["Alerts_TestNone"]"
+             data-msg-invalid_status="@L["Err_InvalidStatus"]" data-msg-invalid_slack="@L["Err_InvalidSlack"]" data-msg-invalid_webhook="@L["Err_InvalidWebhook"]"
+             data-msg-blocked_host="@L["Err_BlockedHost"]" data-msg-no_channels="@L["Err_NoChannels"]">
+        <p>@L["Alerts_Intro"]</p>
+        @if (usingServerSettings)
+        {
+            <p class="muted">@L["Alerts_ServerDefaults"]</p>
+        }
+
+        <label class="check-row"><input type="checkbox" id="al-enabled" checked="@enabled" /> @L["Alerts_Enabled"]</label>
+
+        <h2>@L["Alerts_Channels"]</h2>
+        <label for="al-slack">@L["Alerts_Slack"]</label>
+        <input id="al-slack" type="url" autocomplete="off" placeholder="@(slackHost is null ? "https://hooks.slack.com/services/…" : L["Alerts_Configured", slackHost].Value)" />
+        @if (slackHost is not null) { <label class="check-row"><input type="checkbox" id="al-clear-slack" /> @L["Alerts_Remove"]</label> }
+
+        <label for="al-webhook">@L["Alerts_Webhook"]</label>
+        <input id="al-webhook" type="url" autocomplete="off" placeholder="@(webhookHost is null ? "https://events.pagerduty.com/…" : L["Alerts_Configured", webhookHost].Value)" />
+        @if (webhookHost is not null) { <label class="check-row"><input type="checkbox" id="al-clear-webhook" /> @L["Alerts_Remove"]</label> }
+
+        <label for="al-email">@L["Alerts_Email"]</label>
+        <input id="al-email" value="@emailTo" autocomplete="off" placeholder="it@example.com, security@example.com" />
+        @if (!AlertSvc.CanMail) { <small class="muted">@L["Alerts_NoSmtp"]</small> }
+
+        <h2>@L["Alerts_When"]</h2>
+        <label for="al-min">@L["Alerts_Minimum"]</label>
+        <select id="al-min">
+            @foreach (var s in new[] { CheckStatus.Warning, CheckStatus.Error, CheckStatus.Critical })
+            {
+                <option value="@s" selected="@(s == min)">@L["Status_" + s]</option>
+            }
+        </select>
+        <label class="check-row"><input type="checkbox" id="al-recovery" checked="@recovery" /> @L["Alerts_Recovery"]</label>
+        <label class="check-row"><input type="checkbox" id="al-drift" checked="@drift" /> @L["Alerts_Drift"]</label>
+
+        <p class="actions">
+            <button type="button" data-admin="alerts-save">@L["Alerts_Save"]</button>
+            <button type="button" class="secondary" data-admin="alerts-test">@L["Alerts_Test"]</button>
+        </p>
+        <p id="al-note" class="muted" role="status" hidden></p>
+    </section>
+</AdminRoot>
+
+@code {
+    bool enabled = true, recovery = true, drift = true, usingServerSettings;
+    string? slackHost, webhookHost, emailTo;
+    CheckStatus min = CheckStatus.Warning;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var row = await Settings.CurrentAsync();
+        if (row is null)
+        {
+            usingServerSettings = !string.IsNullOrWhiteSpace(Config["Alerts:SlackWebhook"]) || !string.IsNullOrWhiteSpace(Config["Alerts:Webhook"]) || !string.IsNullOrWhiteSpace(Config["Alerts:Email:To"]);
+            return;
+        }
+        enabled = row.Enabled; recovery = row.NotifyRecovery; drift = row.NotifyDrift; min = row.MinStatus; emailTo = row.EmailTo;
+        slackHost = AlertSettingsService.Describe(Settings.Reveal(row.SlackWebhook));
+        webhookHost = AlertSettingsService.Describe(Settings.Reveal(row.WebhookUrl));
+    }
+}

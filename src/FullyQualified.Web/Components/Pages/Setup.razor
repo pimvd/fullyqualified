@@ -11,6 +11,8 @@
     <section class="card narrow">
         <h1>@L["Setup_Title"]</h1>
         <p>@L["Setup_Intro"]</p>
+        <label for="pk-org">@L["Setup_Organization"]</label>
+        <input id="pk-org" maxlength="100" autocomplete="organization" />
         <label for="pk-name">@L["Account_Name"]</label>
         <input id="pk-name" maxlength="100" autocomplete="name" />
         @if (!string.IsNullOrEmpty(Config["Auth:SetupCode"]))
@@ -26,6 +28,6 @@
 @code {
     protected override async Task OnInitializedAsync()
     {
-        if (await Db.Users.AnyAsync()) Nav.NavigateTo("/login");
+        if (await Db.AcrossTenants<User>().AnyAsync()) Nav.NavigateTo("/login");
     }
 }

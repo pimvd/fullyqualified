@@ -29,6 +29,6 @@
     protected override async Task OnInitializedAsync()
     {
         if (Ctx?.User.Identity?.IsAuthenticated == true) Nav.NavigateTo("/");
-        else if (!await Db.Users.AnyAsync()) Nav.NavigateTo("/setup");
+        else if (!await Db.AcrossTenants<User>().AnyAsync()) Nav.NavigateTo("/setup");
     }
 }

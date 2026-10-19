@@ -1,0 +1,40 @@
+@page "/tenants/{Id:guid}"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Policy = Roles.Platform)]
+@inject IStringLocalizer<SharedResource> L
+@inject TenantStats Stats
+
+@if (stat is null)
+{
+    <p>@L["Detail_NotFound"]</p>
+}
+else
+{
+    <PageTitle>@stat.Tenant.Name</PageTitle>
+    <p><a href="/tenants">← @L["Nav_Tenants"]</a></p>
+    <h1>@stat.Tenant.Name @if (stat.Tenant.IsManagement) { <span class="badge pending">@L["Tenants_Management"]</span> }</h1>
+    <p class="muted">@L["Tenants_Since", stat.Tenant.CreatedAt.ToString("yyyy-MM-dd")]</p>
+
+    <section class="tiles">
+        <div class="tile"><b>@stat.Assets</b><span>@L["Tile_Assets"] (@stat.Domains @L["Tenants_DomainsShort"], @stat.Endpoints @L["Tenants_EndpointsShort"])</span></div>
+        <div class="tile"><b>@stat.Certificates</b><span>@L["Nav_Certificates"]</span></div>
+        <div class="tile @(stat.Expiring > 0 ? "warn" : "")"><b>@stat.Expiring</b><span>@L["Tile_Expiring"]</span></div>
+        <div class="tile @(stat.Problems > 0 ? "bad" : "")"><b>@stat.Problems</b><span>@L["Tile_Problems"]</span></div>
+        <div class="tile"><b>@stat.Changes7d</b><span>@L["Tile_Changes"]</span></div>
+        <div class="tile"><b>@stat.Users</b><span>@L["Tenants_Users"]</span></div>
+    </section>
+    <p class="muted">@L["Col_LastScan"]: @(stat.LastScan?.ToString("yyyy-MM-dd HH:mm") ?? "—") · @L["Col_LastLogin"]: @(stat.LastLogin?.ToString("yyyy-MM-dd HH:mm") ?? L["Passkeys_Never"].Value)</p>
+
+    <AdminRoot>
+        <InvitePanel TenantId="Id" />
+        <UsersPanel TenantId="Id" Me="Roles.UserId(Ctx?.User)" />
+    </AdminRoot>
+}
+
+@code {
+    [CascadingParameter] HttpContext? Ctx { get; set; }
+    [Parameter] public Guid Id { get; set; }
+    TenantStat? stat;
+
+    protected override async Task OnInitializedAsync() => stat = (await Stats.ForAsync(Id)).FirstOrDefault();
+}

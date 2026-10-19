@@ -7,9 +7,57 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://fullyqualified.eu/"/>
   </url>
   <url>
+    <loc>https://fullyqualified.eu/support/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fullyqualified.eu/support/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://fullyqualified.eu/nl/support/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fullyqualified.eu/support/"/>
+  </url>
+  <url>
+    <loc>https://fullyqualified.eu/about/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fullyqualified.eu/about/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://fullyqualified.eu/nl/over-ons/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fullyqualified.eu/about/"/>
+  </url>
+  <url>
+    <loc>https://fullyqualified.eu/privacy/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fullyqualified.eu/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://fullyqualified.eu/nl/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fullyqualified.eu/privacy/"/>
+  </url>
+  <url>
+    <loc>https://fullyqualified.eu/terms/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fullyqualified.eu/terms/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://fullyqualified.eu/nl/voorwaarden/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fullyqualified.eu/terms/"/>
+  </url>
+  <url>
     <loc>https://fullyqualified.eu/nl/</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://fullyqualified.eu/"/>
     <xhtml:link rel="alternate" hreflang="nl" href="https://fullyqualified.eu/nl/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://fullyqualified.eu/"/>
+  </url>
+  <url>
+    <loc>https://fullyqualified.eu/nl/support/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fullyqualified.eu/support/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://fullyqualified.eu/nl/support/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fullyqualified.eu/support/"/>
+  </url>
+  <url>
+    <loc>https://fullyqualified.eu/nl/over-ons/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fullyqualified.eu/about/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://fullyqualified.eu/nl/over-ons/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fullyqualified.eu/about/"/>
+  </url>
+  <url>
+    <loc>https://fullyqualified.eu/nl/privacy/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fullyqualified.eu/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://fullyqualified.eu/nl/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fullyqualified.eu/privacy/"/>
+  </url>
+  <url>
+    <loc>https://fullyqualified.eu/nl/voorwaarden/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fullyqualified.eu/terms/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://fullyqualified.eu/nl/voorwaarden/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fullyqualified.eu/terms/"/>
   </url>
 </urlset>

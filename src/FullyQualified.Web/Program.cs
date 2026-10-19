@@ -31,6 +31,11 @@ builder.Services.AddScoped<ReportBuilder>();
 builder.Services.AddScoped<PasskeyService>();
 builder.Services.AddScoped<AdminService>();
 builder.Services.AddScoped<Session>();
+builder.Services.AddScoped<TenantScope>();
+builder.Services.AddScoped<DbGate>();
+builder.Services.AddScoped<TenantStats>();
+builder.Services.AddScoped<LogQueries>();
+builder.Services.AddScoped<AlertSettingsService>();
 builder.Services.AddScoped<SsoService>();
 builder.Services.AddMemoryCache();
 builder.Services.AddHostedService<JobRunner>();
@@ -69,6 +74,7 @@ auth.AddSso(builder.Configuration);
 builder.Services.AddAuthorizationBuilder()
     .SetFallbackPolicy(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build())
     .AddPolicy(Roles.Admin, p => p.RequireRole(nameof(Role.Admin)))
+    .AddPolicy(Roles.Platform, p => p.RequireRole(nameof(Role.Admin)).RequireClaim(Roles.ManagementClaim, "1"))
     .AddPolicy(Roles.Edit, p => p.RequireRole(nameof(Role.Member), nameof(Role.Admin)));
 
 var app = builder.Build();
@@ -77,6 +83,14 @@ if (app.Configuration.GetValue("Database:AutoMigrate", true))
 {
     using var scope = app.Services.CreateScope();
     scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.Migrate();
+}
+
+// Operator command: dotnet FullyQualified.Web.dll recover <e-mail or name> [--url https://host]
+if (args is ["recover", var who, ..])
+{
+    var urlAt = Array.IndexOf(args, "--url");
+    var baseUrl = urlAt >= 0 && urlAt + 1 < args.Length ? args[urlAt + 1] : app.Configuration["Auth:Origin"] ?? "http://localhost:8080";
+    return await OperatorCommands.RecoverAsync(app.Services, who, baseUrl, Console.Out);
 }
 
 var cultures = new[] { new CultureInfo("en"), new CultureInfo("nl") };
@@ -89,6 +103,12 @@ app.UseRequestLocalization(new RequestLocalizationOptions
 
 app.UseStaticFiles();
 app.UseAuthentication();
+// From here on the request works for the tenant in the session. Without one, queries on tenant data return nothing.
+app.Use((ctx, next) =>
+{
+    if (Roles.TenantId(ctx.User) is { } tenant) ctx.RequestServices.GetRequiredService<TenantScope>().Id = tenant;
+    return next();
+});
 app.UseAuthorization();
 app.UseAntiforgery();
 
@@ -113,9 +133,11 @@ app.MapGet("/reports/nis2.pdf", async (ReportBuilder reports, IStringLocalizer<S
 
 app.MapAuth();
 app.MapAdmin();
+app.MapAlerts();
 app.MapSso();
 app.MapRazorComponents<App>();
 
 app.Run();
+return 0;
 
 public partial class Program;

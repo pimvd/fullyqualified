@@ -3,10 +3,19 @@ using System.Text.Json;
 
 namespace FullyQualified.Web;
 
-public static class Tenant
+/// <summary>A customer organization. The first tenant ever created is the management tenant: its admins see and manage all tenants.</summary>
+public class Tenant
 {
-    /// <summary>Self-hosted installs use a single tenant; every table still carries a tenant id.</summary>
-    public static readonly Guid Default = Guid.Empty;
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public required string Name { get; set; }
+    public bool IsManagement { get; set; }
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+}
+
+/// <summary>Everything a tenant owns carries its id. An unset id (empty) is stamped on save from the current tenant, or the save is refused.</summary>
+public interface ITenantOwned
+{
+    Guid TenantId { get; set; }
 }
 
 public enum AssetKind { Domain, Endpoint, CloudResource }
@@ -14,20 +23,20 @@ public enum AssetKind { Domain, Endpoint, CloudResource }
 /// <summary>Ordered by severity so the numeric value can be used to find the worst status.</summary>
 public enum CheckStatus { Ok = 0, Warning = 1, Error = 2, Critical = 3 }
 
-public class Asset
+public class Asset : ITenantOwned
 {
     public Guid Id { get; set; } = Guid.NewGuid();
-    public Guid TenantId { get; set; } = Tenant.Default;
+    public Guid TenantId { get; set; }
     public AssetKind Kind { get; set; }
     public required string Name { get; set; }
     public bool Discovered { get; set; }
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }
 
-public class CheckResult
+public class CheckResult : ITenantOwned
 {
     public Guid Id { get; set; } = Guid.NewGuid();
-    public Guid TenantId { get; set; } = Tenant.Default;
+    public Guid TenantId { get; set; }
     public Guid AssetId { get; set; }
     public required string CheckType { get; set; }
     public CheckStatus Status { get; set; }
@@ -41,10 +50,10 @@ public class CheckResult
         JsonSerializer.Deserialize<Dictionary<string, string>>(ValuesJson) ?? [];
 }
 
-public class Change
+public class Change : ITenantOwned
 {
     public Guid Id { get; set; } = Guid.NewGuid();
-    public Guid TenantId { get; set; } = Tenant.Default;
+    public Guid TenantId { get; set; }
     public Guid AssetId { get; set; }
     public required string CheckType { get; set; }
     public required string Key { get; set; }
@@ -53,10 +62,10 @@ public class Change
     public DateTimeOffset DetectedAt { get; set; } = DateTimeOffset.UtcNow;
 }
 
-public class CertificateRecord
+public class CertificateRecord : ITenantOwned
 {
     public Guid Id { get; set; } = Guid.NewGuid();
-    public Guid TenantId { get; set; } = Tenant.Default;
+    public Guid TenantId { get; set; }
     public Guid AssetId { get; set; }
     /// <summary>"endpoint" or "ct".</summary>
     public required string Source { get; set; }
@@ -73,10 +82,10 @@ public class CertificateRecord
     public int DaysLeft => (int)Math.Floor((NotAfter - DateTimeOffset.UtcNow).TotalDays);
 }
 
-public class Job
+public class Job : ITenantOwned
 {
     public Guid Id { get; set; } = Guid.NewGuid();
-    public Guid TenantId { get; set; } = Tenant.Default;
+    public Guid TenantId { get; set; }
     public Guid AssetId { get; set; }
     public required string CheckType { get; set; }
     public DateTimeOffset RunAt { get; set; } = DateTimeOffset.UtcNow;
@@ -87,22 +96,23 @@ public class Job
 /// <summary>Viewer reads, Member also manages assets, Admin also manages people. Each role includes the ones before it.</summary>
 public enum Role { Viewer = 0, Member = 1, Admin = 2 }
 
-public class User
+public class User : ITenantOwned
 {
     public Guid Id { get; set; } = Guid.NewGuid();
-    public Guid TenantId { get; set; } = Tenant.Default;
+    public Guid TenantId { get; set; }
     public required string Name { get; set; }
     /// <summary>Lower case. Set from an invitation or from single sign-on; used to link an SSO identity to this user.</summary>
     public string? Email { get; set; }
     public Role Role { get; set; } = Role.Viewer;
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset? LastLoginAt { get; set; }
 }
 
 /// <summary>A WebAuthn credential. Accounts have no passwords; a user signs in with any of their passkeys.</summary>
-public class Passkey
+public class Passkey : ITenantOwned
 {
     public Guid Id { get; set; } = Guid.NewGuid();
-    public Guid TenantId { get; set; } = Tenant.Default;
+    public Guid TenantId { get; set; }
     public Guid UserId { get; set; }
     public required byte[] CredentialId { get; set; }
     public required byte[] PublicKey { get; set; }
@@ -113,14 +123,16 @@ public class Passkey
 }
 
 /// <summary>Single-use link that lets a new person register their own account. Only a hash of the token is stored.</summary>
-public class Invite
+public class Invite : ITenantOwned
 {
     public Guid Id { get; set; } = Guid.NewGuid();
-    public Guid TenantId { get; set; } = Tenant.Default;
+    public Guid TenantId { get; set; }
     public required byte[] TokenHash { get; set; }
     /// <summary>Optional. When set, the same person can also accept the invitation by signing in with SSO using this address.</summary>
     public string? Email { get; set; }
     public Role Role { get; set; } = Role.Viewer;
+    /// <summary>Set for a passkey recovery link: the existing user who gets a new passkey. Null for a normal invitation.</summary>
+    public Guid? RecoveryForUser { get; set; }
     public Guid CreatedBy { get; set; }
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
     public DateTimeOffset ExpiresAt { get; set; }
@@ -128,12 +140,41 @@ public class Invite
 }
 
 /// <summary>Links a user to an identity at the single sign-on provider (issuer + subject), so the link survives e-mail changes.</summary>
-public class ExternalLogin
+public class ExternalLogin : ITenantOwned
 {
     public Guid Id { get; set; } = Guid.NewGuid();
-    public Guid TenantId { get; set; } = Tenant.Default;
+    public Guid TenantId { get; set; }
     public Guid UserId { get; set; }
     public required string Issuer { get; set; }
     public required string Subject { get; set; }
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+}
+
+/// <summary>Where a tenant sends alarms. The URLs are stored encrypted with Data Protection.</summary>
+public class AlertSettings : ITenantOwned
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid TenantId { get; set; }
+    public bool Enabled { get; set; } = true;
+    public string? SlackWebhook { get; set; }
+    public string? WebhookUrl { get; set; }
+    /// <summary>Comma-separated recipients.</summary>
+    public string? EmailTo { get; set; }
+    /// <summary>Alert only when a check reaches at least this status.</summary>
+    public CheckStatus MinStatus { get; set; } = CheckStatus.Warning;
+    public bool NotifyRecovery { get; set; } = true;
+    public bool NotifyDrift { get; set; } = true;
+    public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
+}
+
+/// <summary>One delivery attempt to one channel; feeds the log screen.</summary>
+public class AlertLogEntry : ITenantOwned
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid TenantId { get; set; }
+    public DateTimeOffset At { get; set; } = DateTimeOffset.UtcNow;
+    public required string Channel { get; set; }
+    public required string Subject { get; set; }
+    public bool Success { get; set; }
+    public string? Error { get; set; }
 }

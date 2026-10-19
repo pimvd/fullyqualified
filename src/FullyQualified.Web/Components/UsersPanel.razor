@@ -1,0 +1,60 @@
+@inject IStringLocalizer<SharedResource> L
+@inject AppDbContext Db
+@inject DbGate Gate
+
+<section class="card">
+    <h2>@L["Users_Title"]</h2>
+    <table>
+        <thead><tr><th>@L["Col_Name"]</th><th>@L["Col_Email"]</th><th>@L["Col_Role"]</th><th>@L["Col_SignIn"]</th><th>@L["Col_Registered"]</th><th>@L["Col_LastLogin"]</th><th></th></tr></thead>
+        <tbody>
+        @foreach (var u in users)
+        {
+            <tr>
+                <td>@u.Name @if (u.Id == Me) { <span class="muted">(@L["Users_You"])</span> }</td>
+                <td>@u.Email</td>
+                <td>
+                    <select data-user-role="@u.Id">
+                        @foreach (var r in Enum.GetValues<Role>())
+                        {
+                            <option value="@r" selected="@(r == u.Role)">@L["Role_" + r]</option>
+                        }
+                    </select>
+                </td>
+                <td>@Methods(u.Id)</td>
+                <td class="nowrap">@u.CreatedAt.ToString("yyyy-MM-dd")</td>
+                <td class="nowrap">@(u.LastLoginAt?.ToString("yyyy-MM-dd HH:mm") ?? L["Passkeys_Never"].Value)</td>
+                <td class="nowrap">
+                    <button type="button" class="secondary" data-user-reset="@u.Id">@L["Recovery_Button"]</button>
+                    @if (u.Id != Me)
+                    {
+                        <button type="button" class="danger" data-user-remove="@u.Id">@L["Passkeys_Remove"]</button>
+                    }
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</section>
+
+@code {
+    /// <summary>Show this tenant's users. Only platform admins may pass a tenant other than their own.</summary>
+    [Parameter] public Guid TenantId { get; set; }
+    [Parameter] public Guid? Me { get; set; }
+    List<User> users = [];
+    Dictionary<Guid, int> passkeys = [];
+    HashSet<Guid> sso = [];
+
+    protected override Task OnInitializedAsync() => Gate.RunAsync(async () =>
+    {
+        users = await Db.AcrossTenants<User>().Where(u => u.TenantId == TenantId).OrderBy(u => u.Name).ToListAsync();
+        var ids = users.Select(u => u.Id).ToList();
+        passkeys = await Db.AcrossTenants<Passkey>().Where(p => ids.Contains(p.UserId)).GroupBy(p => p.UserId).ToDictionaryAsync(g => g.Key, g => g.Count());
+        sso = (await Db.AcrossTenants<ExternalLogin>().Where(x => ids.Contains(x.UserId)).Select(x => x.UserId).ToListAsync()).ToHashSet();
+    });
+
+    string Methods(Guid id) => string.Join(", ", new[]
+    {
+        passkeys.TryGetValue(id, out var n) ? $"{L["Method_Passkeys"]} ({n})" : null,
+        sso.Contains(id) ? "SSO" : null,
+    }.Where(x => x is not null));
+}

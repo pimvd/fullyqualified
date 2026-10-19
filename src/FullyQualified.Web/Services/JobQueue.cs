@@ -16,7 +16,7 @@ public class JobQueue(AppDbContext db, IEnumerable<ICheck> checks, IConfiguratio
     {
         var existing = await db.Jobs.Where(j => j.AssetId == asset.Id).Select(j => j.CheckType).ToListAsync(ct);
         foreach (var check in checks.Where(c => c.AppliesTo(asset) && !existing.Contains(c.Type)))
-            db.Jobs.Add(new Job { AssetId = asset.Id, CheckType = check.Type });
+            db.Jobs.Add(new Job { TenantId = asset.TenantId, AssetId = asset.Id, CheckType = check.Type });
         await db.SaveChangesAsync(ct);
     }
 
@@ -38,7 +38,7 @@ public class JobQueue(AppDbContext db, IEnumerable<ICheck> checks, IConfiguratio
                 // A failed check is retried sooner than a healthy one is rescanned.
                 if (last.TryGetValue(key, out var prev)
                     && DateTimeOffset.UtcNow - prev.ObservedAt < (prev.Status == CheckStatus.Error ? TimeSpan.FromMinutes(15) : interval)) continue;
-                db.Jobs.Add(new Job { AssetId = asset.Id, CheckType = check.Type });
+                db.Jobs.Add(new Job { TenantId = asset.TenantId, AssetId = asset.Id, CheckType = check.Type });
             }
         await db.SaveChangesAsync(ct);
     }

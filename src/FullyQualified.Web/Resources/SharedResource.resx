@@ -171,4 +171,93 @@ Open this link to create your account with a passkey, or sign in with single sig
 {1}
 
 The link works once and expires in {2} days.</value></data>
+  <data name="Nav_Alerts" xml:space="preserve"><value>Alarms</value></data>
+  <data name="Nav_Log" xml:space="preserve"><value>Log</value></data>
+  <data name="Nav_Tenants" xml:space="preserve"><value>Tenants</value></data>
+  <data name="Alerts_Title" xml:space="preserve"><value>Alarms</value></data>
+  <data name="Alerts_Intro" xml:space="preserve"><value>Choose where FullyQualified sends an alarm when a certificate or DNS check gets worse, recovers or drifts. These settings apply to your organization only.</value></data>
+  <data name="Alerts_ServerDefaults" xml:space="preserve"><value>No alarms are configured here yet, so the server's default settings are used. Saving this form replaces them for your organization.</value></data>
+  <data name="Alerts_Enabled" xml:space="preserve"><value>Send alarms</value></data>
+  <data name="Alerts_Channels" xml:space="preserve"><value>Channels</value></data>
+  <data name="Alerts_Slack" xml:space="preserve"><value>Slack incoming webhook</value></data>
+  <data name="Alerts_Webhook" xml:space="preserve"><value>Generic webhook (PagerDuty, Opsgenie, ...)</value></data>
+  <data name="Alerts_Email" xml:space="preserve"><value>Email recipients</value></data>
+  <data name="Alerts_NoSmtp" xml:space="preserve"><value>The server has no SMTP host (Alerts:Email:Host), so email cannot be sent yet.</value></data>
+  <data name="Alerts_Configured" xml:space="preserve"><value>Configured ({0}). Leave empty to keep it.</value></data>
+  <data name="Alerts_Remove" xml:space="preserve"><value>Remove</value></data>
+  <data name="Alerts_When" xml:space="preserve"><value>When</value></data>
+  <data name="Alerts_Minimum" xml:space="preserve"><value>Alarm from this status upward</value></data>
+  <data name="Alerts_Recovery" xml:space="preserve"><value>Also tell me when a check recovers</value></data>
+  <data name="Alerts_Drift" xml:space="preserve"><value>Also tell me when a DNS record or certificate changes</value></data>
+  <data name="Alerts_Save" xml:space="preserve"><value>Save</value></data>
+  <data name="Alerts_Saved" xml:space="preserve"><value>Saved.</value></data>
+  <data name="Alerts_Test" xml:space="preserve"><value>Send a test alarm</value></data>
+  <data name="Alerts_TestOk" xml:space="preserve"><value>delivered</value></data>
+  <data name="Alerts_TestFailed" xml:space="preserve"><value>failed</value></data>
+  <data name="Alerts_TestNone" xml:space="preserve"><value>No channel was attempted.</value></data>
+  <data name="Err_InvalidStatus" xml:space="preserve"><value>Choose a status.</value></data>
+  <data name="Err_InvalidSlack" xml:space="preserve"><value>The Slack webhook must be a full http(s) URL.</value></data>
+  <data name="Err_InvalidWebhook" xml:space="preserve"><value>The webhook must be a full http(s) URL.</value></data>
+  <data name="Err_BlockedHost" xml:space="preserve"><value>This address points to a private network, which this server does not allow.</value></data>
+  <data name="Err_NoChannels" xml:space="preserve"><value>Configure at least one channel first.</value></data>
+  <data name="Err_TenantExists" xml:space="preserve"><value>A tenant with this name already exists.</value></data>
+  <data name="Err_Forbidden" xml:space="preserve"><value>You may not do this.</value></data>
+  <data name="Col_Date" xml:space="preserve"><value>Date</value></data>
+  <data name="Col_Time" xml:space="preserve"><value>Time</value></data>
+  <data name="Col_Subject" xml:space="preserve"><value>Subject</value></data>
+  <data name="Col_Registered" xml:space="preserve"><value>Registered</value></data>
+  <data name="Col_LastLogin" xml:space="preserve"><value>Last login</value></data>
+  <data name="Col_LastScan" xml:space="preserve"><value>Last scan</value></data>
+  <data name="Col_Expiring" xml:space="preserve"><value>Expiring ≤ 30 days</value></data>
+  <data name="Log_Title" xml:space="preserve"><value>Log</value></data>
+  <data name="Log_Range" xml:space="preserve"><value>Period</value></data>
+  <data name="Log_LastDays" xml:space="preserve"><value>Last {0} days</value></data>
+  <data name="Log_Check" xml:space="preserve"><value>Check</value></data>
+  <data name="Log_All" xml:space="preserve"><value>All</value></data>
+  <data name="Log_Apply" xml:space="preserve"><value>Apply</value></data>
+  <data name="Log_Results" xml:space="preserve"><value>Check results</value></data>
+  <data name="Log_OkShare" xml:space="preserve"><value>Results that were OK</value></data>
+  <data name="Log_AlertsSent" xml:space="preserve"><value>Alarms delivered</value></data>
+  <data name="Log_AlertsFailed" xml:space="preserve"><value>failed</value></data>
+  <data name="Log_Changes" xml:space="preserve"><value>Changes</value></data>
+  <data name="Log_PerDay" xml:space="preserve"><value>Results per day</value></data>
+  <data name="Log_ByCheck" xml:space="preserve"><value>Results per check</value></data>
+  <data name="Log_ChangesPerDay" xml:space="preserve"><value>Changes per day</value></data>
+  <data name="Log_TableView" xml:space="preserve"><value>Show as table</value></data>
+  <data name="Log_Empty" xml:space="preserve"><value>Nothing logged in this period.</value></data>
+  <data name="Log_Entries" xml:space="preserve"><value>Entries</value></data>
+  <data name="Log_Newer" xml:space="preserve"><value>Newer</value></data>
+  <data name="Log_Older" xml:space="preserve"><value>Older</value></data>
+  <data name="Log_Page" xml:space="preserve"><value>Page {0} of {1}</value></data>
+  <data name="Log_AlertLog" xml:space="preserve"><value>Alarms sent</value></data>
+  <data name="Log_NoAlerts" xml:space="preserve"><value>No alarms have been sent.</value></data>
+  <data name="Log_Channel" xml:space="preserve"><value>Channel</value></data>
+  <data name="Log_Delivered" xml:space="preserve"><value>Delivered</value></data>
+  <data name="Log_Failed" xml:space="preserve"><value>Failed</value></data>
+  <data name="Tenants_Title" xml:space="preserve"><value>Tenants</value></data>
+  <data name="Tenants_New" xml:space="preserve"><value>New tenant</value></data>
+  <data name="Tenants_NewIntro" xml:space="preserve"><value>Create a tenant and invite its first administrator. Tenants cannot see each other's data; only the management tenant sees all of them.</value></data>
+  <data name="Tenants_Name" xml:space="preserve"><value>Organization name</value></data>
+  <data name="Tenants_AdminEmail" xml:space="preserve"><value>Administrator email (optional)</value></data>
+  <data name="Tenants_Create" xml:space="preserve"><value>Create tenant and invitation</value></data>
+  <data name="Tenants_Management" xml:space="preserve"><value>Management</value></data>
+  <data name="Tenants_Count" xml:space="preserve"><value>Tenants</value></data>
+  <data name="Tenants_Users" xml:space="preserve"><value>Users</value></data>
+  <data name="Tenants_Since" xml:space="preserve"><value>Tenant since {0}</value></data>
+  <data name="Tenants_DomainsShort" xml:space="preserve"><value>domains</value></data>
+  <data name="Tenants_EndpointsShort" xml:space="preserve"><value>endpoints</value></data>
+  <data name="Tenants_AssetsLegend" xml:space="preserve"><value>Assets: total (domains / endpoints). Expiring counts endpoint certificates that expire within 30 days or already have.</value></data>
+  <data name="Setup_Organization" xml:space="preserve"><value>Organization name</value></data>
+  <data name="Recovery_Button" xml:space="preserve"><value>Reset passkey</value></data>
+  <data name="Recovery_Created" xml:space="preserve"><value>Share this link privately with the person. It works once, for 24 hours; setting up a new passkey removes their old ones.</value></data>
+  <data name="Recovery_Kind" xml:space="preserve"><value>Passkey recovery</value></data>
+  <data name="Recover_Title" xml:space="preserve"><value>Set up a new passkey</value></data>
+  <data name="Recover_Intro" xml:space="preserve"><value>You were sent here because you lost access to your passkey. Creating a new one removes the old passkeys of your account.</value></data>
+  <data name="Recover_Button" xml:space="preserve"><value>Create a new passkey</value></data>
+  <data name="Recover_Invalid" xml:space="preserve"><value>This recovery link is invalid, expired or already used.</value></data>
+  <data name="Mail_RecoverySubject" xml:space="preserve"><value>Set up a new passkey for FullyQualified</value></data>
+  <data name="Mail_RecoveryBody" xml:space="preserve"><value>{0} created a link for you to set up a new passkey for FullyQualified:
+{1}
+
+The link works once and expires in {2} hours. Setting up a new passkey removes your old ones. If you did not expect this, ignore this message.</value></data>
 </root>

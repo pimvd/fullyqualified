@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About FullyQualified: open source certificate and DNS monitoring</title>
+<meta name="description" content="Why FullyQualified exists, how it is built, what it stands for and where it stands today.">
+<link rel="canonical" href="https://fullyqualified.eu/about/">
+<link rel="alternate" hreflang="en" href="https://fullyqualified.eu/about/">
+<link rel="alternate" hreflang="nl" href="https://fullyqualified.eu/nl/over-ons/">
+<link rel="alternate" hreflang="x-default" href="https://fullyqualified.eu/about/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FullyQualified">
+<meta property="og:title" content="About FullyQualified: open source certificate and DNS monitoring">
+<meta property="og:description" content="Why FullyQualified exists, how it is built, what it stands for and where it stands today.">
+<meta property="og:url" content="https://fullyqualified.eu/about/">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="nl_NL">
+<meta property="og:image" content="https://fullyqualified.eu/img/og-en.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="FullyQualified: every domain, fully qualified. Certificates, DNS and NIS2.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0b5fff">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/style.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "AboutPage", "name": "About FullyQualified: open source certificate and DNS monitoring", "url": "https://fullyqualified.eu/about/", "inLanguage": "en", "description": "Why FullyQualified exists, how it is built, what it stands for and where it stands today."}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site">
+<div class="wrap">
+<a class="brand" href="/">Fully<span>Qualified</span></a>
+<nav aria-label="Main"><a href="/">Home</a><a href="/support/">Support</a><a href="/about/">About</a></nav>
+<a class="lang" href="/nl/over-ons/" hreflang="nl" lang="nl">Nederlands</a>
+<a class="button ghost" href="https://github.com/pimvd/fullyqualified">GitHub</a>
+</div>
+</header>
+<main id="main">
+<article class="block page prose"><div class="wrap">
+<h1>About FullyQualified</h1>
+<p class="lead">An open-source tool that shows you every certificate and DNS record you depend on, and proves it.</p>
+
+<nav class="toc" aria-label="On this page"><ol><li><a href="#mission">Why it exists</a></li><li><a href="#name">About the name</a></li><li><a href="#built">How it is built</a></li><li><a href="#principles">What it stands for</a></li><li><a href="#status">Where it stands</a></li><li><a href="#involved">Get involved</a></li></ol></nav>
+<section id="mission"><h2>Why it exists</h2><p>Certificates and DNS records quietly hold a company&#x27;s websites, email and logins together. They are also what is forgotten first: a certificate that expires on a Sunday, an MX record that someone changed, a subdomain that still points at a service nobody owns.</p><p>Large enterprise tools solve this at a price and complexity that small and mid-sized European companies cannot justify, and simple scripts lack inventory and context. FullyQualified sits in between: see everything, get told when something changes, and hand an auditor the proof.</p></section><section id="name"><h2>About the name</h2><p>A fully qualified domain name (FQDN) is the complete name of a host, such as www.example.com, including every label up to the top-level domain. It is exactly the level of detail this tool works at: not one certificate or one record, but every name that belongs to you, spelled out completely.</p></section><section id="built"><h2>How it is built</h2><p>FullyQualified is designed and built by a small team of AI agents (Claude Code and Codex), each with a fixed role: architecture, development, testing, review and content. They work through GitHub issues and pull requests only.</p><p>Nothing reaches the main branch without review by a different model and approval by a human, and the architecture is recorded in public decision records. You can read all of it in the repository.</p></section><section id="principles"><h2>What it stands for</h2><div class="grid"><div class="card"><h3>See first, act later</h3><p>Monitoring and reporting come before any automated change. FullyQualified only reads: DNS queries, TLS handshakes and public Certificate Transparency logs.</p></div><div class="card"><h3>Evidence over dashboards</h3><p>The point is not another screen. It is a report you can give to an auditor or a customer.</p></div><div class="card"><h3>European and open</h3><p>Open source under the AGPL-3.0, self-hostable, and with a hosted version planned in the EU.</p></div><div class="card"><h3>Small and sharp</h3><p>No scope creep into uptime monitoring, DMARC report processing or issuing certificates. Fewer features, done properly.</p></div></div></section><section id="status"><h2>Where it stands</h2><p>Today you can run FullyQualified yourself: certificate and DNS checks, change detection, alarms, a NIS2 report as PDF and Excel, accounts with passkeys, roles, single sign-on and separate tenants.</p><ul><li>Planned: a hosted version in the EU, cloud connectors (starting with Azure) and, later, automated renewal.</li><li>Not planned: issuing certificates, uptime monitoring and DMARC report processing.</li></ul></section><section id="involved"><h2>Get involved</h2><p>The project lives on GitHub. Try it on your own domains and tell us what is missing, report bugs, or ask a question. External pull requests are not accepted yet, since the agents write the code; this will change once the community grows.</p><p><a class="button" href="https://github.com/pimvd/fullyqualified">GitHub</a> <a class="button ghost" href="https://github.com/pimvd/fullyqualified/issues">Issues</a></p></section>
+</div></article>
+</main>
+<footer class="site"><div class="wrap"><span>FullyQualified is open source software under the AGPL-3.0.</span><span><a href="/support/">Support</a><a href="/about/">About</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="https://github.com/pimvd/fullyqualified">Source code</a><a href="https://github.com/pimvd/fullyqualified/issues">Issues</a><a href="https://github.com/pimvd/fullyqualified/blob/master/LICENSE">License</a></span></div></footer>
+</body>
+</html>

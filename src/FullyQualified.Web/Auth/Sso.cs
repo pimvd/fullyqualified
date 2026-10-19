@@ -44,33 +44,36 @@ public class SsoService(AppDbContext db, IConfiguration cfg)
         await using var tx = await db.Database.BeginTransactionAsync();
         await db.Database.ExecuteSqlRawAsync("select pg_advisory_xact_lock(7001)");
 
-        if (await db.ExternalLogins.SingleOrDefaultAsync(x => x.Issuer == issuer && x.Subject == subject) is { } known)
-            return (await db.Users.SingleAsync(u => u.Id == known.UserId), null);
+        // Signing in happens before a tenant is known, so identity lookups are across tenants.
+        if (await db.AcrossTenants<ExternalLogin>().SingleOrDefaultAsync(x => x.Issuer == issuer && x.Subject == subject) is { } known)
+            return (await db.AcrossTenants<User>().SingleAsync(u => u.Id == known.UserId), null);
 
         // First account is created through /setup with a passkey, so an SSO sign-in can never claim an empty instance.
-        if (!await db.Users.AnyAsync()) return (null, "sso_no_account");
+        if (!await db.AcrossTenants<User>().AnyAsync()) return (null, "sso_no_account");
         if (email is null) return (null, "sso_no_email");
         if (!SsoPolicy.Trusted(email, external.FindFirstValue("email_verified"), SsoPolicy.Domains(cfg["Sso:AllowedDomains"])))
             return (null, "sso_domain");
 
-        var user = await db.Users.SingleOrDefaultAsync(u => u.Email == email);
+        var user = await db.AcrossTenants<User>().SingleOrDefaultAsync(u => u.Email == email);
         if (user is null)
         {
-            var invite = await db.Invites.Where(i => i.Email == email && i.UsedAt == null && i.ExpiresAt > DateTimeOffset.UtcNow).OrderByDescending(i => i.CreatedAt).FirstOrDefaultAsync();
+            var invite = await db.AcrossTenants<Invite>().Where(i => i.Email == email && i.RecoveryForUser == null && i.UsedAt == null && i.ExpiresAt > DateTimeOffset.UtcNow).OrderByDescending(i => i.CreatedAt).FirstOrDefaultAsync();
             if (invite is not null)
             {
                 invite.UsedAt = DateTimeOffset.UtcNow;
-                user = new User { Name = name, Email = email, Role = invite.Role };
+                user = new User { TenantId = invite.TenantId, Name = name, Email = email, Role = invite.Role };
             }
             else if (cfg.GetValue("Sso:AutoProvision", false))
             {
                 var role = Enum.TryParse<Role>(cfg["Sso:DefaultRole"], out var r) && r != Role.Admin ? r : Role.Viewer;
-                user = new User { Name = name, Email = email, Role = role };
+                // Without an invitation the account joins the management tenant, which is the only tenant of a self-hosted install.
+                var management = await db.Tenants.SingleAsync(t => t.IsManagement);
+                user = new User { TenantId = management.Id, Name = name, Email = email, Role = role };
             }
             else return (null, "sso_no_account");
             db.Users.Add(user);
         }
-        db.ExternalLogins.Add(new ExternalLogin { UserId = user.Id, Issuer = issuer, Subject = subject });
+        db.ExternalLogins.Add(new ExternalLogin { TenantId = user.TenantId, UserId = user.Id, Issuer = issuer, Subject = subject });
         await db.SaveChangesAsync();
         await tx.CommitAsync();
         return (user, null);
@@ -84,7 +87,7 @@ public static class SsoEndpoints
         if (!SsoService.Enabled(app.Configuration)) return;
         var g = app.MapGroup("/auth/sso").AllowAnonymous();
         g.MapGet("/start", () => Results.Challenge(new AuthenticationProperties { RedirectUri = "/auth/sso/complete" }, [SsoService.Provider]));
-        g.MapGet("/complete", async (HttpContext ctx, SsoService sso) =>
+        g.MapGet("/complete", async (HttpContext ctx, SsoService sso, Session session) =>
         {
             var external = await ctx.AuthenticateAsync(SsoService.ExternalScheme);
             await ctx.SignOutAsync(SsoService.ExternalScheme);
@@ -95,7 +98,7 @@ public static class SsoEndpoints
             }
             var (user, error) = await sso.Resolve(external.Principal!);
             if (user is null) return Results.LocalRedirect($"/login?error={error}");
-            await Session.SignIn(ctx, user);
+            await session.SignIn(ctx, user);
             return Results.LocalRedirect("/");
         });
     }

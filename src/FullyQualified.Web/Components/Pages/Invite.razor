@@ -27,5 +27,5 @@
     [Parameter] public string Token { get; set; } = "";
     bool valid;
 
-    protected override async Task OnInitializedAsync() => valid = await Passkeys.FindInvite(Token) is not null;
+    protected override async Task OnInitializedAsync() => valid = await Passkeys.FindInvite(Token, recovery: false) is not null;
 }

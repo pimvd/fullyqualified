@@ -10,6 +10,7 @@
             <a href="/certificates">@L["Nav_Certificates"]</a>
             <a href="/changes">@L["Nav_Changes"]</a>
             <a href="/reports">@L["Nav_Reports"]</a>
+            <a href="/log">@L["Nav_Log"]</a>
         }
     </nav>
     <div class="lang">
@@ -18,7 +19,8 @@
     </div>
     @if (signedIn)
     {
-        @if (Roles.IsAdmin(Ctx?.User)) { <a href="/users">@L["Nav_Users"]</a> }
+        @if (Roles.IsPlatformAdmin(Ctx?.User)) { <a href="/tenants">@L["Nav_Tenants"]</a> }
+        @if (Roles.IsAdmin(Ctx?.User)) { <a href="/alerts">@L["Nav_Alerts"]</a><a href="/users">@L["Nav_Users"]</a> }
         <a href="/account">@L["Nav_Account"]</a>
         <form method="post" action="/auth/logout"><button type="submit" class="link">@L["Nav_SignOut"]</button></form>
     }
