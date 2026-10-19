@@ -1,0 +1,110 @@
+@page "/assets/{Id:guid}"
+@inject AppDbContext Db
+@inject JobQueue Queue
+@inject IStringLocalizer<SharedResource> L
+@inject NavigationManager Nav
+
+@if (asset is null)
+{
+    <p>@L["Detail_NotFound"]</p>
+}
+else
+{
+    <PageTitle>@asset.Name</PageTitle>
+    <p><a href="/">← @L["Detail_Back"]</a></p>
+    <h1>@asset.Name <StatusBadge Status="results.WorstStatus()" /></h1>
+    <div class="actions">
+        <form method="post" @onsubmit="ScanAsync" @formname="scan"><AntiforgeryToken /><button>@L["Detail_ScanNow"]</button></form>
+        <form method="post" @onsubmit="DeleteAsync" @formname="delete"><AntiforgeryToken />
+            <button class="danger" onclick="return confirm('@L["Detail_Confirm"]')">@L["Detail_Delete"]</button></form>
+    </div>
+
+    <section class="card">
+        <h2>@L["Detail_Checks"]</h2>
+        @if (results.Count == 0) { <p class="muted">@L["Empty_Generic"]</p> }
+        @foreach (var r in results.OrderBy(r => r.CheckType))
+        {
+            <div class="check">
+                <div><b>@L["Check_" + r.CheckType]</b> <StatusBadge Status="r.Status" />
+                    <span class="muted">@r.ObservedAt.ToString("yyyy-MM-dd HH:mm") UTC</span></div>
+                <div>@ResourceText.Summary(L, r.Summary)</div>
+                @foreach (var issue in ResourceText.Issues(L, r)) { <div class="issue">⚠ @issue</div> }
+                @if (r.CheckType == "dns")
+                {
+                    <dl>
+                    @foreach (var kv in r.Values.Where(kv => !kv.Key.StartsWith('_') && kv.Value != ""))
+                    { <dt>@kv.Key</dt><dd>@kv.Value</dd> }
+                    </dl>
+                }
+            </div>
+        }
+    </section>
+
+    <section class="card">
+        <h2>@L["Detail_Certs"]</h2>
+        @if (certs.Count == 0) { <p class="muted">@L["Empty_Generic"]</p> }
+        else
+        {
+            <table>
+                <thead><tr><th>@L["Col_Name"]</th><th>@L["Col_Issuer"]</th><th>@L["Col_Expires"]</th><th>@L["Col_Days"]</th><th>@L["Col_Source"]</th><th>@L["Col_Renewal"]</th></tr></thead>
+                <tbody>
+                @foreach (var c in certs)
+                {
+                    <tr><td>@c.Host</td><td>@c.Issuer</td><td>@c.NotAfter.ToString("yyyy-MM-dd")</td>
+                        <td class="@(c.DaysLeft <= 14 ? "bad-text" : c.DaysLeft <= 30 ? "warn-text" : "")">@c.DaysLeft</td>
+                        <td>@L["Source_" + c.Source]</td><td>@L["Renewal_" + c.Renewal]</td></tr>
+                }
+                </tbody>
+            </table>
+        }
+    </section>
+
+    <section class="card">
+        <h2>@L["Detail_Changes"]</h2>
+        @if (changes.Count == 0) { <p class="muted">@L["Empty_Generic"]</p> }
+        else
+        {
+            <table>
+                <thead><tr><th>@L["Col_Detected"]</th><th>@L["Col_Check"]</th><th>@L["Col_Change"]</th><th>@L["Col_Before"]</th><th>@L["Col_After"]</th></tr></thead>
+                <tbody>
+                @foreach (var c in changes)
+                {
+                    <tr><td>@c.DetectedAt.ToString("yyyy-MM-dd HH:mm")</td><td>@L["Check_" + c.CheckType]</td><td>@c.Key</td><td class="wrap">@c.Before</td><td class="wrap">@c.After</td></tr>
+                }
+                </tbody>
+            </table>
+        }
+    </section>
+}
+
+@code {
+    [Parameter] public Guid Id { get; set; }
+    Asset? asset;
+    List<CheckResult> results = [];
+    List<CertificateRecord> certs = [];
+    List<Change> changes = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        asset = await Db.Assets.FirstOrDefaultAsync(a => a.Id == Id);
+        if (asset is null) return;
+        results = (await Db.LatestResultsAsync()).Where(r => r.AssetId == Id).ToList();
+        certs = await Db.Certificates.Where(c => c.AssetId == Id).OrderBy(c => c.NotAfter).ToListAsync();
+        changes = await Db.Changes.Where(c => c.AssetId == Id).OrderByDescending(c => c.DetectedAt).Take(50).ToListAsync();
+    }
+
+    async Task ScanAsync()
+    {
+        if (asset is null) return;
+        await Queue.EnqueueAsync(asset);
+        Nav.NavigateTo(Nav.Uri, forceLoad: true);
+    }
+
+    async Task DeleteAsync()
+    {
+        if (asset is null) return;
+        Db.Assets.Remove(asset);
+        await Db.SaveChangesAsync();
+        Nav.NavigateTo("/");
+    }
+}

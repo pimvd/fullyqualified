@@ -1,0 +1,32 @@
+@page "/changes"
+@inject AppDbContext Db
+@inject IStringLocalizer<SharedResource> L
+
+<PageTitle>@L["Nav_Changes"]</PageTitle>
+<h1>@L["Changes_Title"]</h1>
+<section class="card">
+@if (changes.Count == 0) { <p class="muted">@L["Empty_Generic"]</p> }
+else
+{
+    <table>
+        <thead><tr><th>@L["Col_Detected"]</th><th>@L["Col_Asset"]</th><th>@L["Col_Change"]</th><th>@L["Col_Before"]</th><th>@L["Col_After"]</th></tr></thead>
+        <tbody>
+        @foreach (var c in changes)
+        {
+            <tr><td>@c.DetectedAt.ToString("yyyy-MM-dd HH:mm")</td><td><a href="/assets/@c.AssetId">@names.GetValueOrDefault(c.AssetId)</a></td>
+                <td>@c.Key</td><td class="wrap">@c.Before</td><td class="wrap">@c.After</td></tr>
+        }
+        </tbody>
+    </table>
+}
+</section>
+
+@code {
+    List<Change> changes = [];
+    Dictionary<Guid, string> names = [];
+    protected override async Task OnInitializedAsync()
+    {
+        changes = await Db.Changes.OrderByDescending(c => c.DetectedAt).Take(200).ToListAsync();
+        names = await Db.Assets.ToDictionaryAsync(a => a.Id, a => a.Name);
+    }
+}

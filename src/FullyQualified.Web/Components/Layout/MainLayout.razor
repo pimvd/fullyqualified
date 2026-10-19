@@ -1,0 +1,17 @@
+@inherits LayoutComponentBase
+@inject IStringLocalizer<SharedResource> L
+@inject NavigationManager Nav
+<header class="top">
+    <a class="brand" href="/">Fully<span>Qualified</span></a>
+    <nav>
+        <a href="/">@L["Nav_Dashboard"]</a>
+        <a href="/certificates">@L["Nav_Certificates"]</a>
+        <a href="/changes">@L["Nav_Changes"]</a>
+        <a href="/reports">@L["Nav_Reports"]</a>
+    </nav>
+    <div class="lang">
+        <a href="/culture?culture=en&redirect=@Uri.EscapeDataString(Nav.ToBaseRelativePath(Nav.Uri).Insert(0, "/"))">EN</a> ·
+        <a href="/culture?culture=nl&redirect=@Uri.EscapeDataString(Nav.ToBaseRelativePath(Nav.Uri).Insert(0, "/"))">NL</a>
+    </div>
+</header>
+<main>@Body</main>

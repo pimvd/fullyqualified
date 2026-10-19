@@ -1,0 +1,83 @@
+@page "/"
+@inject AppDbContext Db
+@inject JobQueue Queue
+@inject IStringLocalizer<SharedResource> L
+@inject NavigationManager Nav
+
+<PageTitle>FullyQualified</PageTitle>
+<h1>@L["Nav_Dashboard"]</h1>
+
+<section class="tiles">
+    <div class="tile"><b>@assets.Count</b><span>@L["Tile_Assets"]</span></div>
+    <div class="tile @(expiring > 0 ? "warn" : "")"><b>@expiring</b><span>@L["Tile_Expiring"]</span></div>
+    <div class="tile @(problems > 0 ? "bad" : "")"><b>@problems</b><span>@L["Tile_Problems"]</span></div>
+    <div class="tile"><b>@recentChanges</b><span>@L["Tile_Changes"]</span></div>
+</section>
+
+<section class="card">
+    <h2>@L["Add_Title"]</h2>
+    <EditForm Model="Model!" FormName="add-asset" OnValidSubmit="AddAsync" method="post" class="inline">
+        <InputText @bind-Value="Model!.Name" placeholder="@L["Add_Placeholder"]" />
+        <button type="submit">@L["Add_Button"]</button>
+    </EditForm>
+    @if (error is not null) { <p class="error">@L[error]</p> }
+</section>
+
+<section class="card">
+    @if (assets.Count == 0)
+    {
+        <p class="muted">@L["Empty_Assets"]</p>
+    }
+    else
+    {
+        <table>
+            <thead><tr><th>@L["Col_Name"]</th><th>@L["Col_Type"]</th><th>@L["Col_Status"]</th><th>@L["Col_Summary"]</th></tr></thead>
+            <tbody>
+            @foreach (var a in assets)
+            {
+                var results = latest.Where(r => r.AssetId == a.Id).ToList();
+                var tls = results.FirstOrDefault(r => r.CheckType == "tls");
+                <tr>
+                    <td><a href="/assets/@a.Id">@a.Name</a></td>
+                    <td>@L["Kind_" + a.Kind]</td>
+                    <td><StatusBadge Status="results.WorstStatus()" /></td>
+                    <td class="muted">@(tls is null ? "" : ResourceText.Summary(L, tls.Summary))</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+</section>
+
+@code {
+    [SupplyParameterFromForm] AddModel? Model { get; set; }
+    List<Asset> assets = [];
+    List<CheckResult> latest = [];
+    int expiring, problems, recentChanges;
+    string? error;
+
+    class AddModel { public string Name { get; set; } = ""; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Model ??= new();
+        assets = await Db.Assets.OrderBy(a => a.Name).ToListAsync();
+        latest = await Db.LatestResultsAsync();
+        var now = DateTimeOffset.UtcNow;
+        expiring = await Db.Certificates.CountAsync(c => c.Source == "endpoint" && c.NotAfter <= now.AddDays(30));
+        problems = assets.Count(a => latest.Where(r => r.AssetId == a.Id).WorstStatus() >= CheckStatus.Warning);
+        recentChanges = await Db.Changes.CountAsync(c => c.DetectedAt >= now.AddDays(-7));
+    }
+
+    async Task AddAsync()
+    {
+        var name = HostName.Normalize(Model!.Name);
+        if (name is null) { error = "Add_Invalid"; return; }
+        if (await Db.Assets.AnyAsync(a => a.Name == name)) { error = "Add_Duplicate"; return; }
+        var asset = new Asset { Name = name, Kind = name.Contains(':') ? AssetKind.Endpoint : AssetKind.Domain };
+        Db.Assets.Add(asset);
+        await Db.SaveChangesAsync();
+        await Queue.EnqueueAsync(asset);
+        Nav.NavigateTo($"/assets/{asset.Id}");
+    }
+}

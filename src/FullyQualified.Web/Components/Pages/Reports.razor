@@ -1,0 +1,12 @@
+@page "/reports"
+@inject IStringLocalizer<SharedResource> L
+
+<PageTitle>@L["Nav_Reports"]</PageTitle>
+<h1>@L["Reports_Title"]</h1>
+<section class="card">
+    <p>@L["Reports_Intro"]</p>
+    <p class="actions">
+        <a class="button" href="/reports/nis2.xlsx">@L["Reports_Excel"]</a>
+        <a class="button" href="/reports/nis2.pdf">@L["Reports_Pdf"]</a>
+    </p>
+</section>

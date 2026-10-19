@@ -1,0 +1,12 @@
+@inject IStringLocalizer<SharedResource> L
+@if (Status is { } s)
+{
+    <span class="badge @s.ToString().ToLowerInvariant()">@L["Status_" + s]</span>
+}
+else
+{
+    <span class="badge pending">@L["Status_Pending"]</span>
+}
+@code {
+    [Parameter] public CheckStatus? Status { get; set; }
+}
