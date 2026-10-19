@@ -32,3 +32,4 @@ dt{color:var(--muted)}dd{margin:0;word-break:break-all}
 .narrow button{margin-top:1rem}button:disabled{opacity:.6;cursor:default}
 header.top form{margin:0}button.link{background:none;color:var(--accent);padding:0}button.link:hover{text-decoration:underline}
 .error[hidden],input[hidden]{display:none}
+select{padding:.5rem .6rem;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);font:inherit}

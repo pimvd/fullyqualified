@@ -13,11 +13,14 @@ else
     <PageTitle>@asset.Name</PageTitle>
     <p><a href="/">← @L["Detail_Back"]</a></p>
     <h1>@asset.Name <StatusBadge Status="results.WorstStatus()" /></h1>
-    <div class="actions">
-        <form method="post" @onsubmit="ScanAsync" @formname="scan"><AntiforgeryToken /><button>@L["Detail_ScanNow"]</button></form>
-        <form method="post" @onsubmit="DeleteAsync" @formname="delete"><AntiforgeryToken />
-            <button class="danger" onclick="return confirm('@L["Detail_Confirm"]')">@L["Detail_Delete"]</button></form>
-    </div>
+    @if (canEdit)
+    {
+        <div class="actions">
+            <form method="post" @onsubmit="ScanAsync" @formname="scan"><AntiforgeryToken /><button>@L["Detail_ScanNow"]</button></form>
+            <form method="post" @onsubmit="DeleteAsync" @formname="delete"><AntiforgeryToken />
+                <button class="danger" onclick="return confirm('@L["Detail_Confirm"]')">@L["Detail_Delete"]</button></form>
+        </div>
+    }
 
     <section class="card">
         <h2>@L["Detail_Checks"]</h2>
@@ -78,6 +81,8 @@ else
 }
 
 @code {
+    [CascadingParameter] HttpContext? Ctx { get; set; }
+    bool canEdit => Roles.CanEdit(Ctx?.User);
     [Parameter] public Guid Id { get; set; }
     Asset? asset;
     List<CheckResult> results = [];
@@ -95,14 +100,14 @@ else
 
     async Task ScanAsync()
     {
-        if (asset is null) return;
+        if (asset is null || !canEdit) return;
         await Queue.EnqueueAsync(asset);
         Nav.NavigateTo(Nav.Uri, forceLoad: true);
     }
 
     async Task DeleteAsync()
     {
-        if (asset is null) return;
+        if (asset is null || !canEdit) return;
         Db.Assets.Remove(asset);
         await Db.SaveChangesAsync();
         Nav.NavigateTo("/");

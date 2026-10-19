@@ -84,11 +84,17 @@ public class Job
     public string State { get; set; } = "pending";
 }
 
+/// <summary>Viewer reads, Member also manages assets, Admin also manages people. Each role includes the ones before it.</summary>
+public enum Role { Viewer = 0, Member = 1, Admin = 2 }
+
 public class User
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public Guid TenantId { get; set; } = Tenant.Default;
     public required string Name { get; set; }
+    /// <summary>Lower case. Set from an invitation or from single sign-on; used to link an SSO identity to this user.</summary>
+    public string? Email { get; set; }
+    public Role Role { get; set; } = Role.Viewer;
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }
 
@@ -112,8 +118,22 @@ public class Invite
     public Guid Id { get; set; } = Guid.NewGuid();
     public Guid TenantId { get; set; } = Tenant.Default;
     public required byte[] TokenHash { get; set; }
+    /// <summary>Optional. When set, the same person can also accept the invitation by signing in with SSO using this address.</summary>
+    public string? Email { get; set; }
+    public Role Role { get; set; } = Role.Viewer;
     public Guid CreatedBy { get; set; }
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
     public DateTimeOffset ExpiresAt { get; set; }
     public DateTimeOffset? UsedAt { get; set; }
+}
+
+/// <summary>Links a user to an identity at the single sign-on provider (issuer + subject), so the link survives e-mail changes.</summary>
+public class ExternalLogin
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid TenantId { get; set; } = Tenant.Default;
+    public Guid UserId { get; set; }
+    public required string Issuer { get; set; }
+    public required string Subject { get; set; }
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }

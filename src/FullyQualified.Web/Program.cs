@@ -29,11 +29,18 @@ builder.Services.AddScoped<CheckRunner>();
 builder.Services.AddScoped<AlertService>();
 builder.Services.AddScoped<ReportBuilder>();
 builder.Services.AddScoped<PasskeyService>();
+builder.Services.AddScoped<AdminService>();
+builder.Services.AddScoped<Session>();
+builder.Services.AddScoped<SsoService>();
+builder.Services.AddMemoryCache();
 builder.Services.AddHostedService<JobRunner>();
 
 // Accounts sign in with passkeys only. Keys live in the database so cookies survive restarts and redeploys.
 builder.Services.AddDataProtection().SetApplicationName("FullyQualified").PersistKeysToDbContext<AppDbContext>();
-builder.Services.AddAuthentication(PasskeyService.Scheme).AddCookie(o =>
+static bool IsApi(HttpRequest r) => r.Path.StartsWithSegments("/auth") || r.Path.StartsWithSegments("/admin");
+
+var auth = builder.Services.AddAuthentication(Session.Scheme);
+auth.AddCookie(o =>
 {
     o.Cookie.Name = "fq_auth";
     o.Cookie.HttpOnly = true;
@@ -42,15 +49,27 @@ builder.Services.AddAuthentication(PasskeyService.Scheme).AddCookie(o =>
     o.ExpireTimeSpan = TimeSpan.FromDays(14);
     o.SlidingExpiration = true;
     o.LoginPath = "/login";
+    o.AccessDeniedPath = "/forbidden";
+    o.Events.OnValidatePrincipal = Session.Validate;
     o.Events.OnRedirectToLogin = ctx =>
     {
         // Scripts get a status code; browsers get sent to the login page.
-        if (ctx.Request.Path.StartsWithSegments("/auth")) ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        if (IsApi(ctx.Request)) ctx.Response.StatusCode = StatusCodes.Status401Unauthorized;
+        else ctx.Response.Redirect(ctx.RedirectUri);
+        return Task.CompletedTask;
+    };
+    o.Events.OnRedirectToAccessDenied = ctx =>
+    {
+        if (IsApi(ctx.Request)) ctx.Response.StatusCode = StatusCodes.Status403Forbidden;
         else ctx.Response.Redirect(ctx.RedirectUri);
         return Task.CompletedTask;
     };
 });
-builder.Services.AddAuthorizationBuilder().SetFallbackPolicy(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build());
+auth.AddSso(builder.Configuration);
+builder.Services.AddAuthorizationBuilder()
+    .SetFallbackPolicy(new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build())
+    .AddPolicy(Roles.Admin, p => p.RequireRole(nameof(Role.Admin)))
+    .AddPolicy(Roles.Edit, p => p.RequireRole(nameof(Role.Member), nameof(Role.Admin)));
 
 var app = builder.Build();
 
@@ -93,6 +112,8 @@ app.MapGet("/reports/nis2.pdf", async (ReportBuilder reports, IStringLocalizer<S
     Results.File(ReportWriter.Pdf(await reports.BuildAsync(), l), "application/pdf", $"nis2-report-{DateTime.UtcNow:yyyyMMdd}.pdf"));
 
 app.MapAuth();
+app.MapAdmin();
+app.MapSso();
 app.MapRazorComponents<App>();
 
 app.Run();

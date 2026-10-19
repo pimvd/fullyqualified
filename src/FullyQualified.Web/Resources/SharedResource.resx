@@ -117,8 +117,8 @@
   <data name="Passkeys_Never" xml:space="preserve"><value>Never</value></data>
   <data name="Col_Created" xml:space="preserve"><value>Created</value></data>
   <data name="Col_LastUsed" xml:space="preserve"><value>Last used</value></data>
-  <data name="Invites_Title" xml:space="preserve"><value>Invite a colleague</value></data>
-  <data name="Invites_Intro" xml:space="preserve"><value>Create a single-use link that is valid for 7 days. Share it privately.</value></data>
+  <data name="Invites_Title" xml:space="preserve"><value>Invite someone</value></data>
+  <data name="Invites_Intro" xml:space="preserve"><value>Invite someone with a single-use link, valid for 7 days. The role decides what they may do: viewers read, members also manage assets, admins also manage people.</value></data>
   <data name="Invites_Create" xml:space="preserve"><value>Create invitation link</value></data>
   <data name="Err_Unsupported" xml:space="preserve"><value>This browser does not support passkeys.</value></data>
   <data name="Err_Cancelled" xml:space="preserve"><value>The passkey request was cancelled.</value></data>
@@ -132,4 +132,43 @@
   <data name="Err_VerificationFailed" xml:space="preserve"><value>The passkey could not be verified.</value></data>
   <data name="Err_NotFound" xml:space="preserve"><value>Not found.</value></data>
   <data name="Err_AlreadyRegistered" xml:space="preserve"><value>This device already has a passkey for this account. Use another device or security key.</value></data>
+  <data name="Nav_Users" xml:space="preserve"><value>Users</value></data>
+  <data name="Users_Title" xml:space="preserve"><value>Users</value></data>
+  <data name="Users_You" xml:space="preserve"><value>you</value></data>
+  <data name="Users_ConfirmRemove" xml:space="preserve"><value>Remove this user and their passkeys?</value></data>
+  <data name="Col_Email" xml:space="preserve"><value>Email</value></data>
+  <data name="Col_Role" xml:space="preserve"><value>Role</value></data>
+  <data name="Col_SignIn" xml:space="preserve"><value>Sign-in</value></data>
+  <data name="Method_Passkeys" xml:space="preserve"><value>Passkeys</value></data>
+  <data name="Role_Viewer" xml:space="preserve"><value>Viewer</value></data>
+  <data name="Role_Member" xml:space="preserve"><value>Member</value></data>
+  <data name="Role_Admin" xml:space="preserve"><value>Admin</value></data>
+  <data name="Forbidden_Title" xml:space="preserve"><value>No access</value></data>
+  <data name="Forbidden_Text" xml:space="preserve"><value>Your role does not allow this.</value></data>
+  <data name="Invites_Email" xml:space="preserve"><value>Email (optional)</value></data>
+  <data name="Invites_Pending" xml:space="preserve"><value>Pending invitations</value></data>
+  <data name="Invites_Revoke" xml:space="preserve"><value>Revoke</value></data>
+  <data name="Invites_ConfirmRevoke" xml:space="preserve"><value>Revoke this invitation?</value></data>
+  <data name="Invites_Emailed" xml:space="preserve"><value>The invitation was emailed. You can also share this link privately.</value></data>
+  <data name="Invites_Copy" xml:space="preserve"><value>Share this link privately. It works once and expires in 7 days.</value></data>
+  <data name="Invites_MailOn" xml:space="preserve"><value>With an email address, the link is sent by email. The address also lets that person sign in with SSO.</value></data>
+  <data name="Invites_MailOff" xml:space="preserve"><value>No SMTP server is set up (Alerts:Email), so you share the link yourself.</value></data>
+  <data name="Login_Or" xml:space="preserve"><value>or</value></data>
+  <data name="Login_Sso" xml:space="preserve"><value>Sign in with {0}</value></data>
+  <data name="Err_LastAdmin" xml:space="preserve"><value>There must always be at least one administrator.</value></data>
+  <data name="Err_CannotRemoveSelf" xml:space="preserve"><value>You cannot remove yourself.</value></data>
+  <data name="Err_EmailExists" xml:space="preserve"><value>This email address already belongs to a user.</value></data>
+  <data name="Err_InvalidEmail" xml:space="preserve"><value>Enter a valid email address.</value></data>
+  <data name="Err_InvalidRole" xml:space="preserve"><value>Choose a role.</value></data>
+  <data name="Err_SsoFailed" xml:space="preserve"><value>Single sign-on failed. Try again.</value></data>
+  <data name="Err_SsoNoAccount" xml:space="preserve"><value>Your identity provider signed you in, but you have no account here. Ask an administrator for an invitation.</value></data>
+  <data name="Err_SsoDomain" xml:space="preserve"><value>Your email address is not allowed to sign in here.</value></data>
+  <data name="Err_SsoNoEmail" xml:space="preserve"><value>Your identity provider did not share an email address.</value></data>
+  <data name="Mail_InviteSubject" xml:space="preserve"><value>You are invited to FullyQualified</value></data>
+  <data name="Mail_InviteBody" xml:space="preserve"><value>{0} invited you to FullyQualified.
+
+Open this link to create your account with a passkey, or sign in with single sign-on if your organization uses it:
+{1}
+
+The link works once and expires in {2} days.</value></data>
 </root>

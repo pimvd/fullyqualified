@@ -14,14 +14,17 @@
     <div class="tile"><b>@recentChanges</b><span>@L["Tile_Changes"]</span></div>
 </section>
 
-<section class="card">
-    <h2>@L["Add_Title"]</h2>
-    <EditForm Model="Model!" FormName="add-asset" OnValidSubmit="AddAsync" method="post" class="inline">
-        <InputText @bind-Value="Model!.Name" placeholder="@L["Add_Placeholder"]" />
-        <button type="submit">@L["Add_Button"]</button>
-    </EditForm>
-    @if (error is not null) { <p class="error">@L[error]</p> }
-</section>
+@if (canEdit)
+{
+    <section class="card">
+        <h2>@L["Add_Title"]</h2>
+        <EditForm Model="Model!" FormName="add-asset" OnValidSubmit="AddAsync" method="post" class="inline">
+            <InputText @bind-Value="Model!.Name" placeholder="@L["Add_Placeholder"]" />
+            <button type="submit">@L["Add_Button"]</button>
+        </EditForm>
+        @if (error is not null) { <p class="error">@L[error]</p> }
+    </section>
+}
 
 <section class="card">
     @if (assets.Count == 0)
@@ -50,6 +53,8 @@
 </section>
 
 @code {
+    [CascadingParameter] HttpContext? Ctx { get; set; }
+    bool canEdit => Roles.CanEdit(Ctx?.User);
     [SupplyParameterFromForm] AddModel? Model { get; set; }
     List<Asset> assets = [];
     List<CheckResult> latest = [];
@@ -71,6 +76,7 @@
 
     async Task AddAsync()
     {
+        if (!canEdit) return;
         var name = HostName.Normalize(Model!.Name);
         if (name is null) { error = "Add_Invalid"; return; }
         if (await Db.Assets.AnyAsync(a => a.Name == name)) { error = "Add_Duplicate"; return; }

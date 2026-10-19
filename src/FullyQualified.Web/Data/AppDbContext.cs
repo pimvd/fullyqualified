@@ -14,6 +14,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<User> Users => Set<User>();
     public DbSet<Passkey> Passkeys => Set<Passkey>();
     public DbSet<Invite> Invites => Set<Invite>();
+    public DbSet<ExternalLogin> ExternalLogins => Set<ExternalLogin>();
     /// <summary>Keeps the cookie and challenge keys across restarts. Infrastructure, so it has no tenant id.</summary>
     public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
 
@@ -53,6 +54,9 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.ToTable("users");
             e.HasQueryFilter(x => x.TenantId == Tenant.Default);
             e.Property(x => x.Name).HasMaxLength(100);
+            e.Property(x => x.Email).HasMaxLength(254);
+            e.HasIndex(x => new { x.TenantId, x.Email }).IsUnique();
+            e.Property(x => x.Role).HasConversion<string>().HasMaxLength(10);
         });
         b.Entity<Passkey>(e =>
         {
@@ -67,7 +71,16 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             e.ToTable("invites");
             e.HasQueryFilter(x => x.TenantId == Tenant.Default);
             e.HasIndex(x => x.TokenHash).IsUnique();
+            e.Property(x => x.Email).HasMaxLength(254);
+            e.Property(x => x.Role).HasConversion<string>().HasMaxLength(10);
             e.HasOne<User>().WithMany().HasForeignKey(x => x.CreatedBy).OnDelete(DeleteBehavior.Cascade);
+        });
+        b.Entity<ExternalLogin>(e =>
+        {
+            e.ToTable("external_logins");
+            e.HasQueryFilter(x => x.TenantId == Tenant.Default);
+            e.HasIndex(x => new { x.Issuer, x.Subject }).IsUnique();
+            e.HasOne<User>().WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
         });
         b.Entity<DataProtectionKey>().ToTable("data_protection_keys");
         b.Entity<Job>(e =>

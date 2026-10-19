@@ -26,7 +26,7 @@ public class AuthTests(NoDbFactory factory) : IClassFixture<NoDbFactory>
     public async Task Pages_and_reports_require_sign_in()
     {
         var client = factory.CreateClient(new() { AllowAutoRedirect = false });
-        foreach (var path in new[] { "/", "/reports/nis2.pdf", "/reports/nis2.xlsx", "/account" })
+        foreach (var path in new[] { "/", "/reports/nis2.pdf", "/reports/nis2.xlsx", "/account", "/users" })
         {
             var response = await client.GetAsync(path);
             Assert.Equal(System.Net.HttpStatusCode.Redirect, response.StatusCode);
@@ -38,7 +38,7 @@ public class AuthTests(NoDbFactory factory) : IClassFixture<NoDbFactory>
     public async Task Account_endpoints_answer_401_without_a_session()
     {
         var client = factory.CreateClient(new() { AllowAutoRedirect = false });
-        foreach (var path in new[] { "/auth/invites", "/auth/passkeys/options", "/auth/logout" })
+        foreach (var path in new[] { "/admin/invites", "/auth/passkeys/options", "/auth/logout" })
             Assert.Equal(System.Net.HttpStatusCode.Unauthorized, (await client.PostAsJsonAsync(path, new { })).StatusCode);
         Assert.Equal(System.Net.HttpStatusCode.Unauthorized, (await client.DeleteAsync($"/auth/passkeys/{Guid.NewGuid()}")).StatusCode);
     }

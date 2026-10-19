@@ -38,6 +38,10 @@ Environment variables (use `__` for `:`):
 | `ConnectionStrings:Default` | local Postgres | Database |
 | `Auth:SetupCode` | unset | If set, creating the first account requires this code. Set it when the app is reachable before you have set it up. |
 | `Auth:RpId`, `Auth:Origin` | request host | Passkey relying-party domain and origin. Set them when a reverse proxy changes the host name. |
+| `Sso:Authority`, `Sso:ClientId`, `Sso:ClientSecret` | unset | OpenID Connect single sign-on (Entra ID, Google, Okta, Keycloak, ...). Set all three to show a "Sign in with ..." button. Redirect URI to register: `https://<host>/auth/sso/signin-oidc`. |
+| `Sso:DisplayName` | `SSO` | Name on the sign-in button |
+| `Sso:AllowedDomains` | unset | Comma-separated e-mail domains that may use SSO. Required for Entra ID, which does not send `email_verified`; without it only verified addresses are accepted. |
+| `Sso:AutoProvision`, `Sso:DefaultRole` | false, Viewer | Create an account on first SSO sign-in instead of requiring an invitation. Never creates admins. |
 | `Scanning:IntervalHours` | 6 | Rescan interval |
 | `Scanning:AllowPrivateAddresses` | true | Set false on a shared install to block scans of private networks |
 | `Dns:Server` | system | Resolver IP to use |

@@ -19,9 +19,7 @@ record Pending(string OptionsJson, string Name, Guid UserId, Guid? InviteId);
 
 public class PasskeyService(AppDbContext db, IDataProtectionProvider dp, IConfiguration cfg)
 {
-    public const string Scheme = CookieAuthenticationDefaults.AuthenticationScheme;
     const string StateCookie = "fq_pk";
-    static readonly TimeSpan InviteLifetime = TimeSpan.FromDays(7);
     readonly ITimeLimitedDataProtector protector = dp.CreateProtector("fq.passkey.state").ToTimeLimitedDataProtector();
 
     Fido2 Fido(HttpContext ctx)
@@ -39,7 +37,7 @@ public class PasskeyService(AppDbContext db, IDataProtectionProvider dp, IConfig
     static Guid? CurrentUser(HttpContext ctx) =>
         Guid.TryParse(ctx.User.FindFirstValue(ClaimTypes.NameIdentifier), out var id) ? id : null;
 
-    static byte[] Hash(string s) => SHA256.HashData(Encoding.UTF8.GetBytes(s));
+    internal static byte[] Hash(string s) => SHA256.HashData(Encoding.UTF8.GetBytes(s));
 
     void SaveState(HttpContext ctx, object state) =>
         ctx.Response.Cookies.Append(StateCookie, protector.Protect(JsonSerializer.Serialize(state), TimeSpan.FromMinutes(5)),
@@ -53,11 +51,6 @@ public class PasskeyService(AppDbContext db, IDataProtectionProvider dp, IConfig
         try { return JsonSerializer.Deserialize<T>(protector.Unprotect(raw)); }
         catch (CryptographicException) { return default; }
     }
-
-    async Task SignIn(HttpContext ctx, User user) =>
-        await ctx.SignInAsync(Scheme, new ClaimsPrincipal(new ClaimsIdentity(
-            [new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()), new Claim(ClaimTypes.Name, user.Name)], Scheme)),
-            new AuthenticationProperties { IsPersistent = true });
 
     static IResult Fail(int status, string code) => Results.Json(new { error = code }, statusCode: status);
 
@@ -146,13 +139,18 @@ public class PasskeyService(AppDbContext db, IDataProtectionProvider dp, IConfig
             user = await db.Users.SingleAsync(u => u.Id == state.UserId);
         else
         {
+            // The first account is the administrator; everyone after that joins through an invitation with a role.
+            var role = Role.Admin;
+            string? email = null;
             if (await db.Users.AnyAsync())
             {
                 var invite = state.InviteId is { } id ? await db.Invites.SingleOrDefaultAsync(i => i.Id == id && i.UsedAt == null && i.ExpiresAt > DateTimeOffset.UtcNow) : null;
                 if (invite is null) return Fail(403, "invalid_invite");
                 invite.UsedAt = DateTimeOffset.UtcNow;
+                role = invite.Role;
+                email = invite.Email;
             }
-            user = new User { Id = state.UserId, Name = state.Name };
+            user = new User { Id = state.UserId, Name = state.Name, Role = role, Email = email };
             db.Users.Add(user);
         }
 
@@ -161,10 +159,11 @@ public class PasskeyService(AppDbContext db, IDataProtectionProvider dp, IConfig
             UserId = user.Id, CredentialId = credential.Id, PublicKey = credential.PublicKey, SignCount = credential.SignCount,
             Name = addToExisting ? state.Name : "Passkey",
         });
-        await db.SaveChangesAsync();
+        try { await db.SaveChangesAsync(); }
+        catch (DbUpdateException) { return Fail(409, "email_exists"); }
         await tx.CommitAsync();
 
-        if (!addToExisting) await SignIn(ctx, user);
+        if (!addToExisting) await Session.SignIn(ctx, user);
         return Results.Ok(new { redirect = "/" });
     }
 
@@ -218,19 +217,11 @@ public class PasskeyService(AppDbContext db, IDataProtectionProvider dp, IConfig
         passkey.SignCount = result.SignCount;
         passkey.LastUsedAt = DateTimeOffset.UtcNow;
         await db.SaveChangesAsync();
-        await SignIn(ctx, await db.Users.SingleAsync(u => u.Id == passkey.UserId));
+        await Session.SignIn(ctx, await db.Users.SingleAsync(u => u.Id == passkey.UserId));
         return Results.Ok(new { redirect = "/" });
     }
 
-    // ---- invites ----
-
-    public async Task<IResult> CreateInvite(HttpContext ctx)
-    {
-        var token = Convert.ToHexString(RandomNumberGenerator.GetBytes(24)).ToLowerInvariant();
-        db.Invites.Add(new Invite { TokenHash = Hash(token), CreatedBy = CurrentUser(ctx)!.Value, ExpiresAt = DateTimeOffset.UtcNow + InviteLifetime });
-        await db.SaveChangesAsync();
-        return Results.Ok(new { url = $"{ctx.Request.Scheme}://{ctx.Request.Host}/invite/{token}", expiresInDays = (int)InviteLifetime.TotalDays });
-    }
+    // ---- invitations are created by administrators, see AdminEndpoints ----
 
     public async Task<Invite?> FindInvite(string? token)
     {
@@ -254,10 +245,9 @@ public static class AuthEndpoints
         authed.MapPost("/passkeys/options", (HttpContext c, PasskeyService s, LabelRequest r) => s.AddOptions(c, r));
         authed.MapPost("/passkeys/complete", (HttpContext c, PasskeyService s, AuthenticatorAttestationRawResponse r) => s.Complete(c, r, true));
         authed.MapDelete("/passkeys/{id:guid}", (HttpContext c, PasskeyService s, Guid id) => s.RemovePasskey(c, id));
-        authed.MapPost("/invites", (HttpContext c, PasskeyService s) => s.CreateInvite(c));
         authed.MapPost("/logout", async (HttpContext c) =>
         {
-            await c.SignOutAsync(PasskeyService.Scheme);
+            await c.SignOutAsync(Session.Scheme);
             return Results.LocalRedirect("/login");
         });
     }

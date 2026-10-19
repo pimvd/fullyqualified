@@ -22,12 +22,19 @@ public class AlertService(IConfiguration cfg, IHttpClientFactory http, ILogger<A
         });
         await Try("email", async () =>
         {
-            if (cfg["Alerts:Email:Host"] is not { Length: > 0 } host) return;
-            using var smtp = new SmtpClient(host, cfg.GetValue("Alerts:Email:Port", 587)) { EnableSsl = cfg.GetValue("Alerts:Email:Ssl", true) };
-            if (cfg["Alerts:Email:User"] is { Length: > 0 } user)
-                smtp.Credentials = new System.Net.NetworkCredential(user, cfg["Alerts:Email:Password"]);
-            await smtp.SendMailAsync(new MailMessage(cfg["Alerts:Email:From"] ?? "fullyqualified@localhost", cfg["Alerts:Email:To"] ?? "", subject, body), ct);
+            if (CanMail) await MailAsync(cfg["Alerts:Email:To"] ?? "", subject, body, ct);
         });
+    }
+
+    public bool CanMail => !string.IsNullOrWhiteSpace(cfg["Alerts:Email:Host"]);
+
+    /// <summary>Sends one message through the configured SMTP server. Throws when it fails; callers decide what that means.</summary>
+    public async Task MailAsync(string to, string subject, string body, CancellationToken ct)
+    {
+        using var smtp = new SmtpClient(cfg["Alerts:Email:Host"], cfg.GetValue("Alerts:Email:Port", 587)) { EnableSsl = cfg.GetValue("Alerts:Email:Ssl", true) };
+        if (cfg["Alerts:Email:User"] is { Length: > 0 } user)
+            smtp.Credentials = new System.Net.NetworkCredential(user, cfg["Alerts:Email:Password"]);
+        await smtp.SendMailAsync(new MailMessage(cfg["Alerts:Email:From"] ?? "fullyqualified@localhost", to, subject, body), ct);
     }
 
     async Task Try(string channel, Func<Task> send)

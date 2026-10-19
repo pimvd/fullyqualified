@@ -1,0 +1,115 @@
+@page "/users"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Policy = Roles.Admin)]
+@inject IStringLocalizer<SharedResource> L
+@inject AppDbContext Db
+@inject IConfiguration Config
+
+<PageTitle>@L["Nav_Users"]</PageTitle>
+<h1>@L["Users_Title"]</h1>
+<div data-admin-root data-confirm-user="@L["Users_ConfirmRemove"]" data-confirm-invite="@L["Invites_ConfirmRevoke"]"
+     data-emailed="@L["Invites_Emailed"]" data-copy="@L["Invites_Copy"]"
+     data-msg-last_admin="@L["Err_LastAdmin"]"
+     data-msg-cannot_remove_self="@L["Err_CannotRemoveSelf"]"
+     data-msg-email_exists="@L["Err_EmailExists"]"
+     data-msg-invalid_email="@L["Err_InvalidEmail"]"
+     data-msg-invalid_role="@L["Err_InvalidRole"]"
+     data-msg-not_found="@L["Err_NotFound"]"
+     data-msg-failed="@L["Err_Failed"]">
+    <section class="card">
+        <h2>@L["Invites_Title"]</h2>
+        <p>@L["Invites_Intro"]</p>
+        <p class="inline">
+            <input id="adm-email" type="email" maxlength="254" placeholder="@L["Invites_Email"]" autocomplete="off" />
+            <select id="adm-role">
+                @foreach (var r in Enum.GetValues<Role>())
+                {
+                    <option value="@r" selected="@(r == Role.Member)">@L["Role_" + r]</option>
+                }
+            </select>
+            <button type="button" data-admin="invite">@L["Invites_Create"]</button>
+        </p>
+        <p class="muted"><small>@L[mailConfigured ? "Invites_MailOn" : "Invites_MailOff"]</small></p>
+        <p><input id="adm-link" readonly hidden style="width:100%" /></p>
+        <p id="adm-note" class="muted" hidden></p>
+    </section>
+
+    <section class="card">
+        <h2>@L["Users_Title"]</h2>
+        <table>
+            <thead><tr><th>@L["Col_Name"]</th><th>@L["Col_Email"]</th><th>@L["Col_Role"]</th><th>@L["Col_SignIn"]</th><th>@L["Col_Created"]</th><th></th></tr></thead>
+            <tbody>
+            @foreach (var u in users)
+            {
+                <tr>
+                    <td>@u.Name @if (u.Id == me) { <span class="muted">(@L["Users_You"])</span> }</td>
+                    <td>@u.Email</td>
+                    <td>
+                        <select data-user-role="@u.Id">
+                            @foreach (var r in Enum.GetValues<Role>())
+                            {
+                                <option value="@r" selected="@(r == u.Role)">@L["Role_" + r]</option>
+                            }
+                        </select>
+                    </td>
+                    <td>@Methods(u.Id)</td>
+                    <td>@u.CreatedAt.ToString("yyyy-MM-dd")</td>
+                    <td>
+                        @if (u.Id != me)
+                        {
+                            <button type="button" class="danger" data-user-remove="@u.Id">@L["Passkeys_Remove"]</button>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </section>
+
+    @if (invites.Count > 0)
+    {
+        <section class="card">
+            <h2>@L["Invites_Pending"]</h2>
+            <table>
+                <thead><tr><th>@L["Col_Email"]</th><th>@L["Col_Role"]</th><th>@L["Col_Expires"]</th><th></th></tr></thead>
+                <tbody>
+                @foreach (var i in invites)
+                {
+                    <tr>
+                        <td>@(i.Email ?? "—")</td>
+                        <td>@L["Role_" + i.Role]</td>
+                        <td>@i.ExpiresAt.ToString("yyyy-MM-dd")</td>
+                        <td><button type="button" class="danger" data-invite-revoke="@i.Id">@L["Invites_Revoke"]</button></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </section>
+    }
+    <p id="adm-error" class="error" role="alert" hidden></p>
+</div>
+
+@code {
+    [CascadingParameter] HttpContext? Ctx { get; set; }
+    List<User> users = [];
+    List<FullyQualified.Web.Invite> invites = [];
+    Dictionary<Guid, int> passkeys = [];
+    HashSet<Guid> sso = [];
+    Guid? me;
+    bool mailConfigured => !string.IsNullOrWhiteSpace(Config["Alerts:Email:Host"]);
+
+    protected override async Task OnInitializedAsync()
+    {
+        me = Roles.UserId(Ctx?.User);
+        users = await Db.Users.OrderBy(u => u.Name).ToListAsync();
+        invites = await Db.Invites.Where(i => i.UsedAt == null && i.ExpiresAt > DateTimeOffset.UtcNow).OrderBy(i => i.ExpiresAt).ToListAsync();
+        passkeys = await Db.Passkeys.GroupBy(p => p.UserId).ToDictionaryAsync(g => g.Key, g => g.Count());
+        sso = (await Db.ExternalLogins.Select(x => x.UserId).ToListAsync()).ToHashSet();
+    }
+
+    string Methods(Guid id) => string.Join(", ", new[]
+    {
+        passkeys.TryGetValue(id, out var n) ? $"{L["Method_Passkeys"]} ({n})" : null,
+        sso.Contains(id) ? "SSO" : null,
+    }.Where(x => x is not null));
+}

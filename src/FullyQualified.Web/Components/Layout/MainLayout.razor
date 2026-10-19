@@ -18,6 +18,7 @@
     </div>
     @if (signedIn)
     {
+        @if (Roles.IsAdmin(Ctx?.User)) { <a href="/users">@L["Nav_Users"]</a> }
         <a href="/account">@L["Nav_Account"]</a>
         <form method="post" action="/auth/logout"><button type="submit" class="link">@L["Nav_SignOut"]</button></form>
     }

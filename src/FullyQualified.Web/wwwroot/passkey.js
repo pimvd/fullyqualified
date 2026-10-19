@@ -62,16 +62,11 @@
       location.assign('/');
     },
     add: async () => { await create('/auth/passkeys/options', '/auth/passkeys/complete', { label: value('pk-label') }); location.reload(); },
-    invite: async () => {
-      const r = await send('POST', '/auth/invites');
-      const box = document.getElementById('pk-invite-url');
-      box.value = r.url; box.hidden = false; box.select();
-    },
   };
 
   document.querySelectorAll('[data-passkey]').forEach(button => button.addEventListener('click', async () => {
     show('');
-    if (!window.PublicKeyCredential && button.getAttribute('data-passkey') !== 'invite') return show(msg('unsupported'));
+    if (!window.PublicKeyCredential) return show(msg('unsupported'));
     button.disabled = true;
     try { await actions[button.getAttribute('data-passkey')](); }
     catch (e) { show(e?.code ? msg(e.code) : e?.name === 'NotAllowedError' ? msg('cancelled') : e?.name === 'InvalidStateError' ? msg('already_registered') : msg('failed')); }

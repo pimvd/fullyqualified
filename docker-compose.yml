@@ -5,6 +5,10 @@ services:
     environment:
       ConnectionStrings__Default: Host=db;Database=fullyqualified;Username=postgres;Password=${POSTGRES_PASSWORD:-postgres}
       Auth__SetupCode: ${FQ_SETUP_CODE:-}
+      Sso__Authority: ${FQ_SSO_AUTHORITY:-}
+      Sso__ClientId: ${FQ_SSO_CLIENT_ID:-}
+      Sso__ClientSecret: ${FQ_SSO_CLIENT_SECRET:-}
+      Sso__AllowedDomains: ${FQ_SSO_DOMAINS:-}
     depends_on: [db]
   db:
     image: postgres:17

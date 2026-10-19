@@ -4,6 +4,7 @@
 
 <PageTitle>@L["Account_Title"]</PageTitle>
 <h1>@L["Account_Title"]</h1>
+<p class="muted">@Ctx?.User.Identity?.Name · @L["Col_Role"]: @L["Role_" + (Ctx?.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? "Viewer")]</p>
 <PasskeyRoot>
     <section class="card">
         <h2>@L["Passkeys_Title"]</h2>
@@ -31,12 +32,6 @@
             <input id="pk-label" maxlength="100" placeholder="@L["Passkeys_Label"]" />
             <button type="button" data-passkey="add">@L["Passkeys_Add"]</button>
         </p>
-    </section>
-    <section class="card">
-        <h2>@L["Invites_Title"]</h2>
-        <p>@L["Invites_Intro"]</p>
-        <button type="button" data-passkey="invite">@L["Invites_Create"]</button>
-        <p><input id="pk-invite-url" readonly hidden style="width:100%" /></p>
     </section>
 </PasskeyRoot>
 

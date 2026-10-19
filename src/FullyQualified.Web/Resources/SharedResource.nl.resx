@@ -117,8 +117,8 @@
   <data name="Passkeys_Never" xml:space="preserve"><value>Nooit</value></data>
   <data name="Col_Created" xml:space="preserve"><value>Aangemaakt</value></data>
   <data name="Col_LastUsed" xml:space="preserve"><value>Laatst gebruikt</value></data>
-  <data name="Invites_Title" xml:space="preserve"><value>Collega uitnodigen</value></data>
-  <data name="Invites_Intro" xml:space="preserve"><value>Maak een link voor eenmalig gebruik die 7 dagen geldig is. Deel hem alleen privé.</value></data>
+  <data name="Invites_Title" xml:space="preserve"><value>Iemand uitnodigen</value></data>
+  <data name="Invites_Intro" xml:space="preserve"><value>Nodig iemand uit met een link voor eenmalig gebruik, 7 dagen geldig. De rol bepaalt wat diegene mag: lezers kijken, medewerkers beheren ook assets, beheerders beheren ook mensen.</value></data>
   <data name="Invites_Create" xml:space="preserve"><value>Uitnodigingslink maken</value></data>
   <data name="Err_Unsupported" xml:space="preserve"><value>Deze browser ondersteunt geen passkeys.</value></data>
   <data name="Err_Cancelled" xml:space="preserve"><value>De passkey-aanvraag is geannuleerd.</value></data>
@@ -132,4 +132,43 @@
   <data name="Err_VerificationFailed" xml:space="preserve"><value>De passkey kon niet worden geverifieerd.</value></data>
   <data name="Err_NotFound" xml:space="preserve"><value>Niet gevonden.</value></data>
   <data name="Err_AlreadyRegistered" xml:space="preserve"><value>Dit apparaat heeft al een passkey voor dit account. Gebruik een ander apparaat of een beveiligingssleutel.</value></data>
+  <data name="Nav_Users" xml:space="preserve"><value>Gebruikers</value></data>
+  <data name="Users_Title" xml:space="preserve"><value>Gebruikers</value></data>
+  <data name="Users_You" xml:space="preserve"><value>jij</value></data>
+  <data name="Users_ConfirmRemove" xml:space="preserve"><value>Deze gebruiker en hun passkeys verwijderen?</value></data>
+  <data name="Col_Email" xml:space="preserve"><value>E-mail</value></data>
+  <data name="Col_Role" xml:space="preserve"><value>Rol</value></data>
+  <data name="Col_SignIn" xml:space="preserve"><value>Inloggen</value></data>
+  <data name="Method_Passkeys" xml:space="preserve"><value>Passkeys</value></data>
+  <data name="Role_Viewer" xml:space="preserve"><value>Lezer</value></data>
+  <data name="Role_Member" xml:space="preserve"><value>Medewerker</value></data>
+  <data name="Role_Admin" xml:space="preserve"><value>Beheerder</value></data>
+  <data name="Forbidden_Title" xml:space="preserve"><value>Geen toegang</value></data>
+  <data name="Forbidden_Text" xml:space="preserve"><value>Je rol staat dit niet toe.</value></data>
+  <data name="Invites_Email" xml:space="preserve"><value>E-mail (optioneel)</value></data>
+  <data name="Invites_Pending" xml:space="preserve"><value>Openstaande uitnodigingen</value></data>
+  <data name="Invites_Revoke" xml:space="preserve"><value>Intrekken</value></data>
+  <data name="Invites_ConfirmRevoke" xml:space="preserve"><value>Deze uitnodiging intrekken?</value></data>
+  <data name="Invites_Emailed" xml:space="preserve"><value>De uitnodiging is per e-mail verstuurd. Je kunt de link ook zelf privé delen.</value></data>
+  <data name="Invites_Copy" xml:space="preserve"><value>Deel deze link privé. Hij werkt één keer en verloopt na 7 dagen.</value></data>
+  <data name="Invites_MailOn" xml:space="preserve"><value>Met een e-mailadres wordt de link per e-mail verstuurd. Met dat adres kan die persoon ook inloggen via SSO.</value></data>
+  <data name="Invites_MailOff" xml:space="preserve"><value>Er is geen SMTP-server ingesteld (Alerts:Email), dus je deelt de link zelf.</value></data>
+  <data name="Login_Or" xml:space="preserve"><value>of</value></data>
+  <data name="Login_Sso" xml:space="preserve"><value>Inloggen met {0}</value></data>
+  <data name="Err_LastAdmin" xml:space="preserve"><value>Er moet altijd minimaal één beheerder zijn.</value></data>
+  <data name="Err_CannotRemoveSelf" xml:space="preserve"><value>Je kunt jezelf niet verwijderen.</value></data>
+  <data name="Err_EmailExists" xml:space="preserve"><value>Dit e-mailadres hoort al bij een gebruiker.</value></data>
+  <data name="Err_InvalidEmail" xml:space="preserve"><value>Vul een geldig e-mailadres in.</value></data>
+  <data name="Err_InvalidRole" xml:space="preserve"><value>Kies een rol.</value></data>
+  <data name="Err_SsoFailed" xml:space="preserve"><value>Single sign-on is mislukt. Probeer het opnieuw.</value></data>
+  <data name="Err_SsoNoAccount" xml:space="preserve"><value>Je identity provider heeft je aangemeld, maar je hebt hier geen account. Vraag een beheerder om een uitnodiging.</value></data>
+  <data name="Err_SsoDomain" xml:space="preserve"><value>Je e-mailadres mag hier niet inloggen.</value></data>
+  <data name="Err_SsoNoEmail" xml:space="preserve"><value>Je identity provider heeft geen e-mailadres gedeeld.</value></data>
+  <data name="Mail_InviteSubject" xml:space="preserve"><value>Je bent uitgenodigd voor FullyQualified</value></data>
+  <data name="Mail_InviteBody" xml:space="preserve"><value>{0} heeft je uitgenodigd voor FullyQualified.
+
+Open deze link om je account met een passkey aan te maken, of log in via single sign-on als je organisatie dat gebruikt:
+{1}
+
+De link werkt één keer en verloopt na {2} dagen.</value></data>
 </root>
