@@ -1,0 +1,31 @@
+@page "/invite/{Token}"
+@using Microsoft.AspNetCore.Authorization
+@attribute [AllowAnonymous]
+@inject IStringLocalizer<SharedResource> L
+@inject PasskeyService Passkeys
+
+<PageTitle>@L["Invite_Title"]</PageTitle>
+<PasskeyRoot Invite="@Token">
+    <section class="card narrow">
+        <h1>@L["Invite_Title"]</h1>
+        @if (valid)
+        {
+            <p>@L["Invite_Intro"]</p>
+            <label for="pk-name">@L["Account_Name"]</label>
+            <input id="pk-name" maxlength="100" autocomplete="name" />
+            <button type="button" data-passkey="register">@L["Register_Button"]</button>
+        }
+        else
+        {
+            <p class="error">@L["Invite_Invalid"]</p>
+            <a href="/login">@L["Login_Title"]</a>
+        }
+    </section>
+</PasskeyRoot>
+
+@code {
+    [Parameter] public string Token { get; set; } = "";
+    bool valid;
+
+    protected override async Task OnInitializedAsync() => valid = await Passkeys.FindInvite(Token) is not null;
+}

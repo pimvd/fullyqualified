@@ -27,3 +27,8 @@ button,.button{padding:.55rem 1rem;border:0;border-radius:8px;background:var(--a
 .check{padding:.6rem 0;border-bottom:1px solid var(--line)}.check:last-child{border:0}
 .issue{color:var(--warn)}dl{display:grid;grid-template-columns:max-content 1fr;gap:.2rem 1rem;margin:.5rem 0 0;font-size:.88rem}
 dt{color:var(--muted)}dd{margin:0;word-break:break-all}
+.narrow{max-width:520px;margin-left:auto;margin-right:auto}
+.narrow label{display:block;margin:.8rem 0 .3rem;color:var(--muted);font-size:.85rem}.narrow input{width:100%}
+.narrow button{margin-top:1rem}button:disabled{opacity:.6;cursor:default}
+header.top form{margin:0}button.link{background:none;color:var(--accent);padding:0}button.link:hover{text-decoration:underline}
+.error[hidden],input[hidden]{display:none}

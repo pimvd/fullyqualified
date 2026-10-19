@@ -83,3 +83,37 @@ public class Job
     public DateTimeOffset? LockedAt { get; set; }
     public string State { get; set; } = "pending";
 }
+
+public class User
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid TenantId { get; set; } = Tenant.Default;
+    public required string Name { get; set; }
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+}
+
+/// <summary>A WebAuthn credential. Accounts have no passwords; a user signs in with any of their passkeys.</summary>
+public class Passkey
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid TenantId { get; set; } = Tenant.Default;
+    public Guid UserId { get; set; }
+    public required byte[] CredentialId { get; set; }
+    public required byte[] PublicKey { get; set; }
+    public uint SignCount { get; set; }
+    public required string Name { get; set; }
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset? LastUsedAt { get; set; }
+}
+
+/// <summary>Single-use link that lets a new person register their own account. Only a hash of the token is stored.</summary>
+public class Invite
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid TenantId { get; set; } = Tenant.Default;
+    public required byte[] TokenHash { get; set; }
+    public Guid CreatedBy { get; set; }
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset ExpiresAt { get; set; }
+    public DateTimeOffset? UsedAt { get; set; }
+}

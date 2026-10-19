@@ -93,4 +93,43 @@
   <data name="Rep_Yes" xml:space="preserve"><value>Ja</value></data>
   <data name="Rep_No" xml:space="preserve"><value>Nee</value></data>
   <data name="Rep_ChangesTitle" xml:space="preserve"><value>Wijzigingen (laatste 90 dagen)</value></data>
+  <data name="Nav_Account" xml:space="preserve"><value>Account</value></data>
+  <data name="Nav_SignOut" xml:space="preserve"><value>Uitloggen</value></data>
+  <data name="Login_Title" xml:space="preserve"><value>Inloggen</value></data>
+  <data name="Login_Intro" xml:space="preserve"><value>Log in met een passkey op dit apparaat, of met je telefoon of een beveiligingssleutel.</value></data>
+  <data name="Login_Button" xml:space="preserve"><value>Inloggen met een passkey</value></data>
+  <data name="Setup_Title" xml:space="preserve"><value>FullyQualified instellen</value></data>
+  <data name="Setup_Intro" xml:space="preserve"><value>Maak het eerste account aan. Je logt in met een passkey; er zijn geen wachtwoorden.</value></data>
+  <data name="Setup_Code" xml:space="preserve"><value>Installatiecode</value></data>
+  <data name="Setup_CodeHelp" xml:space="preserve"><value>Vereist omdat Auth:SetupCode op de server is ingesteld.</value></data>
+  <data name="Account_Name" xml:space="preserve"><value>Je naam</value></data>
+  <data name="Register_Button" xml:space="preserve"><value>Account aanmaken met een passkey</value></data>
+  <data name="Invite_Title" xml:space="preserve"><value>Uitnodiging accepteren</value></data>
+  <data name="Invite_Intro" xml:space="preserve"><value>Je bent uitgenodigd. Vul je naam in en maak een passkey aan.</value></data>
+  <data name="Invite_Invalid" xml:space="preserve"><value>Deze uitnodigingslink is ongeldig, verlopen of al gebruikt.</value></data>
+  <data name="Account_Title" xml:space="preserve"><value>Account</value></data>
+  <data name="Passkeys_Title" xml:space="preserve"><value>Passkeys</value></data>
+  <data name="Passkeys_Intro" xml:space="preserve"><value>Voeg een passkey toe voor elk apparaat dat je gebruikt. Er moet er minimaal één blijven.</value></data>
+  <data name="Passkeys_Label" xml:space="preserve"><value>Naam van de nieuwe passkey</value></data>
+  <data name="Passkeys_Add" xml:space="preserve"><value>Passkey toevoegen</value></data>
+  <data name="Passkeys_Remove" xml:space="preserve"><value>Verwijderen</value></data>
+  <data name="Passkeys_ConfirmRemove" xml:space="preserve"><value>Deze passkey verwijderen?</value></data>
+  <data name="Passkeys_Never" xml:space="preserve"><value>Nooit</value></data>
+  <data name="Col_Created" xml:space="preserve"><value>Aangemaakt</value></data>
+  <data name="Col_LastUsed" xml:space="preserve"><value>Laatst gebruikt</value></data>
+  <data name="Invites_Title" xml:space="preserve"><value>Collega uitnodigen</value></data>
+  <data name="Invites_Intro" xml:space="preserve"><value>Maak een link voor eenmalig gebruik die 7 dagen geldig is. Deel hem alleen privé.</value></data>
+  <data name="Invites_Create" xml:space="preserve"><value>Uitnodigingslink maken</value></data>
+  <data name="Err_Unsupported" xml:space="preserve"><value>Deze browser ondersteunt geen passkeys.</value></data>
+  <data name="Err_Cancelled" xml:space="preserve"><value>De passkey-aanvraag is geannuleerd.</value></data>
+  <data name="Err_Failed" xml:space="preserve"><value>Er ging iets mis. Probeer het opnieuw.</value></data>
+  <data name="Err_InvalidSetupCode" xml:space="preserve"><value>De installatiecode klopt niet.</value></data>
+  <data name="Err_InvalidInvite" xml:space="preserve"><value>Deze uitnodiging is ongeldig, verlopen of al gebruikt.</value></data>
+  <data name="Err_LastPasskey" xml:space="preserve"><value>Je kunt je laatste passkey niet verwijderen.</value></data>
+  <data name="Err_UnknownPasskey" xml:space="preserve"><value>Deze passkey is hier niet bekend.</value></data>
+  <data name="Err_Expired" xml:space="preserve"><value>De aanvraag is verlopen. Probeer het opnieuw.</value></data>
+  <data name="Err_InvalidName" xml:space="preserve"><value>Vul een naam in van maximaal 100 tekens.</value></data>
+  <data name="Err_VerificationFailed" xml:space="preserve"><value>De passkey kon niet worden geverifieerd.</value></data>
+  <data name="Err_NotFound" xml:space="preserve"><value>Niet gevonden.</value></data>
+  <data name="Err_AlreadyRegistered" xml:space="preserve"><value>Dit apparaat heeft al een passkey voor dit account. Gebruik een ander apparaat of een beveiligingssleutel.</value></data>
 </root>

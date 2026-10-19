@@ -36,7 +36,8 @@ Environment variables (use `__` for `:`):
 | Setting | Default | Purpose |
 | --- | --- | --- |
 | `ConnectionStrings:Default` | local Postgres | Database |
-| `Auth:Password` | unset | If set, the UI requires this password (HTTP Basic, any user name). Set it when exposing the app. |
+| `Auth:SetupCode` | unset | If set, creating the first account requires this code. Set it when the app is reachable before you have set it up. |
+| `Auth:RpId`, `Auth:Origin` | request host | Passkey relying-party domain and origin. Set them when a reverse proxy changes the host name. |
 | `Scanning:IntervalHours` | 6 | Rescan interval |
 | `Scanning:AllowPrivateAddresses` | true | Set false on a shared install to block scans of private networks |
 | `Dns:Server` | system | Resolver IP to use |

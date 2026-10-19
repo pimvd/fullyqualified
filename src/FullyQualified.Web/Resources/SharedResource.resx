@@ -93,4 +93,43 @@
   <data name="Rep_Yes" xml:space="preserve"><value>Yes</value></data>
   <data name="Rep_No" xml:space="preserve"><value>No</value></data>
   <data name="Rep_ChangesTitle" xml:space="preserve"><value>Changes (last 90 days)</value></data>
+  <data name="Nav_Account" xml:space="preserve"><value>Account</value></data>
+  <data name="Nav_SignOut" xml:space="preserve"><value>Sign out</value></data>
+  <data name="Login_Title" xml:space="preserve"><value>Sign in</value></data>
+  <data name="Login_Intro" xml:space="preserve"><value>Sign in with a passkey on this device, or with your phone or a security key.</value></data>
+  <data name="Login_Button" xml:space="preserve"><value>Sign in with a passkey</value></data>
+  <data name="Setup_Title" xml:space="preserve"><value>Set up FullyQualified</value></data>
+  <data name="Setup_Intro" xml:space="preserve"><value>Create the first account. It signs in with a passkey; there are no passwords.</value></data>
+  <data name="Setup_Code" xml:space="preserve"><value>Setup code</value></data>
+  <data name="Setup_CodeHelp" xml:space="preserve"><value>Needed because Auth:SetupCode is set on the server.</value></data>
+  <data name="Account_Name" xml:space="preserve"><value>Your name</value></data>
+  <data name="Register_Button" xml:space="preserve"><value>Create account with a passkey</value></data>
+  <data name="Invite_Title" xml:space="preserve"><value>Accept invitation</value></data>
+  <data name="Invite_Intro" xml:space="preserve"><value>You have been invited. Enter your name and create a passkey.</value></data>
+  <data name="Invite_Invalid" xml:space="preserve"><value>This invitation link is invalid, expired or already used.</value></data>
+  <data name="Account_Title" xml:space="preserve"><value>Account</value></data>
+  <data name="Passkeys_Title" xml:space="preserve"><value>Passkeys</value></data>
+  <data name="Passkeys_Intro" xml:space="preserve"><value>Add a passkey for every device you use. At least one must remain.</value></data>
+  <data name="Passkeys_Label" xml:space="preserve"><value>Name of the new passkey</value></data>
+  <data name="Passkeys_Add" xml:space="preserve"><value>Add a passkey</value></data>
+  <data name="Passkeys_Remove" xml:space="preserve"><value>Remove</value></data>
+  <data name="Passkeys_ConfirmRemove" xml:space="preserve"><value>Remove this passkey?</value></data>
+  <data name="Passkeys_Never" xml:space="preserve"><value>Never</value></data>
+  <data name="Col_Created" xml:space="preserve"><value>Created</value></data>
+  <data name="Col_LastUsed" xml:space="preserve"><value>Last used</value></data>
+  <data name="Invites_Title" xml:space="preserve"><value>Invite a colleague</value></data>
+  <data name="Invites_Intro" xml:space="preserve"><value>Create a single-use link that is valid for 7 days. Share it privately.</value></data>
+  <data name="Invites_Create" xml:space="preserve"><value>Create invitation link</value></data>
+  <data name="Err_Unsupported" xml:space="preserve"><value>This browser does not support passkeys.</value></data>
+  <data name="Err_Cancelled" xml:space="preserve"><value>The passkey request was cancelled.</value></data>
+  <data name="Err_Failed" xml:space="preserve"><value>Something went wrong. Try again.</value></data>
+  <data name="Err_InvalidSetupCode" xml:space="preserve"><value>The setup code is not correct.</value></data>
+  <data name="Err_InvalidInvite" xml:space="preserve"><value>This invitation is invalid, expired or already used.</value></data>
+  <data name="Err_LastPasskey" xml:space="preserve"><value>You cannot remove your last passkey.</value></data>
+  <data name="Err_UnknownPasskey" xml:space="preserve"><value>This passkey is not known here.</value></data>
+  <data name="Err_Expired" xml:space="preserve"><value>The request expired. Try again.</value></data>
+  <data name="Err_InvalidName" xml:space="preserve"><value>Enter a name of up to 100 characters.</value></data>
+  <data name="Err_VerificationFailed" xml:space="preserve"><value>The passkey could not be verified.</value></data>
+  <data name="Err_NotFound" xml:space="preserve"><value>Not found.</value></data>
+  <data name="Err_AlreadyRegistered" xml:space="preserve"><value>This device already has a passkey for this account. Use another device or security key.</value></data>
 </root>

@@ -1,0 +1,31 @@
+@page "/setup"
+@using Microsoft.AspNetCore.Authorization
+@attribute [AllowAnonymous]
+@inject IStringLocalizer<SharedResource> L
+@inject AppDbContext Db
+@inject NavigationManager Nav
+@inject IConfiguration Config
+
+<PageTitle>@L["Setup_Title"]</PageTitle>
+<PasskeyRoot>
+    <section class="card narrow">
+        <h1>@L["Setup_Title"]</h1>
+        <p>@L["Setup_Intro"]</p>
+        <label for="pk-name">@L["Account_Name"]</label>
+        <input id="pk-name" maxlength="100" autocomplete="name" />
+        @if (!string.IsNullOrEmpty(Config["Auth:SetupCode"]))
+        {
+            <label for="pk-code">@L["Setup_Code"]</label>
+            <input id="pk-code" type="password" autocomplete="off" />
+            <small class="muted">@L["Setup_CodeHelp"]</small>
+        }
+        <button type="button" data-passkey="register">@L["Register_Button"]</button>
+    </section>
+</PasskeyRoot>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        if (await Db.Users.AnyAsync()) Nav.NavigateTo("/login");
+    }
+}
