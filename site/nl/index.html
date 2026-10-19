@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FullyQualified: certificaat- en DNS-monitoring met NIS2-rapport</title>
+<meta name="description" content="Open-source monitoring van TLS-certificaten en DNS-records voor al je domeinen, met meldingen bij wijzigingen en een NIS2-rapport. Nu zelf te hosten.">
+<link rel="canonical" href="https://fullyqualified.eu/nl/">
+<link rel="alternate" hreflang="en" href="https://fullyqualified.eu/">
+<link rel="alternate" hreflang="nl" href="https://fullyqualified.eu/nl/">
+<link rel="alternate" hreflang="x-default" href="https://fullyqualified.eu/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FullyQualified">
+<meta property="og:title" content="FullyQualified: certificaat- en DNS-monitoring met NIS2-rapport">
+<meta property="og:description" content="Open-source monitoring van TLS-certificaten en DNS-records voor al je domeinen, met meldingen bij wijzigingen en een NIS2-rapport. Nu zelf te hosten.">
+<meta property="og:url" content="https://fullyqualified.eu/nl/">
+<meta property="og:locale" content="nl_NL">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:image" content="https://fullyqualified.eu/img/og-nl.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="FullyQualified: elk domein, fully qualified. Certificaten, DNS en NIS2.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0b5fff">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/style.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "FullyQualified", "applicationCategory": "SecurityApplication", "operatingSystem": "Linux, Docker", "description": "Open-source monitoring van TLS-certificaten en DNS-records met meldingen bij wijzigingen en een NIS2-rapport.", "url": "https://fullyqualified.eu/nl/", "inLanguage": "nl", "license": "https://www.gnu.org/licenses/agpl-3.0.html", "codeRepository": "https://github.com/pimvd/fullyqualified", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR", "description": "Self-hosted, open source"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "inLanguage": "nl", "mainEntity": [{"@type": "Question", "name": "Past FullyQualified iets aan in mijn omgeving?", "acceptedAnswer": {"@type": "Answer", "text": "Nee. Het leest alleen: publieke DNS-vragen, TLS-handshakes met de endpoints die je toevoegt en Certificate Transparency-logs. Dingen aanpassen, zoals automatisch vernieuwen, is een mogelijke latere stap en zou optioneel zijn."}}, {"@type": "Question", "name": "Wat wordt er gecontroleerd?", "acceptedAnswer": {"@type": "Answer", "text": "TLS-certificaten (verloopdatum, uitgever, vertrouwen) en DNS-records: SPF, DKIM, DMARC, CAA, MX, NS, DNSSEC en dangling CNAME's. Elke wijziging ten opzichte van de nulmeting wordt vastgelegd en gemeld via Slack, een webhook of e-mail."}}, {"@type": "Question", "name": "Maakt het rapport mij NIS2-compliant?", "acceptedAnswer": {"@type": "Answer", "text": "Nee. Het geeft je bewijs voor het certificaat- en DNS-deel van je technische maatregelen. Naleving van NIS2 is veel breder en blijft je eigen verantwoordelijkheid."}}, {"@type": "Question", "name": "Waar staat mijn data?", "acceptedAnswer": {"@type": "Answer", "text": "Als je zelf host, op je eigen server in je eigen Postgres-database. De geplande gehoste versie draait in de EU op Scaleway."}}, {"@type": "Question", "name": "Hoe loggen mensen in?", "acceptedAnswer": {"@type": "Answer", "text": "Met passkeys, dus er zijn geen wachtwoorden om te lekken. Single sign-on via OpenID Connect wordt ook ondersteund, en er zijn drie rollen: lezer, medewerker en beheerder. Nieuwe mensen komen binnen via uitnodigingen voor eenmalig gebruik."}}, {"@type": "Question", "name": "Is het gratis?", "acceptedAnswer": {"@type": "Answer", "text": "Zelf hosten is gratis en open source onder de AGPL-3.0. Een betaalde gehoste versie is gepland; prijzen zijn nog niet vastgesteld."}}]}</script>
+</head>
+<body id="top">
+<a class="skip" href="#main">Naar de inhoud</a>
+<header class="site">
+<div class="wrap">
+<a class="brand" href="/nl/">Fully<span>Qualified</span></a>
+<nav aria-label="Hoofdmenu"><a href="#why">Waarom nu</a><a href="#checks">Wat we controleren</a><a href="#how">Hoe het werkt</a><a href="#selfhost">Zelf hosten</a><a href="#pricing">Pakketten</a><a href="#faq">Veelgestelde vragen</a></nav>
+<a class="lang" href="/" hreflang="en" lang="en">English</a>
+<a class="button ghost" href="https://github.com/pimvd/fullyqualified">GitHub</a>
+</div>
+</header>
+<main id="main">
+<section class="hero">
+<div class="wrap">
+<div>
+<p class="eyebrow">Certificaten · DNS · NIS2</p>
+<h1>Elk domein, fully qualified.</h1>
+<p class="lead">FullyQualified houdt de TLS-certificaten en DNS-records van al je domeinen in de gaten, waarschuwt je zodra er iets verloopt of verandert, en maakt van de resultaten een NIS2-rapport.</p>
+<div class="cta"><a class="button" href="https://github.com/pimvd/fullyqualified">Bekijk op GitHub</a><a class="button ghost" href="#selfhost">Zelf draaien</a></div>
+<p class="note">Open source (AGPL-3.0). Het leest alleen: er wordt nooit iets in jouw omgeving aangepast.</p>
+</div>
+<div class="shot"><img src="/img/dashboard-nl.png" width="1200" height="760" alt="Het FullyQualified-dashboard: zeven gemonitorde assets met statuslabels, twee certificaten die binnen 30 dagen verlopen en één verlopen certificaat." fetchpriority="high"></div>
+</div>
+</section>
+<div class="trust"><div class="wrap"><ul><li>Open source, AGPL-3.0</li><li>Alleen lezen: wijzigt nooit je systemen</li><li>Nu zelf te hosten, EU-gehoste versie gepland</li><li>Inloggen met passkeys, rollen en single sign-on</li></ul></div></div>
+<section class="block" id="why"><div class="wrap">
+<h2>Certificaten worden korter. Je spreadsheet houdt dat niet bij.</h2>
+<p class="intro">Browsers en certificaatautoriteiten verkorten de maximale looptijd van publieke certificaten. Wat een jaarlijkse klus was, wordt een maandelijkse, en een vergeten certificaat of een gewijzigd DNS-record is een storing of een beveiligingslek.</p>
+<div class="grid"><div class="card"><p class="stat">100 dagen</p><p>Maximale looptijd van een certificaat vanaf 2027, nu nog een jaar.</p></div><div class="card"><p class="stat">47 dagen</p><p>Maximale looptijd vanaf 2029. Handmatig vernieuwen is dan niet meer realistisch.</p></div><div class="card"><p class="stat">NIS2</p><p>Vraagt aantoonbare beheersing, ook van bedrijven die leverancier zijn in de keten van een ander.</p></div></div>
+</div></section>
+<section class="block alt" id="checks"><div class="wrap">
+<h2>Waar we op letten</h2>
+<p class="intro">Voeg een domein of endpoint toe en de controles starten. Elke waarde wordt als nulmeting bewaard, zodat een wijziging wordt gezien, vastgelegd en gemeld.</p>
+<div class="grid"><div class="card"><h3>Certificaten</h3><ul><li>Gevonden via Certificate Transparency-logs en TLS-scans van endpoints</li><li>Verloopdatum, uitgever en of vernieuwing handmatig of automatisch lijkt</li><li>Niet-vertrouwde, verlopen en bijna verlopen certificaten gemarkeerd</li></ul></div><div class="card"><h3>DNS</h3><ul><li>SPF, DKIM, DMARC, CAA, MX, NS en DNSSEC</li><li>Dangling CNAME&#x27;s die subdomain takeover mogelijk maken</li><li>Elke wijziging van een record wordt vastgelegd</li></ul></div><div class="card"><h3>Meldingen</h3><ul><li>Slack, een generieke webhook (PagerDuty, Opsgenie) of e-mail</li><li>Verstuurd bij een statuswijziging of afwijkend record</li><li>Dashboard en wijzigingshistorie in het Nederlands en Engels</li></ul></div></div>
+</div></section>
+<section class="block" id="report"><div class="wrap two">
+<div>
+<h2>Het rapport is het doel</h2>
+<p>Auditors en klanten willen geen dashboard, ze willen bewijs. FullyQualified maakt van de laatste resultaten een NIS2-rapport als PDF en Excel: je certificaatinventaris, je DNS-maatregelen per domein en wat er de afgelopen 90 dagen veranderde.</p>
+<p class="note">Een rapport is bewijs voor het technische deel van NIS2, geen nalevingscertificaat. NIS2 omvat veel meer dan certificaten en DNS.</p>
+</div>
+<div class="shot"><img src="/img/certificates-nl.png" width="1200" height="420" alt="De certificaatinventaris: host, uitgever, verloopdatum, resterende dagen, bron en type vernieuwing, met een verlopen certificaat in rood." loading="lazy"></div>
+</div></section>
+<section class="block alt" id="how"><div class="wrap">
+<h2>Van niets naar eerste rapport in minuten</h2>
+<p class="intro">Het doel is waarde binnen tien minuten na de start.</p>
+<ol class="steps"><li><h3>Voeg je domeinen toe</h3><p>Typ een domein of host:poort. Certificaten worden gevonden via CT-logs en door te scannen.</p></li><li><h3>Lees de resultaten</h3><p>Zie wat verloopt, wat niet vertrouwd wordt en welke DNS-maatregelen ontbreken.</p></li><li><h3>Lever het rapport</h3><p>Download het NIS2-rapport als PDF of Excel, en laat meldingen vangen wat daarna verandert.</p></li></ol>
+</div></section>
+<section class="block" id="selfhost"><div class="wrap two">
+<div>
+<h2>Zelf hosten met één commando</h2>
+<p>FullyQualified is één .NET-container met een Postgres-database. Alles in de repository is open source onder de AGPL-3.0, inclusief accounts met passkeys, rollen en single sign-on via OpenID Connect.</p>
+<p class="note">Open daarna http://localhost:8080 en maak het eerste account aan. Cloudkoppelingen, te beginnen met Azure, staan op de roadmap.</p>
+</div>
+<pre><code>git clone https://github.com/pimvd/fullyqualified
+cd fullyqualified
+docker compose up</code></pre>
+</div></section>
+<section class="block alt" id="pricing"><div class="wrap">
+<h2>Gehoste pakketten zijn gepland</h2>
+<p class="intro">Liever niet zelf draaien? Een gehoste versie in de EU, op Scaleway, is gepland. De pakketten verschillen naar aantal domeinen. Prijzen zijn nog niet vastgesteld.</p>
+<div class="plans"><div class="plan"><span class="badge">Gepland</span><h3>Free</h3><p class="domains">3 <small>domeinen</small></p><ul><li>Certificaat- en DNS-controles</li></ul></div><div class="plan"><span class="badge">Gepland</span><h3>Starter</h3><p class="domains">25 <small>domeinen</small></p><ul><li>Alles uit Free, plus het NIS2-rapport</li></ul></div><div class="plan"><span class="badge">Gepland</span><h3>Business</h3><p class="domains">100 <small>domeinen</small></p><ul><li>Alles uit Starter, plus cloudkoppelingen en SSO</li></ul></div></div>
+<p class="note" style="margin-top:1rem">Zelf hosten blijft gratis, zonder limiet op het aantal domeinen.</p>
+</div></section>
+<section class="block" id="faq"><div class="wrap">
+<h2>Veelgestelde vragen</h2>
+<details><summary>Past FullyQualified iets aan in mijn omgeving?</summary><p>Nee. Het leest alleen: publieke DNS-vragen, TLS-handshakes met de endpoints die je toevoegt en Certificate Transparency-logs. Dingen aanpassen, zoals automatisch vernieuwen, is een mogelijke latere stap en zou optioneel zijn.</p></details><details><summary>Wat wordt er gecontroleerd?</summary><p>TLS-certificaten (verloopdatum, uitgever, vertrouwen) en DNS-records: SPF, DKIM, DMARC, CAA, MX, NS, DNSSEC en dangling CNAME&#x27;s. Elke wijziging ten opzichte van de nulmeting wordt vastgelegd en gemeld via Slack, een webhook of e-mail.</p></details><details><summary>Maakt het rapport mij NIS2-compliant?</summary><p>Nee. Het geeft je bewijs voor het certificaat- en DNS-deel van je technische maatregelen. Naleving van NIS2 is veel breder en blijft je eigen verantwoordelijkheid.</p></details><details><summary>Waar staat mijn data?</summary><p>Als je zelf host, op je eigen server in je eigen Postgres-database. De geplande gehoste versie draait in de EU op Scaleway.</p></details><details><summary>Hoe loggen mensen in?</summary><p>Met passkeys, dus er zijn geen wachtwoorden om te lekken. Single sign-on via OpenID Connect wordt ook ondersteund, en er zijn drie rollen: lezer, medewerker en beheerder. Nieuwe mensen komen binnen via uitnodigingen voor eenmalig gebruik.</p></details><details><summary>Is het gratis?</summary><p>Zelf hosten is gratis en open source onder de AGPL-3.0. Een betaalde gehoste versie is gepland; prijzen zijn nog niet vastgesteld.</p></details>
+</div></section>
+<section class="block alt final" id="start"><div class="wrap">
+<h2>Weet wat verloopt voordat het verloopt.</h2>
+<p class="intro" style="margin-left:auto;margin-right:auto">Geef het project een ster, probeer het op je eigen domeinen, of vertel ons wat er ontbreekt.</p>
+<div class="cta"><a class="button" href="https://github.com/pimvd/fullyqualified">Bekijk op GitHub</a><a class="button ghost" href="https://github.com/pimvd/fullyqualified/issues">Meld een probleem</a></div>
+</div></section>
+</main>
+<footer class="site"><div class="wrap"><span>FullyQualified is open source software onder de AGPL-3.0.</span><span><a href="https://github.com/pimvd/fullyqualified">Broncode</a><a href="https://github.com/pimvd/fullyqualified/issues">Issues</a><a href="https://github.com/pimvd/fullyqualified/blob/master/LICENSE">Licentie</a></span></div></footer>
+</body>
+</html>

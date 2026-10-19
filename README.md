@@ -49,13 +49,21 @@ Environment variables (use `__` for `:`):
 | `Alerts:Webhook` | unset | Generic JSON webhook |
 | `Alerts:Email:Host/Port/Ssl/User/Password/From/To` | unset | SMTP |
 
+## Sign in
+
+The first visit opens `/setup`, where you create the first account (an administrator) with a passkey; there are no passwords. After that, admins invite people from the Users page with a single-use link and a role: viewer (read), member (also manage assets) or admin (also manage people). OpenID Connect single sign-on is optional, see the `Sso:*` settings. Passkeys need HTTPS, except on `localhost`.
+
+## Website
+
+The marketing site is plain static files in [`site/`](site), in English and Dutch, with no scripts, cookies or third-party requests. Preview it with `python3 -m http.server -d site 8090`. Its tests are in `tests/FullyQualified.Tests/SiteTests.cs` and run with `dotnet test`. The canonical domain `https://fullyqualified.eu` is a placeholder until the domain is confirmed: replace it in `site/` and in `SiteFixture.Origin`.
+
 ## Develop
 
 ```sh
 dotnet test
 ```
 
-Not built yet: cloud connectors (Azure first), SSO and roles, multi-tenant hosting, automated renewal. Rules for contributors and agents are in [AGENTS.md](AGENTS.md).
+Not built yet: cloud connectors (Azure first), multi-tenant hosting, automated renewal. Rules for contributors and agents are in [AGENTS.md](AGENTS.md).
 
 ## License
 
