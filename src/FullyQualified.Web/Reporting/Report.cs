@@ -1,9 +1,10 @@
 using ClosedXML.Excel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
-using QuestPDF.Fluent;
-using QuestPDF.Helpers;
-using QuestPDF.Infrastructure;
+using MigraDoc.DocumentObjectModel;
+using MigraDoc.DocumentObjectModel.Tables;
+using MigraDoc.Rendering;
+using PdfSharp.Fonts;
 
 namespace FullyQualified.Web;
 
@@ -90,47 +91,112 @@ public static class ReportWriter
 
     public static byte[] Pdf(ReportModel m, IStringLocalizer l)
     {
-        QuestPDF.Settings.License = LicenseType.Community;
-        return Document.Create(doc => doc.Page(page =>
-        {
-            page.Margin(32);
-            page.DefaultTextStyle(t => t.FontSize(9));
-            page.Header().Column(h =>
-            {
-                h.Item().Text(l["Rep_Title"].Value).FontSize(20).Bold();
-                h.Item().Text($"{l["Rep_GeneratedAt"]}: {m.GeneratedAt:yyyy-MM-dd HH:mm} UTC").FontColor(Colors.Grey.Darken1);
-            });
-            page.Content().PaddingVertical(12).Column(col =>
-            {
-                col.Spacing(10);
-                col.Item().Text(l["Rep_Summary"].Value).FontSize(13).Bold();
-                col.Item().Text($"{l["Rep_Assets"]}: {m.Assets}   {l["Rep_Certs"]}: {m.Certificates}   {l["Rep_Expiring"]}: {m.ExpiringSoon}   {l["Rep_Expired"]}: {m.Expired}");
+        PdfFonts.Register();
+        var doc = new Document();
+        doc.Styles[StyleNames.Normal]!.Font.Name = PdfFonts.Family;
+        doc.Styles[StyleNames.Normal]!.Font.Size = 9;
 
-                col.Item().Text(l["Rep_DnsControls"].Value).FontSize(13).Bold();
-                Table(col, [l["Col_Domain"], l["Ctl_Spf"], l["Ctl_Dmarc"], l["Ctl_Caa"], l["Ctl_Dnssec"]],
-                    m.Domains.Select(d => new[] { d.Domain, YesNo(l, d.Spf), YesNo(l, d.Dmarc), YesNo(l, d.Caa), YesNo(l, d.Dnssec) }), [3, 1, 1, 1, 1]);
+        var sec = doc.AddSection();
+        // PageWidth is only filled in at render time, so set A4 explicitly to size the tables.
+        sec.PageSetup.PageWidth = Unit.FromCentimeter(21);
+        sec.PageSetup.PageHeight = Unit.FromCentimeter(29.7);
+        sec.PageSetup.LeftMargin = sec.PageSetup.RightMargin = Unit.FromPoint(32);
+        sec.PageSetup.TopMargin = Unit.FromPoint(80);
+        sec.PageSetup.BottomMargin = Unit.FromPoint(40);
+        sec.PageSetup.HeaderDistance = Unit.FromPoint(28);
+        var width = sec.PageSetup.PageWidth.Point - sec.PageSetup.LeftMargin.Point - sec.PageSetup.RightMargin.Point;
 
-                col.Item().Text(l["Nav_Certificates"].Value).FontSize(13).Bold();
-                Table(col, [l["Col_Name"], l["Col_Issuer"], l["Col_Expires"], l["Col_Days"], l["Col_Renewal"]],
-                    m.Certs.Select(c => new[] { c.Host, c.Issuer, c.NotAfter.ToString("yyyy-MM-dd"), c.DaysLeft.ToString(), l["Renewal_" + c.Renewal].Value }), [3, 2, 1.4f, 1, 1.6f]);
+        var title = sec.Headers.Primary.AddParagraph(l["Rep_Title"].Value);
+        title.Format.Font.Size = 20; title.Format.Font.Bold = true;
+        var stamp = sec.Headers.Primary.AddParagraph($"{l["Rep_GeneratedAt"]}: {m.GeneratedAt:yyyy-MM-dd HH:mm} UTC");
+        stamp.Format.Font.Color = Colors.Gray; stamp.Format.SpaceAfter = 8;
 
-                col.Item().Text(l["Rep_ChangesTitle"].Value).FontSize(13).Bold();
-                Table(col, [l["Col_Detected"], l["Col_Asset"], l["Col_Change"], l["Col_Before"], l["Col_After"]],
-                    m.Changes.Take(100).Select(c => new[] { c.At.ToString("yyyy-MM-dd"), c.Asset, c.Key, Cut(c.Before), Cut(c.After) }), [1.4f, 2, 1, 2.5f, 2.5f]);
-            });
-            page.Footer().AlignCenter().Text(t => { t.CurrentPageNumber(); t.Span(" / "); t.TotalPages(); });
-        })).GeneratePdf();
+        var footer = sec.Footers.Primary.AddParagraph();
+        footer.Format.Alignment = ParagraphAlignment.Center;
+        footer.AddPageField(); footer.AddText(" / "); footer.AddNumPagesField();
+
+        Heading(sec, l["Rep_Summary"].Value);
+        sec.AddParagraph($"{l["Rep_Assets"]}: {m.Assets}   {l["Rep_Certs"]}: {m.Certificates}   {l["Rep_Expiring"]}: {m.ExpiringSoon}   {l["Rep_Expired"]}: {m.Expired}");
+
+        Heading(sec, l["Rep_DnsControls"].Value);
+        Table(sec, width, [l["Col_Domain"], l["Ctl_Spf"], l["Ctl_Dmarc"], l["Ctl_Caa"], l["Ctl_Dnssec"]],
+            m.Domains.Select(d => new[] { d.Domain, YesNo(l, d.Spf), YesNo(l, d.Dmarc), YesNo(l, d.Caa), YesNo(l, d.Dnssec) }), [3, 1, 1, 1, 1]);
+
+        Heading(sec, l["Nav_Certificates"].Value);
+        Table(sec, width, [l["Col_Name"], l["Col_Issuer"], l["Col_Expires"], l["Col_Days"], l["Col_Renewal"]],
+            m.Certs.Select(c => new[] { c.Host, c.Issuer, c.NotAfter.ToString("yyyy-MM-dd"), c.DaysLeft.ToString(), l["Renewal_" + c.Renewal].Value }), [3, 2, 1.4f, 1, 1.6f]);
+
+        Heading(sec, l["Rep_ChangesTitle"].Value);
+        Table(sec, width, [l["Col_Detected"], l["Col_Asset"], l["Col_Change"], l["Col_Before"], l["Col_After"]],
+            m.Changes.Take(100).Select(c => new[] { c.At.ToString("yyyy-MM-dd"), c.Asset, c.Key, Cut(c.Before), Cut(c.After) }), [1.4f, 2, 1.5f, 2.3f, 2.3f]);
+
+        var renderer = new PdfDocumentRenderer { Document = doc };
+        renderer.RenderDocument();
+        using var ms = new MemoryStream();
+        renderer.PdfDocument.Save(ms);
+        return ms.ToArray();
     }
 
     static string Cut(string s) => s.Length > 60 ? s[..60] + "…" : s;
 
-    static void Table(ColumnDescriptor col, string[] headers, IEnumerable<string[]> rows, float[] widths) =>
-        col.Item().Table(t =>
+    static void Heading(Section sec, string text)
+    {
+        var p = sec.AddParagraph(text);
+        p.Format.Font.Size = 13; p.Format.Font.Bold = true;
+        p.Format.SpaceBefore = 10; p.Format.SpaceAfter = 4;
+        p.Format.KeepWithNext = true;
+    }
+
+    static void Table(Section sec, double width, string[] headers, IEnumerable<string[]> rows, float[] weights)
+    {
+        var t = sec.AddTable();
+        t.Format.Font.Size = 9;
+        t.Borders.Bottom.Width = 0.5; t.Borders.Bottom.Color = Colors.LightGray;
+        t.TopPadding = t.BottomPadding = t.LeftPadding = t.RightPadding = 3;
+        foreach (var w in weights) t.AddColumn(Unit.FromPoint(width * w / weights.Sum()));
+
+        var head = t.AddRow();
+        head.HeadingFormat = true; head.Shading.Color = Colors.Gainsboro; head.Format.Font.Bold = true;
+        for (var i = 0; i < headers.Length; i++) head.Cells[i].AddParagraph(headers[i]);
+
+        foreach (var row in rows)
         {
-            t.ColumnsDefinition(c => { foreach (var w in widths) c.RelativeColumn(w); });
-            t.Header(h => { foreach (var x in headers) h.Cell().Background(Colors.Grey.Lighten3).Padding(3).Text(x).Bold(); });
-            foreach (var row in rows)
-                foreach (var cell in row)
-                    t.Cell().BorderBottom(0.5f).BorderColor(Colors.Grey.Lighten2).Padding(3).Text(cell);
-        });
+            var r = t.AddRow();
+            for (var i = 0; i < row.Length; i++) r.Cells[i].AddParagraph(row[i]);
+        }
+    }
+}
+
+// PDFsharp needs a font resolver on Linux containers, which ship no fonts; DejaVu Sans is embedded (free license).
+static class PdfFonts
+{
+    public const string Family = "DejaVu Sans";
+    static readonly object Gate = new();
+    static bool registered;
+
+    public static void Register()
+    {
+        lock (Gate)
+        {
+            if (registered) return;
+            GlobalFontSettings.FontResolver = new Resolver();
+            registered = true;
+        }
+    }
+
+    sealed class Resolver : IFontResolver
+    {
+        public FontResolverInfo? ResolveTypeface(string familyName, bool bold, bool italic) =>
+            new(bold ? "DejaVuSans-Bold" : "DejaVuSans");
+
+        public byte[]? GetFont(string faceName)
+        {
+            var asm = typeof(PdfFonts).Assembly;
+            var name = asm.GetManifestResourceNames().Single(n => n.EndsWith(faceName + ".ttf", StringComparison.Ordinal));
+            using var s = asm.GetManifestResourceStream(name)!;
+            using var ms = new MemoryStream();
+            s.CopyTo(ms);
+            return ms.ToArray();
+        }
+    }
 }
