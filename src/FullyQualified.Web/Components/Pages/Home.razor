@@ -2,6 +2,7 @@
 @inject AppDbContext Db
 @inject JobQueue Queue
 @inject PlanService Plans
+@inject IConfiguration Config
 @inject IStringLocalizer<SharedResource> L
 @inject NavigationManager Nav
 
@@ -17,6 +18,13 @@
 
 @if (canEdit)
 {
+    <section class="card">
+        <h2>@L["CheckAll_Title"]</h2>
+        <p class="muted">@L["CheckAll_Text", Cooldown]</p>
+        <form method="post" @onsubmit="CheckAllAsync" @formname="check-all"><AntiforgeryToken /><button>@L["CheckAll_Button"]</button></form>
+        @if (checkNotice is not null) { <p class="@(checkIsError ? "error" : "ok-text")" role="status">@checkNotice</p> }
+    </section>
+
     <section class="card">
         <h2>@L["Add_Title"]</h2>
         <EditForm Model="Model!" FormName="add-asset" OnValidSubmit="AddAsync" method="post" class="inline">
@@ -65,6 +73,9 @@
     List<CheckResult> latest = [];
     int expiring, problems, recentChanges;
     string? error;
+    string? checkNotice;
+    bool checkIsError;
+    string Cooldown => Config.GetValue("Scanning:ManualCooldownMinutes", 5.0).ToString("0.##");
     Plan? plan;
     string Used(int n, int? max) => max is null ? n.ToString() : $"{n} / {max}";
     Guid? tenantId => Roles.TenantId(Ctx?.User);
@@ -81,6 +92,15 @@
         expiring = await Db.Certificates.CountAsync(c => c.Source == "endpoint" && c.NotAfter <= now.AddDays(30));
         problems = assets.Count(a => latest.Where(r => r.AssetId == a.Id).WorstStatus() >= CheckStatus.Warning);
         recentChanges = await Db.Changes.CountAsync(c => c.DetectedAt >= now.AddDays(-7));
+    }
+
+    async Task CheckAllAsync()
+    {
+        if (!canEdit || tenantId is not { } id) return;
+        var r = await Queue.EnqueueAllAsync(id, DateTimeOffset.UtcNow);
+        checkIsError = r.Wait is not null;
+        checkNotice = r.Wait is { } wait ? L["CheckAll_Cooldown", Math.Ceiling(wait.TotalMinutes)].Value
+            : r.Queued == 0 ? L["CheckAll_AlreadyQueued"].Value : L["CheckAll_Queued", r.Queued].Value;
     }
 
     async Task AddAsync()

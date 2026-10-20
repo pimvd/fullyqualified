@@ -77,13 +77,13 @@ public class PlanDbTests : IClassFixture<PgFactory>
     {
         var org = await NewOrg();
         var plan = await PlanOf(org.Id);
-        Assert.Equal(("free", new PlanLimits(3, 10, 2, false, 1)), (plan.Tier.Key, plan.Limits));
+        Assert.Equal(("free", new PlanLimits(3, 10, 2, false, 1, 1440)), (plan.Tier.Key, plan.Limits));
 
         using var scope = Scope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         var mgmt = await db.Tenants.SingleAsync(t => t.IsManagement);
         var boss = (await scope.ServiceProvider.GetRequiredService<PlanService>().ForAsync(mgmt.Id))!;
-        Assert.Equal(new PlanLimits(null, null, null, true, null), boss.Limits);
+        Assert.Equal(new PlanLimits(null, null, null, true, null, null), boss.Limits);
         Assert.Equal(4, await db.Tiers.CountAsync());
     }
 
@@ -93,19 +93,19 @@ public class PlanDbTests : IClassFixture<PgFactory>
         var owner = await Owner();
         var org = await NewOrg(Tiers.Starter);
         var client = factory.As(owner);
-        var saved = await client.PutAsJsonAsync("/platform/tiers/starter", new { maxDomains = "40", maxEndpoints = "", maxUsers = "12", reportsEnabled = true, retentionMonths = "18" });
+        var saved = await client.PutAsJsonAsync("/platform/tiers/starter", new { maxDomains = "40", maxEndpoints = "", maxUsers = "12", reportsEnabled = true, retentionMonths = "18", scanIntervalMinutes = "360" });
         Assert.Equal(HttpStatusCode.NoContent, saved.StatusCode);
         try
         {
-            Assert.Equal(new PlanLimits(40, null, 12, true, 18), (await PlanOf(org.Id)).Limits);
+            Assert.Equal(new PlanLimits(40, null, 12, true, 18, 360), (await PlanOf(org.Id)).Limits);
             // The page shows what was saved.
             Assert.Contains("value=\"40\"", await (await client.GetAsync("/limits")).Content.ReadAsStringAsync());
         }
         finally
         {
-            await client.PutAsJsonAsync("/platform/tiers/starter", new { maxDomains = "25", maxEndpoints = "100", maxUsers = "10", reportsEnabled = true, retentionMonths = "12" });
+            await client.PutAsJsonAsync("/platform/tiers/starter", new { maxDomains = "25", maxEndpoints = "100", maxUsers = "10", reportsEnabled = true, retentionMonths = "12", scanIntervalMinutes = "360" });
         }
-        Assert.Equal(new PlanLimits(25, 100, 10, true, 12), (await PlanOf(org.Id)).Limits);
+        Assert.Equal(new PlanLimits(25, 100, 10, true, 12, 360), (await PlanOf(org.Id)).Limits);
     }
 
     [DbFact]
@@ -134,7 +134,7 @@ public class PlanDbTests : IClassFixture<PgFactory>
         var put = await mia.PutAsJsonAsync($"/platform/tenants/{org.Id}/plan", new { tier = "custom", maxDomains = "7", maxEndpoints = "unlimited", maxUsers = "", reports = "no", retentionMonths = "6" });
         Assert.Equal(HttpStatusCode.NoContent, put.StatusCode);
         var plan = await PlanOf(org.Id);
-        Assert.Equal(("custom", new PlanLimits(7, null, null, false, 6)), (plan.Tier.Key, plan.Limits));
+        Assert.Equal(("custom", new PlanLimits(7, null, null, false, 6, null)), (plan.Tier.Key, plan.Limits));
         Assert.True(plan.Overridden);
 
         var page = await (await mia.GetAsync($"/tenants/{org.Id}")).Content.ReadAsStringAsync();
@@ -143,7 +143,7 @@ public class PlanDbTests : IClassFixture<PgFactory>
 
         await mia.PutAsJsonAsync($"/platform/tenants/{org.Id}/plan", new { tier = "free", maxDomains = "", maxEndpoints = "", maxUsers = "", reports = "", retentionMonths = "" });
         var back = await PlanOf(org.Id);
-        Assert.Equal(("free", new PlanLimits(3, 10, 2, false, 1)), (back.Tier.Key, back.Limits));
+        Assert.Equal(("free", new PlanLimits(3, 10, 2, false, 1, 1440)), (back.Tier.Key, back.Limits));
         Assert.False(back.Overridden);
 
         foreach (var bad in new object[] { new { tier = "gold" }, new { tier = "free", maxDomains = "x" }, new { tier = "free", reports = "maybe" }, new { tier = "free", retentionMonths = "0" } })

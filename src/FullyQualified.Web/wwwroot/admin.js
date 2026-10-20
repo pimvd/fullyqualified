@@ -49,6 +49,28 @@
     }));
   }
 
+  root.querySelector('[data-admin=diag]')?.addEventListener('click', event => run(async () => {
+    const button = event.currentTarget, out = document.getElementById('diag-results'), summary = document.getElementById('diag-summary');
+    button.disabled = true;
+    try {
+      const r = await send('POST', '/admin/diagnostics', { sendAlarm: document.getElementById('diag-alarm').checked });
+      out.replaceChildren();
+      const icons = { ok: '✓', info: 'ⓘ', warning: '⚠', fail: '✕' };
+      let list = null, last = null;
+      for (const i of r.items) {
+        if (i.group !== last) { last = i.group; const h = document.createElement('h3'); h.textContent = i.group; out.append(h); list = document.createElement('ul'); list.className = 'diag'; out.append(list); }
+        const li = document.createElement('li'); li.className = 'diag-item ' + i.status;
+        const icon = document.createElement('span'); icon.className = 'diag-icon'; icon.setAttribute('aria-hidden', 'true'); icon.textContent = icons[i.status];
+        const title = document.createElement('b'); title.textContent = i.title;
+        const state = document.createElement('span'); state.className = 'diag-state'; state.textContent = ' · ' + i.label;
+        const detail = document.createElement('div'); detail.className = 'muted'; detail.textContent = i.detail;
+        const body = document.createElement('div'); body.append(title, state, detail);
+        li.append(icon, body); list.append(li);
+      }
+      summary.textContent = r.summary; summary.hidden = false;
+    } finally { button.disabled = false; }
+  }));
+
   root.querySelector('[data-admin=tenant]')?.addEventListener('click', () => run(async () => {
     const r = await send('POST', '/platform/tenants', { name: document.getElementById('adm-tenant-name').value, adminEmail: document.getElementById('adm-email').value, tier: document.getElementById('adm-tier')?.value });
     const link = document.getElementById('adm-link'), note = document.getElementById('adm-note');
@@ -77,7 +99,7 @@
     const f = name => row.querySelector(`[data-f=${name}]`);
     await send('PUT', `/platform/tiers/${button.getAttribute('data-tier')}`, {
       maxDomains: f('domains').value, maxEndpoints: f('endpoints').value, maxUsers: f('users').value,
-      reportsEnabled: f('reports').checked, retentionMonths: f('retention').value });
+      reportsEnabled: f('reports').checked, retentionMonths: f('retention').value, scanIntervalMinutes: f('interval').value });
     const note = document.getElementById('tier-note');
     note.textContent = root.getAttribute('data-saved'); note.hidden = false;
   })));
@@ -85,7 +107,7 @@
   root.querySelector('[data-admin=plan-save]')?.addEventListener('click', () => run(async () => {
     const editor = document.getElementById('plan-editor'), v = id => document.getElementById(id).value;
     await send('PUT', `/platform/tenants/${editor.getAttribute('data-tenant')}/plan`, {
-      tier: v('pl-tier'), maxDomains: v('pl-domains'), maxEndpoints: v('pl-endpoints'), maxUsers: v('pl-users'), reports: v('pl-reports'), retentionMonths: v('pl-retention') });
+      tier: v('pl-tier'), maxDomains: v('pl-domains'), maxEndpoints: v('pl-endpoints'), maxUsers: v('pl-users'), reports: v('pl-reports'), retentionMonths: v('pl-retention'), scanIntervalMinutes: v('pl-interval') });
     const note = document.getElementById('pl-note');
     note.textContent = root.getAttribute('data-saved'); note.hidden = false;
     setTimeout(() => location.reload(), 600);

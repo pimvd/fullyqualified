@@ -37,6 +37,8 @@ builder.Services.AddScoped<TenantStats>();
 builder.Services.AddScoped<PlanService>();
 builder.Services.AddScoped<RetentionService>();
 builder.Services.AddScoped<PlanAdminService>();
+builder.Services.AddScoped<SettingsTestService>();
+builder.Services.AddSingleton<ServerProbes>();
 builder.Services.AddSingleton<ScanThrottle>();
 builder.Services.AddScoped<PublicScanService>();
 builder.Services.AddScoped<LogQueries>();
@@ -146,6 +148,7 @@ app.MapAuth();
 app.MapAdmin();
 app.MapAlerts();
 app.MapPlans();
+app.MapDiagnostics();
 app.MapSso();
 app.MapRazorComponents<App>();
 

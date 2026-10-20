@@ -21,6 +21,7 @@
                     <option value="no" selected="@(Plan.Tenant.OverrideReports == false)">@L["Rep_No"]</option>
                 </select></td></tr>
             <tr><td>@L["Plan_Retention"]</td><td></td><td>@(Plan.Tier.RetentionMonths is { } m ? ResourceText.Months(L, m) : L["Plan_AllHistory"].Value)</td><td><input id="pl-retention" value="@Text(Plan.Tenant.OverrideRetentionMonths)" placeholder="@L["Plan_Follow"]" /></td></tr>
+            <tr><td>@L["Plan_Interval"]</td><td></td><td>@(Plan.Tier.ScanIntervalMinutes is { } i ? ResourceText.Interval(L, i) : L["Plan_ServerDefault"].Value)</td><td><input id="pl-interval" value="@TextInterval(Plan.Tenant.OverrideScanIntervalMinutes)" placeholder="@L["Plan_Follow"]" /></td></tr>
         </tbody>
     </table>
     <p class="muted"><small>@L["Plan_OverrideHelp"]</small></p>
@@ -33,4 +34,5 @@
     [Parameter, EditorRequired] public List<Tier> Tiers { get; set; } = [];
     string Show(int? n) => n is null ? L["Plan_Unlimited"].Value : n.ToString()!;
     static string Text(int? n) => n is null ? "" : n == -1 ? "unlimited" : n.ToString()!;
+    static string TextInterval(int? n) => n is null ? "" : n == -1 ? "default" : n.ToString()!;
 }

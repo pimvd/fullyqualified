@@ -20,7 +20,7 @@ public class PlanLogicTests
     public void A_tenant_follows_its_tier_unless_it_overrides()
     {
         var tenant = new Tenant { Name = "x" };
-        Assert.Equal(new PlanLimits(3, 10, 2, false, 1), PlanLimits.Resolve(Tier(), tenant));
+        Assert.Equal(new PlanLimits(3, 10, 2, false, 1, null), PlanLimits.Resolve(Tier(), tenant));
 
         tenant.OverrideMaxDomains = 7; tenant.OverrideReports = true; tenant.OverrideRetentionMonths = 6;
         Assert.Equal(new PlanLimits(7, 10, 2, true, 6), PlanLimits.Resolve(Tier(), tenant));
@@ -31,6 +31,37 @@ public class PlanLogicTests
 
         tenant.OverrideReports = false;                                       // an override can also take something away
         Assert.False(PlanLimits.Resolve(Tier(reports: true), tenant).ReportsEnabled);
+    }
+
+    [Fact]
+    public void The_scan_interval_follows_the_tier_unless_overridden_and_minus_one_means_the_server_default()
+    {
+        var tier = Tier(); tier.ScanIntervalMinutes = 360;
+        var tenant = new Tenant { Name = "x" };
+        Assert.Equal(360, PlanLimits.Resolve(tier, tenant).ScanIntervalMinutes);
+        tenant.OverrideScanIntervalMinutes = 15;
+        Assert.Equal(15, PlanLimits.Resolve(tier, tenant).ScanIntervalMinutes);
+        tenant.OverrideScanIntervalMinutes = -1;
+        Assert.Null(PlanLimits.Resolve(tier, tenant).ScanIntervalMinutes);
+        Assert.Null(PlanLimits.Resolve(Tier(), new Tenant { Name = "y" }).ScanIntervalMinutes);   // a tier without one uses the server default
+    }
+
+    [Theory]
+    [InlineData(15, "15 min")]
+    [InlineData(60, "1 h")]
+    [InlineData(360, "6 h")]
+    [InlineData(90, "90 min")]
+    [InlineData(1440, "1 d")]
+    [InlineData(2880, "2 d")]
+    public void Intervals_are_shown_in_the_largest_unit_that_divides_them(int minutes, string expected) =>
+        Assert.Equal(expected, ResourceText.Interval(new KeyLocalizer2(), minutes));
+
+    sealed class KeyLocalizer2 : Microsoft.Extensions.Localization.IStringLocalizer
+    {
+        static readonly Dictionary<string, string> Units = new() { ["Unit_Minute"] = "min", ["Unit_Hour"] = "h", ["Unit_Day"] = "d" };
+        public Microsoft.Extensions.Localization.LocalizedString this[string name] => new(name, Units.GetValueOrDefault(name, name));
+        public Microsoft.Extensions.Localization.LocalizedString this[string name, params object[] arguments] => this[name];
+        public IEnumerable<Microsoft.Extensions.Localization.LocalizedString> GetAllStrings(bool includeParentCultures) => [];
     }
 
     [Fact]
@@ -78,6 +109,15 @@ public class PlanLogicTests
         Assert.True(Tiers.Defaults.Single(t => t.Key == "custom") is { MaxDomains: null, MaxUsers: null, RetentionMonths: null });
         Assert.False(Tiers.Defaults.Single(t => t.Key == "free").ReportsEnabled);
         Assert.True(Tiers.Defaults.Where(t => t.Key != "free").All(t => t.ReportsEnabled));
+    }
+
+    [Fact]
+    public void The_scan_interval_migration_sets_the_same_intervals_as_the_code()
+    {
+        var sql = Directory.GetFiles(Path.Combine(new SiteFixture().Root, "src", "FullyQualified.Web", "Data", "Migrations"), "*_ScanIntervals.cs").Select(File.ReadAllText).Single();
+        foreach (var t in Tiers.Defaults.Where(t => t.ScanIntervalMinutes is not null))
+            Assert.Contains($"WHEN '{t.Key}' THEN {t.ScanIntervalMinutes}", sql);
+        Assert.Contains("ELSE NULL", sql);                       // Custom has no interval of its own
     }
 
     [Fact]

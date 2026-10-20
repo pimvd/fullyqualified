@@ -62,3 +62,11 @@ table.plan-table input[type=checkbox]{width:auto}
 .danger-zone{border-color:var(--bad)}.danger-zone h2{color:var(--bad)}
 label.field{display:flex;flex-direction:column;gap:.25rem;max-width:16rem;margin:.6rem 0;font-size:.85rem;color:var(--muted)}
 .notice{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:8px;padding:.7rem 1rem}
+.ok-text{color:var(--ok);font-weight:600}
+
+ul.diag{list-style:none;margin:.2rem 0 1rem;padding:0}
+.diag-item{display:flex;gap:.7rem;padding:.55rem 0;border-bottom:1px solid var(--line)}.diag-item:last-child{border:0}
+.diag-icon{flex:0 0 1.4rem;text-align:center;font-weight:700}
+.diag-item.ok .diag-icon{color:var(--st-ok)}.diag-item.warning .diag-icon{color:var(--warn)}.diag-item.fail .diag-icon{color:var(--st-critical)}.diag-item.info .diag-icon{color:var(--muted)}
+.diag-state{color:var(--muted);font-size:.85rem}
+#diag-summary{font-weight:600}

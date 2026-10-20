@@ -4,18 +4,18 @@ using Microsoft.EntityFrameworkCore;
 namespace FullyQualified.Web;
 
 /// <summary>Limits as typed in a form: blank, "unlimited" or a number.</summary>
-public record TierRequest(string? MaxDomains, string? MaxEndpoints, string? MaxUsers, bool ReportsEnabled, string? RetentionMonths);
+public record TierRequest(string? MaxDomains, string? MaxEndpoints, string? MaxUsers, bool ReportsEnabled, string? RetentionMonths, string? ScanIntervalMinutes = null);
 /// <summary>Per-tenant overrides as typed: blank follows the tier, "unlimited" lifts the limit, a number sets it. Reports: blank, "yes" or "no".</summary>
-public record PlanRequest(string? Tier, string? MaxDomains, string? MaxEndpoints, string? MaxUsers, string? Reports, string? RetentionMonths);
+public record PlanRequest(string? Tier, string? MaxDomains, string? MaxEndpoints, string? MaxUsers, string? Reports, string? RetentionMonths, string? ScanIntervalMinutes = null);
 public record DeleteRequest(string? ConfirmName);
 
 public class PlanAdminService(AppDbContext db, Session session, ILogger<PlanAdminService> log)
 {
-    const int MaxLimit = 1_000_000, MaxRetentionMonths = 120;
+    const int MaxLimit = 1_000_000, MaxRetentionMonths = 120, MaxIntervalMinutes = 7 * 24 * 60;
 
     static IResult Fail(int status, string code) => Results.Json(new { error = code }, statusCode: status);
 
-    static bool Unlimited(string? v) => v?.Trim().ToLowerInvariant() is "unlimited" or "∞" or "-1" or "onbeperkt";
+    static bool Unlimited(string? v) => v?.Trim().ToLowerInvariant() is "unlimited" or "∞" or "-1" or "onbeperkt" or "default" or "standaard";
 
     /// <summary>Parses a limit. Blank is null; "unlimited" is null for a tier and -1 for an override. False when invalid.</summary>
     static bool TryLimit(string? text, int max, bool asOverride, out int? value)
@@ -34,9 +34,10 @@ public class PlanAdminService(AppDbContext db, Session session, ILogger<PlanAdmi
         if (tier is null) return Fail(404, "not_found");
         if (!TryLimit(r.MaxDomains, MaxLimit, false, out var domains) || !TryLimit(r.MaxEndpoints, MaxLimit, false, out var endpoints)
             || !TryLimit(r.MaxUsers, MaxLimit, false, out var users) || !TryLimit(r.RetentionMonths, MaxRetentionMonths, false, out var months)
-            || months == 0) return Fail(400, "invalid_limit");
-        (tier.MaxDomains, tier.MaxEndpoints, tier.MaxUsers, tier.ReportsEnabled, tier.RetentionMonths, tier.UpdatedAt) =
-            (domains, endpoints, users, r.ReportsEnabled, months, DateTimeOffset.UtcNow);
+            || !TryLimit(r.ScanIntervalMinutes, MaxIntervalMinutes, false, out var interval)
+            || months == 0 || interval == 0) return Fail(400, "invalid_limit");
+        (tier.MaxDomains, tier.MaxEndpoints, tier.MaxUsers, tier.ReportsEnabled, tier.RetentionMonths, tier.ScanIntervalMinutes, tier.UpdatedAt) =
+            (domains, endpoints, users, r.ReportsEnabled, months, interval, DateTimeOffset.UtcNow);
         await db.SaveChangesAsync();
         return Results.NoContent();
     }
@@ -49,12 +50,13 @@ public class PlanAdminService(AppDbContext db, Session session, ILogger<PlanAdmi
         if (!Tiers.Keys.Contains(tier)) return Fail(400, "invalid_tier");
         if (!TryLimit(r.MaxDomains, MaxLimit, true, out var domains) || !TryLimit(r.MaxEndpoints, MaxLimit, true, out var endpoints)
             || !TryLimit(r.MaxUsers, MaxLimit, true, out var users) || !TryLimit(r.RetentionMonths, MaxRetentionMonths, true, out var months)
-            || months == 0) return Fail(400, "invalid_limit");
+            || !TryLimit(r.ScanIntervalMinutes, MaxIntervalMinutes, true, out var interval)
+            || months == 0 || interval == 0) return Fail(400, "invalid_limit");
         var reportsText = r.Reports?.Trim().ToLowerInvariant() ?? "";
         if (reportsText is not ("" or "yes" or "no")) return Fail(400, "invalid_limit");
         bool? reports = reportsText == "" ? null : reportsText == "yes";
-        (tenant.TierKey, tenant.OverrideMaxDomains, tenant.OverrideMaxEndpoints, tenant.OverrideMaxUsers, tenant.OverrideReports, tenant.OverrideRetentionMonths) =
-            (tier, domains, endpoints, users, reports, months);
+        (tenant.TierKey, tenant.OverrideMaxDomains, tenant.OverrideMaxEndpoints, tenant.OverrideMaxUsers, tenant.OverrideReports, tenant.OverrideRetentionMonths, tenant.OverrideScanIntervalMinutes) =
+            (tier, domains, endpoints, users, reports, months, interval);
         await db.SaveChangesAsync();
         return Results.NoContent();
     }
@@ -99,6 +101,15 @@ public static class PlanEndpoints
 {
     public static void MapPlans(this WebApplication app)
     {
+        // Members and admins can ask for every check of their tenant to run now.
+        app.MapPost("/checks/run", async (HttpContext c, JobQueue queue) =>
+        {
+            var r = await queue.EnqueueAllAsync(Roles.TenantId(c.User)!.Value, DateTimeOffset.UtcNow);
+            return r.Wait is { } wait
+                ? Results.Json(new { error = "cooldown", retryAfterSeconds = (int)Math.Ceiling(wait.TotalSeconds) }, statusCode: StatusCodes.Status429TooManyRequests)
+                : Results.Ok(new { queued = r.Queued });
+        }).RequireAuthorization(Roles.Edit);
+
         var platform = app.MapGroup("/platform").RequireAuthorization(Roles.Platform);
         platform.MapPut("/tiers/{key}", (PlanAdminService s, string key, TierRequest r) => s.SaveTier(key, r));
         platform.MapPut("/tenants/{id:guid}/plan", (PlanAdminService s, Guid id, PlanRequest r) => s.SavePlan(id, r));

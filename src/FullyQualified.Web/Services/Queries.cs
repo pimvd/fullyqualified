@@ -15,6 +15,10 @@ public static class Queries
 
 public static class ResourceText
 {
+    /// <summary>"15 min", "6 h", "1 d": the largest unit that divides the interval evenly.</summary>
+    public static string Interval(Microsoft.Extensions.Localization.IStringLocalizer l, int minutes) =>
+        minutes % 1440 == 0 ? $"{minutes / 1440} {l["Unit_Day"]}" : minutes % 60 == 0 ? $"{minutes / 60} {l["Unit_Hour"]}" : $"{minutes} {l["Unit_Minute"]}";
+
     /// <summary>"1 month", "12 months".</summary>
     public static string Months(Microsoft.Extensions.Localization.IStringLocalizer l, int months) => months == 1 ? l["Plan_Month"].Value : l["Plan_Months", months].Value;
 

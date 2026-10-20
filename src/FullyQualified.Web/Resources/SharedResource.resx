@@ -318,4 +318,102 @@ The link works once and expires in {2} hours. Setting up a new passkey removes y
   <data name="Scan_Stored" xml:space="preserve"><value>Nothing about this check is stored. Only the certificate on port 443 and public DNS records are looked at.</value></data>
   <data name="Scan_Next" xml:space="preserve"><value>Keep watching it</value></data>
   <data name="Scan_NextText" xml:space="preserve"><value>This is a single look. FullyQualified checks every domain on a schedule, tells you when a certificate is about to expire or a record changes, and turns it into a NIS2 report.</value></data>
+  <data name="Plan_Interval" xml:space="preserve"><value>Checks run every</value></data>
+  <data name="Plan_IntervalMinutes" xml:space="preserve"><value>Check every (minutes)</value></data>
+  <data name="Plan_ServerDefault" xml:space="preserve"><value>server default</value></data>
+  <data name="Plan_ServerDefaultValue" xml:space="preserve"><value>{0} (server default)</value></data>
+  <data name="Unit_Minute" xml:space="preserve"><value>min</value></data>
+  <data name="Unit_Hour" xml:space="preserve"><value>h</value></data>
+  <data name="Unit_Day" xml:space="preserve"><value>d</value></data>
+  <data name="Limits_IntervalHelp" xml:space="preserve"><value>The interval is how long a result stays fresh before an asset is checked again; checks run on a one-minute rhythm, so the shortest is one minute. Blank uses the server default (Scanning:IntervalHours). A failed check is always retried after 15 minutes.</value></data>
+  <data name="CheckAll_Title" xml:space="preserve"><value>Check everything now</value></data>
+  <data name="CheckAll_Text" xml:space="preserve"><value>Queue every check of every asset right away instead of waiting for the next round. You can do this once every {0} minutes.</value></data>
+  <data name="CheckAll_Button" xml:space="preserve"><value>Check everything now</value></data>
+  <data name="CheckAll_Queued" xml:space="preserve"><value>{0} checks queued. The results appear within a minute; follow them on the Log page.</value></data>
+  <data name="CheckAll_Cooldown" xml:space="preserve"><value>You just did this. Try again in {0} minute(s).</value></data>
+  <data name="CheckAll_AlreadyQueued" xml:space="preserve"><value>Everything is already waiting to be checked.</value></data>
+  <data name="Diag_Title" xml:space="preserve"><value>Test settings</value></data>
+  <data name="Diag_Intro" xml:space="preserve"><value>Checks that FullyQualified is set up to do its job for your organization: your plan, whether checks are running, whether alarms reach you and whether you can recover from a lost passkey. Nothing is changed.</value></data>
+  <data name="Diag_SendAlarm" xml:space="preserve"><value>Also send a test alarm through every channel</value></data>
+  <data name="Diag_Run" xml:space="preserve"><value>Test settings</value></data>
+  <data name="Diag_Group_plan" xml:space="preserve"><value>Plan</value></data>
+  <data name="Diag_Group_scan" xml:space="preserve"><value>Checks</value></data>
+  <data name="Diag_Group_alarms" xml:space="preserve"><value>Alarms</value></data>
+  <data name="Diag_Group_people" xml:space="preserve"><value>People</value></data>
+  <data name="Diag_Group_server" xml:space="preserve"><value>Server</value></data>
+  <data name="Diag_Status_Ok" xml:space="preserve"><value>OK</value></data>
+  <data name="Diag_Status_Info" xml:space="preserve"><value>Info</value></data>
+  <data name="Diag_Status_Warning" xml:space="preserve"><value>Warning</value></data>
+  <data name="Diag_Status_Fail" xml:space="preserve"><value>Failed</value></data>
+  <data name="Diag_Summary" xml:space="preserve"><value>{0} OK, {1} warnings, {2} failed.</value></data>
+  <data name="Diag_PlanLimits" xml:space="preserve"><value>Plan and limits</value></data>
+  <data name="Diag_PlanIs" xml:space="preserve"><value>You are on the {0} plan.</value></data>
+  <data name="Diag_RoomLeft" xml:space="preserve"><value>There is room left for everything.</value></data>
+  <data name="Diag_AtLimit" xml:space="preserve"><value>Limit reached for: {0}. Adding more is refused until you remove something or the plan is raised.</value></data>
+  <data name="Diag_Interval" xml:space="preserve"><value>Check interval</value></data>
+  <data name="Diag_IntervalIs" xml:space="preserve"><value>Every asset is checked every {0} ({1}).</value></data>
+  <data name="Diag_FromServer" xml:space="preserve"><value>server default</value></data>
+  <data name="Diag_FromPlan" xml:space="preserve"><value>from your plan</value></data>
+  <data name="Diag_ScannerOn" xml:space="preserve"><value>Scanner</value></data>
+  <data name="Diag_ScannerOff" xml:space="preserve"><value>Scanning is switched off on this server (Scanning:Enabled), so nothing is checked on a schedule. Ask whoever runs the server.</value></data>
+  <data name="Diag_Fresh" xml:space="preserve"><value>Results are fresh</value></data>
+  <data name="Diag_NoAssets" xml:space="preserve"><value>No assets yet. Add a domain on the dashboard.</value></data>
+  <data name="Diag_FreshOk" xml:space="preserve"><value>All {0} assets have recent results.</value></data>
+  <data name="Diag_Stale" xml:space="preserve"><value>{0} checks have no recent result (for example {1}). The scanner may be stopped or the host may be unreachable; look at the Log page.</value></data>
+  <data name="Diag_AlarmSetup" xml:space="preserve"><value>Alarm settings</value></data>
+  <data name="Diag_NoChannel" xml:space="preserve"><value>No channel is configured. Nobody will be told when a certificate expires or a record changes. Add Slack, a webhook or an email address on the Alarms page.</value></data>
+  <data name="Diag_AlarmsOff" xml:space="preserve"><value>Alarms are switched off for your organization.</value></data>
+  <data name="Diag_AlarmsOn" xml:space="preserve"><value>Alarms are on, from status {0} upward.</value></data>
+  <data name="Diag_EmailChannel" xml:space="preserve"><value>Email setup</value></data>
+  <data name="Diag_NoSmtp" xml:space="preserve"><value>Email recipients are set, but the server has no SMTP host, so no email can be sent. Ask whoever runs the server (Alerts:Email:Host).</value></data>
+  <data name="Diag_Channel_slack" xml:space="preserve"><value>Slack</value></data>
+  <data name="Diag_Channel_webhook" xml:space="preserve"><value>Webhook</value></data>
+  <data name="Diag_Channel_email" xml:space="preserve"><value>Email</value></data>
+  <data name="Diag_Delivered" xml:space="preserve"><value>The test alarm was delivered.</value></data>
+  <data name="Diag_NotDelivered" xml:space="preserve"><value>The test alarm was not delivered: {0}</value></data>
+  <data name="Diag_TestAlarm" xml:space="preserve"><value>Test alarm</value></data>
+  <data name="Diag_NotSent" xml:space="preserve"><value>No test alarm was sent because alarms are switched off.</value></data>
+  <data name="Diag_RecentAlarms" xml:space="preserve"><value>Recent alarms</value></data>
+  <data name="Diag_RecentFailed" xml:space="preserve"><value>{0} of {1} alarms in the last 7 days failed to deliver. See the Log page.</value></data>
+  <data name="Diag_Admins" xml:space="preserve"><value>Administrators</value></data>
+  <data name="Diag_AdminsOk" xml:space="preserve"><value>There are {0} administrators, so one can help the other.</value></data>
+  <data name="Diag_OneAdmin" xml:space="preserve"><value>There is only one administrator. If that person loses their passkey, only the platform owner or the server operator can help. Invite a second administrator.</value></data>
+  <data name="Diag_Passkeys" xml:space="preserve"><value>Passkeys of administrators</value></data>
+  <data name="Diag_PasskeysOk" xml:space="preserve"><value>Every administrator has more than one way to sign in.</value></data>
+  <data name="Diag_PasskeysFew" xml:space="preserve"><value>{0} administrator(s) have a single passkey and no single sign-on. Ask them to add a second device on the Account page.</value></data>
+  <data name="Diag_Https" xml:space="preserve"><value>Secure connection</value></data>
+  <data name="Diag_HttpsOk" xml:space="preserve"><value>You are using {0}, which passkeys accept.</value></data>
+  <data name="Diag_NotHttps" xml:space="preserve"><value>This page is served over plain http at {0}. Passkeys only work over HTTPS (or on localhost), so other people cannot sign in.</value></data>
+  <data name="Diag_Origin" xml:space="preserve"><value>Passkey address</value></data>
+  <data name="Diag_OriginDiffers" xml:space="preserve"><value>Auth:Origin is {0} but you are using {1}. Passkeys are tied to the configured address, so sign-in will fail.</value></data>
+  <data name="Diag_Proxy" xml:space="preserve"><value>Reverse proxy</value></data>
+  <data name="Diag_ProxyHeaders" xml:space="preserve"><value>Requests arrive through a proxy, but forwarded headers are not switched on (ASPNETCORE_FORWARDEDHEADERS_ENABLED). Visitors will share one address, which breaks per-address limits.</value></data>
+  <data name="Diag_Migrations" xml:space="preserve"><value>Database</value></data>
+  <data name="Diag_MigrationsOk" xml:space="preserve"><value>The database is up to date.</value></data>
+  <data name="Diag_MigrationsPending" xml:space="preserve"><value>{0} database migrations are not applied. Restart the app with Database:AutoMigrate on, or apply them by hand.</value></data>
+  <data name="Diag_Keys" xml:space="preserve"><value>Session keys</value></data>
+  <data name="Diag_KeysOk" xml:space="preserve"><value>Sign-in keys are stored in the database, so sessions survive a restart.</value></data>
+  <data name="Diag_KeysNone" xml:space="preserve"><value>No sign-in keys are stored yet; people are signed out when the app restarts until one is created.</value></data>
+  <data name="Diag_Smtp" xml:space="preserve"><value>Email server</value></data>
+  <data name="Diag_SmtpOk" xml:space="preserve"><value>The mail server {0} accepts connections.</value></data>
+  <data name="Diag_SmtpDown" xml:space="preserve"><value>The mail server {0} cannot be reached: {1}</value></data>
+  <data name="Diag_NoSmtpHost" xml:space="preserve"><value>No mail server is configured, so there are no email alarms or emailed invitations (Alerts:Email:Host).</value></data>
+  <data name="Diag_Sso" xml:space="preserve"><value>Single sign-on</value></data>
+  <data name="Diag_SsoOk" xml:space="preserve"><value>The identity provider at {0} answers.</value></data>
+  <data name="Diag_SsoDown" xml:space="preserve"><value>The identity provider at {0} cannot be reached: {1}</value></data>
+  <data name="Diag_NoSso" xml:space="preserve"><value>Single sign-on is not configured; people sign in with passkeys.</value></data>
+  <data name="Diag_SsoOpen" xml:space="preserve"><value>Open sign-up</value></data>
+  <data name="Diag_SsoOpenText" xml:space="preserve"><value>Sso:AutoProvision is on without Sso:AllowedDomains, so anyone whose email the provider has verified can create an account.</value></data>
+  <data name="Diag_Resolver" xml:space="preserve"><value>Name resolution</value></data>
+  <data name="Diag_ResolverOk" xml:space="preserve"><value>The server can look up names.</value></data>
+  <data name="Diag_ResolverDown" xml:space="preserve"><value>The server cannot look up names: {0}</value></data>
+  <data name="Diag_Ct" xml:space="preserve"><value>Certificate Transparency</value></data>
+  <data name="Diag_CtOk" xml:space="preserve"><value>crt.sh can be reached, so certificates can be discovered.</value></data>
+  <data name="Diag_CtDown" xml:space="preserve"><value>crt.sh cannot be reached ({0}), so certificate discovery will fail and retry.</value></data>
+  <data name="Diag_PrivateScans" xml:space="preserve"><value>Private networks</value></data>
+  <data name="Diag_PrivateAllowed" xml:space="preserve"><value>Scans may reach private addresses. Right for a company network, not for a shared installation (Scanning:AllowPrivateAddresses).</value></data>
+  <data name="Diag_PrivateBlocked" xml:space="preserve"><value>Scans cannot reach private addresses.</value></data>
+  <data name="Diag_PublicCheck" xml:space="preserve"><value>Free public check</value></data>
+  <data name="Diag_PublicOn" xml:space="preserve"><value>The public check is on, at most {0} checks per hour per address.</value></data>
+  <data name="Diag_PublicOff" xml:space="preserve"><value>The public check is off.</value></data>
 </root>

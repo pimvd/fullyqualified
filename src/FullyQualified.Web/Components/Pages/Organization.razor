@@ -15,6 +15,15 @@
             <PlanSummary Plan="plan" />
         </section>
 
+        <section class="card" id="diag">
+            <h2>@L["Diag_Title"]</h2>
+            <p class="muted">@L["Diag_Intro"]</p>
+            <label class="check-row"><input type="checkbox" id="diag-alarm" checked /> @L["Diag_SendAlarm"]</label>
+            <p class="actions"><button type="button" data-admin="diag">@L["Diag_Run"]</button></p>
+            <p id="diag-summary" role="status" hidden></p>
+            <div id="diag-results"></div>
+        </section>
+
         @if (!plan.Tenant.IsManagement)
         {
             <section class="card danger-zone" data-confirm-name="@plan.Tenant.Name">

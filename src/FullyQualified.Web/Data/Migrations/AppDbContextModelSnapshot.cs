@@ -431,6 +431,9 @@ namespace FullyQualified.Web.Data.Migrations
                     b.Property<bool>("IsManagement")
                         .HasColumnType("boolean");
 
+                    b.Property<DateTimeOffset?>("LastManualRunAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -449,6 +452,9 @@ namespace FullyQualified.Web.Data.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<int?>("OverrideRetentionMonths")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("OverrideScanIntervalMinutes")
                         .HasColumnType("integer");
 
                     b.Property<string>("TierKey")
@@ -494,6 +500,9 @@ namespace FullyQualified.Web.Data.Migrations
                         .HasColumnType("boolean");
 
                     b.Property<int?>("RetentionMonths")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("ScanIntervalMinutes")
                         .HasColumnType("integer");
 
                     b.Property<int>("SortOrder")

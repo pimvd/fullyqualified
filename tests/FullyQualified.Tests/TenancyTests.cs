@@ -18,7 +18,7 @@ namespace FullyQualified.Tests;
 /// <summary>Runs only when FQ_TEST_DB points at a Postgres server (without a database name), e.g. "Host=localhost;Username=postgres;Password=postgres".</summary>
 public sealed class DbFactAttribute : FactAttribute
 {
-    public static readonly string? Server = Environment.GetEnvironmentVariable("FQ_TEST_DB");
+    public static readonly string? Server = Environment.GetEnvironmentVariable("FQ_TEST_DB") is { Length: > 0 } v ? v : null; // empty counts as unset
     public DbFactAttribute() { if (Server is null) Skip = "Set FQ_TEST_DB to run the database tests"; }
 }
 

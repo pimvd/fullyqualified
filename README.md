@@ -43,7 +43,8 @@ Environment variables (use `__` for `:`):
 | `Sso:AllowedDomains` | unset | Comma-separated e-mail domains that may use SSO. Required for Entra ID, which does not send `email_verified`; without it only verified addresses are accepted. |
 | `Sso:AutoProvision`, `Sso:DefaultRole` | false, Viewer | Create an account on first SSO sign-in instead of requiring an invitation. Never creates admins. |
 | `PublicScan:Enabled`, `PublicScan:PerHour`, `PublicScan:Concurrent` | false, 10, 8 | The free public check at `/scan`, see above |
-| `Scanning:IntervalHours` | 6 | Rescan interval |
+| `Scanning:IntervalHours` | 6 | Rescan interval for plans without one of their own |
+| `Scanning:ManualCooldownMinutes` | 5 | Minimum time between two uses of "check everything now" per tenant |
 | `Scanning:AllowPrivateAddresses` | true | Set false on a shared install to block scans of private networks |
 | `Dns:Server` | system | Resolver IP to use |
 | `Alerts:SlackWebhook` | unset | Slack incoming webhook |
@@ -66,9 +67,17 @@ docker compose exec app dotnet FullyQualified.Web.dll recover alice@example.com 
 
 ## Plans, limits and history
 
-Every tenant is on a plan: **Free**, **Starter**, **Business** or **Custom**, edited by the platform owner on the **Limits** page. A plan limits domains, endpoints (hosts with a port, and hosts found in certificate logs), users (open invitations count) and whether the NIS2 report is included, and says how long history is kept: results, changes and alarm logs older than the period are removed automatically, but the newest result of every check is always kept. The platform owner can override any single limit per tenant; the Custom plan is for agreements per customer. The management tenant, which is the whole installation for a self-hoster, runs on Custom with no limits and keeps everything. Admins see their plan and usage on **Organization**; adding past a limit is refused with a message. The starting values are in `docs/PLAN.md`.
+Every tenant is on a plan: **Free**, **Starter**, **Business** or **Custom**, edited by the platform owner on the **Limits** page. A plan limits domains, endpoints (hosts with a port, and hosts found in certificate logs), users (open invitations count) and whether the NIS2 report is included, and says how often checks run and how long history is kept: results, changes and alarm logs older than the period are removed automatically, but the newest result of every check is always kept. The platform owner can override any single limit per tenant; the Custom plan is for agreements per customer. The management tenant, which is the whole installation for a self-hoster, runs on Custom with no limits and keeps everything. Admins see their plan and usage on **Organization**; adding past a limit is refused with a message. The starting values are in `docs/PLAN.md`.
 
 **Deleting a tenant.** An admin can delete their own organization from the Organization page, and the platform owner can delete any tenant from its page. Both must type the exact name, everything is removed at once (domains, results, history, alarms, users and their sign-in), and it cannot be undone. The management tenant cannot be deleted.
+
+## When checks run, and running them now
+
+Every asset is checked again once its newest result is older than the **scan interval** of its tenant's plan (for example daily on Free, six-hourly on Starter, hourly on Business; edit them on the Limits page, or override one tenant). A plan without an interval, such as Custom and so the whole of a self-hosted install, uses `Scanning:IntervalHours` (default 6). The scheduler looks once a minute, so a minute is the shortest interval, and a failed check is retried after 15 minutes whatever the interval is.
+
+**Check everything now** (dashboard, members and admins) queues every check of every asset right away. To keep it from becoming a way around the interval, a tenant can use it once per `Scanning:ManualCooldownMinutes` (default 5). Results show up within a minute on the Log page. **Scan now** on an asset's page does the same for one asset.
+
+**Test settings** (Organization page, admins) checks that FullyQualified is set up to work for the organization and says in words what is wrong: plan and limits, whether results are fresh for the interval, whether alarms are configured and a test alarm through every channel (optional), and whether administrators can recover from a lost passkey. The platform owner also gets the server's checks: secure connection and passkey address, proxy headers, database migrations, session keys, mail server, single sign-on, name resolution, certificate-log reachability and the public check. Nothing is changed except the test alarm.
 
 ## Free public check
 

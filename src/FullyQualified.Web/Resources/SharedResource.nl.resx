@@ -318,4 +318,102 @@ De link werkt één keer en verloopt na {2} uur. Een nieuwe passkey instellen ve
   <data name="Scan_Stored" xml:space="preserve"><value>Er wordt niets van deze controle opgeslagen. Alleen het certificaat op poort 443 en openbare DNS-records worden bekeken.</value></data>
   <data name="Scan_Next" xml:space="preserve"><value>Blijf het volgen</value></data>
   <data name="Scan_NextText" xml:space="preserve"><value>Dit is één momentopname. FullyQualified controleert elk domein volgens een schema, meldt het als een certificaat bijna verloopt of een record verandert, en maakt er een NIS2-rapport van.</value></data>
+  <data name="Plan_Interval" xml:space="preserve"><value>Controles elke</value></data>
+  <data name="Plan_IntervalMinutes" xml:space="preserve"><value>Controleren elke (minuten)</value></data>
+  <data name="Plan_ServerDefault" xml:space="preserve"><value>serverstandaard</value></data>
+  <data name="Plan_ServerDefaultValue" xml:space="preserve"><value>{0} (serverstandaard)</value></data>
+  <data name="Unit_Minute" xml:space="preserve"><value>min</value></data>
+  <data name="Unit_Hour" xml:space="preserve"><value>u</value></data>
+  <data name="Unit_Day" xml:space="preserve"><value>d</value></data>
+  <data name="Limits_IntervalHelp" xml:space="preserve"><value>Het interval is hoe lang een resultaat vers blijft voordat een asset opnieuw wordt gecontroleerd; controles lopen in een ritme van een minuut, dus het kortste is een minuut. Leeg gebruikt de serverstandaard (Scanning:IntervalHours). Een mislukte controle wordt altijd na 15 minuten opnieuw geprobeerd.</value></data>
+  <data name="CheckAll_Title" xml:space="preserve"><value>Alles nu controleren</value></data>
+  <data name="CheckAll_Text" xml:space="preserve"><value>Zet elke controle van elke asset meteen in de wachtrij in plaats van op de volgende ronde te wachten. Dit kan eens per {0} minuten.</value></data>
+  <data name="CheckAll_Button" xml:space="preserve"><value>Alles nu controleren</value></data>
+  <data name="CheckAll_Queued" xml:space="preserve"><value>{0} controles in de wachtrij. De resultaten verschijnen binnen een minuut; volg ze op de pagina Log.</value></data>
+  <data name="CheckAll_Cooldown" xml:space="preserve"><value>Dat heb je net gedaan. Probeer het over {0} minuut/minuten opnieuw.</value></data>
+  <data name="CheckAll_AlreadyQueued" xml:space="preserve"><value>Alles staat al in de wachtrij om gecontroleerd te worden.</value></data>
+  <data name="Diag_Title" xml:space="preserve"><value>Instellingen testen</value></data>
+  <data name="Diag_Intro" xml:space="preserve"><value>Controleert of FullyQualified klaarstaat om zijn werk voor jouw organisatie te doen: je pakket, of de controles draaien, of alarmen je bereiken en of je een verloren passkey kunt herstellen. Er wordt niets gewijzigd.</value></data>
+  <data name="Diag_SendAlarm" xml:space="preserve"><value>Stuur ook een testalarm via elk kanaal</value></data>
+  <data name="Diag_Run" xml:space="preserve"><value>Instellingen testen</value></data>
+  <data name="Diag_Group_plan" xml:space="preserve"><value>Pakket</value></data>
+  <data name="Diag_Group_scan" xml:space="preserve"><value>Controles</value></data>
+  <data name="Diag_Group_alarms" xml:space="preserve"><value>Alarmen</value></data>
+  <data name="Diag_Group_people" xml:space="preserve"><value>Mensen</value></data>
+  <data name="Diag_Group_server" xml:space="preserve"><value>Server</value></data>
+  <data name="Diag_Status_Ok" xml:space="preserve"><value>OK</value></data>
+  <data name="Diag_Status_Info" xml:space="preserve"><value>Info</value></data>
+  <data name="Diag_Status_Warning" xml:space="preserve"><value>Waarschuwing</value></data>
+  <data name="Diag_Status_Fail" xml:space="preserve"><value>Mislukt</value></data>
+  <data name="Diag_Summary" xml:space="preserve"><value>{0} OK, {1} waarschuwingen, {2} mislukt.</value></data>
+  <data name="Diag_PlanLimits" xml:space="preserve"><value>Pakket en limieten</value></data>
+  <data name="Diag_PlanIs" xml:space="preserve"><value>Je zit op het pakket {0}.</value></data>
+  <data name="Diag_RoomLeft" xml:space="preserve"><value>Er is overal nog ruimte.</value></data>
+  <data name="Diag_AtLimit" xml:space="preserve"><value>Limiet bereikt voor: {0}. Meer toevoegen wordt geweigerd tot je iets verwijdert of het pakket wordt verhoogd.</value></data>
+  <data name="Diag_Interval" xml:space="preserve"><value>Controle-interval</value></data>
+  <data name="Diag_IntervalIs" xml:space="preserve"><value>Elke asset wordt elke {0} gecontroleerd ({1}).</value></data>
+  <data name="Diag_FromServer" xml:space="preserve"><value>serverstandaard</value></data>
+  <data name="Diag_FromPlan" xml:space="preserve"><value>uit je pakket</value></data>
+  <data name="Diag_ScannerOn" xml:space="preserve"><value>Scanner</value></data>
+  <data name="Diag_ScannerOff" xml:space="preserve"><value>Scannen staat uit op deze server (Scanning:Enabled), dus er wordt niets volgens schema gecontroleerd. Vraag het degene die de server beheert.</value></data>
+  <data name="Diag_Fresh" xml:space="preserve"><value>Resultaten zijn recent</value></data>
+  <data name="Diag_NoAssets" xml:space="preserve"><value>Nog geen assets. Voeg een domein toe op het dashboard.</value></data>
+  <data name="Diag_FreshOk" xml:space="preserve"><value>Alle {0} assets hebben recente resultaten.</value></data>
+  <data name="Diag_Stale" xml:space="preserve"><value>{0} controles hebben geen recent resultaat (bijvoorbeeld {1}). De scanner staat misschien stil of de host is onbereikbaar; kijk op de pagina Log.</value></data>
+  <data name="Diag_AlarmSetup" xml:space="preserve"><value>Alarminstellingen</value></data>
+  <data name="Diag_NoChannel" xml:space="preserve"><value>Er is geen kanaal ingesteld. Niemand hoort het als een certificaat verloopt of een record verandert. Voeg Slack, een webhook of een e-mailadres toe op de pagina Alarmen.</value></data>
+  <data name="Diag_AlarmsOff" xml:space="preserve"><value>Alarmen staan uit voor je organisatie.</value></data>
+  <data name="Diag_AlarmsOn" xml:space="preserve"><value>Alarmen staan aan, vanaf status {0}.</value></data>
+  <data name="Diag_EmailChannel" xml:space="preserve"><value>E-mailinstelling</value></data>
+  <data name="Diag_NoSmtp" xml:space="preserve"><value>E-mailontvangers zijn ingesteld, maar de server heeft geen SMTP-host, dus er kan geen e-mail worden verstuurd. Vraag het degene die de server beheert (Alerts:Email:Host).</value></data>
+  <data name="Diag_Channel_slack" xml:space="preserve"><value>Slack</value></data>
+  <data name="Diag_Channel_webhook" xml:space="preserve"><value>Webhook</value></data>
+  <data name="Diag_Channel_email" xml:space="preserve"><value>E-mail</value></data>
+  <data name="Diag_Delivered" xml:space="preserve"><value>Het testalarm is afgeleverd.</value></data>
+  <data name="Diag_NotDelivered" xml:space="preserve"><value>Het testalarm is niet afgeleverd: {0}</value></data>
+  <data name="Diag_TestAlarm" xml:space="preserve"><value>Testalarm</value></data>
+  <data name="Diag_NotSent" xml:space="preserve"><value>Er is geen testalarm verstuurd omdat alarmen uitstaan.</value></data>
+  <data name="Diag_RecentAlarms" xml:space="preserve"><value>Recente alarmen</value></data>
+  <data name="Diag_RecentFailed" xml:space="preserve"><value>{0} van {1} alarmen in de afgelopen 7 dagen zijn niet afgeleverd. Zie de pagina Log.</value></data>
+  <data name="Diag_Admins" xml:space="preserve"><value>Beheerders</value></data>
+  <data name="Diag_AdminsOk" xml:space="preserve"><value>Er zijn {0} beheerders, dus de een kan de ander helpen.</value></data>
+  <data name="Diag_OneAdmin" xml:space="preserve"><value>Er is maar één beheerder. Als die zijn passkey kwijtraakt, kan alleen de platformbeheerder of de serverbeheerder helpen. Nodig een tweede beheerder uit.</value></data>
+  <data name="Diag_Passkeys" xml:space="preserve"><value>Passkeys van beheerders</value></data>
+  <data name="Diag_PasskeysOk" xml:space="preserve"><value>Elke beheerder heeft meer dan één manier om in te loggen.</value></data>
+  <data name="Diag_PasskeysFew" xml:space="preserve"><value>{0} beheerder(s) hebben één passkey en geen single sign-on. Vraag ze een tweede apparaat toe te voegen op de pagina Account.</value></data>
+  <data name="Diag_Https" xml:space="preserve"><value>Beveiligde verbinding</value></data>
+  <data name="Diag_HttpsOk" xml:space="preserve"><value>Je gebruikt {0}, en dat accepteren passkeys.</value></data>
+  <data name="Diag_NotHttps" xml:space="preserve"><value>Deze pagina wordt via gewoon http uitgeleverd op {0}. Passkeys werken alleen via HTTPS (of op localhost), dus anderen kunnen niet inloggen.</value></data>
+  <data name="Diag_Origin" xml:space="preserve"><value>Passkey-adres</value></data>
+  <data name="Diag_OriginDiffers" xml:space="preserve"><value>Auth:Origin is {0} maar je gebruikt {1}. Passkeys zijn aan het ingestelde adres gekoppeld, dus inloggen mislukt.</value></data>
+  <data name="Diag_Proxy" xml:space="preserve"><value>Reverse proxy</value></data>
+  <data name="Diag_ProxyHeaders" xml:space="preserve"><value>Verzoeken komen via een proxy binnen, maar doorgestuurde headers staan niet aan (ASPNETCORE_FORWARDEDHEADERS_ENABLED). Bezoekers delen dan één adres, wat limieten per adres breekt.</value></data>
+  <data name="Diag_Migrations" xml:space="preserve"><value>Database</value></data>
+  <data name="Diag_MigrationsOk" xml:space="preserve"><value>De database is up-to-date.</value></data>
+  <data name="Diag_MigrationsPending" xml:space="preserve"><value>{0} databasemigraties zijn niet uitgevoerd. Herstart de app met Database:AutoMigrate aan, of voer ze handmatig uit.</value></data>
+  <data name="Diag_Keys" xml:space="preserve"><value>Sessiesleutels</value></data>
+  <data name="Diag_KeysOk" xml:space="preserve"><value>Inlogsleutels staan in de database, dus sessies overleven een herstart.</value></data>
+  <data name="Diag_KeysNone" xml:space="preserve"><value>Er zijn nog geen inlogsleutels opgeslagen; mensen worden bij een herstart uitgelogd totdat er een is aangemaakt.</value></data>
+  <data name="Diag_Smtp" xml:space="preserve"><value>Mailserver</value></data>
+  <data name="Diag_SmtpOk" xml:space="preserve"><value>De mailserver {0} accepteert verbindingen.</value></data>
+  <data name="Diag_SmtpDown" xml:space="preserve"><value>De mailserver {0} is niet bereikbaar: {1}</value></data>
+  <data name="Diag_NoSmtpHost" xml:space="preserve"><value>Er is geen mailserver ingesteld, dus er zijn geen e-mailalarmen of gemailde uitnodigingen (Alerts:Email:Host).</value></data>
+  <data name="Diag_Sso" xml:space="preserve"><value>Single sign-on</value></data>
+  <data name="Diag_SsoOk" xml:space="preserve"><value>De identity provider op {0} antwoordt.</value></data>
+  <data name="Diag_SsoDown" xml:space="preserve"><value>De identity provider op {0} is niet bereikbaar: {1}</value></data>
+  <data name="Diag_NoSso" xml:space="preserve"><value>Single sign-on is niet ingesteld; mensen loggen in met passkeys.</value></data>
+  <data name="Diag_SsoOpen" xml:space="preserve"><value>Open aanmelding</value></data>
+  <data name="Diag_SsoOpenText" xml:space="preserve"><value>Sso:AutoProvision staat aan zonder Sso:AllowedDomains, dus iedereen van wie de provider het e-mailadres heeft geverifieerd, kan een account aanmaken.</value></data>
+  <data name="Diag_Resolver" xml:space="preserve"><value>Namen opzoeken</value></data>
+  <data name="Diag_ResolverOk" xml:space="preserve"><value>De server kan namen opzoeken.</value></data>
+  <data name="Diag_ResolverDown" xml:space="preserve"><value>De server kan geen namen opzoeken: {0}</value></data>
+  <data name="Diag_Ct" xml:space="preserve"><value>Certificate Transparency</value></data>
+  <data name="Diag_CtOk" xml:space="preserve"><value>crt.sh is bereikbaar, dus certificaten kunnen worden gevonden.</value></data>
+  <data name="Diag_CtDown" xml:space="preserve"><value>crt.sh is niet bereikbaar ({0}), dus het vinden van certificaten mislukt en wordt opnieuw geprobeerd.</value></data>
+  <data name="Diag_PrivateScans" xml:space="preserve"><value>Privénetwerken</value></data>
+  <data name="Diag_PrivateAllowed" xml:space="preserve"><value>Scans mogen privéadressen bereiken. Goed voor een bedrijfsnetwerk, niet voor een gedeelde installatie (Scanning:AllowPrivateAddresses).</value></data>
+  <data name="Diag_PrivateBlocked" xml:space="preserve"><value>Scans kunnen geen privéadressen bereiken.</value></data>
+  <data name="Diag_PublicCheck" xml:space="preserve"><value>Gratis openbare check</value></data>
+  <data name="Diag_PublicOn" xml:space="preserve"><value>De openbare check staat aan, hooguit {0} controles per uur per adres.</value></data>
+  <data name="Diag_PublicOff" xml:space="preserve"><value>De openbare check staat uit.</value></data>
 </root>
