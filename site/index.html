@@ -32,7 +32,7 @@
 <header class="site">
 <div class="wrap">
 <a class="brand" href="/">Fully<span>Qualified</span></a>
-<nav aria-label="Main"><a href="#why">Why now</a><a href="#checks">What it checks</a><a href="#how">How it works</a><a href="#selfhost">Self-host</a><a href="#pricing">Plans</a><a href="#faq">FAQ</a><a href="/support/">Support</a><a href="/about/">About</a></nav>
+<nav aria-label="Main"><a href="#scan">Free check</a><a href="#why">Why now</a><a href="#checks">What it checks</a><a href="#selfhost">Self-host</a><a href="#pricing">Plans</a><a href="/support/">Support</a><a href="/about/">About</a></nav>
 <a class="lang" href="/nl/" hreflang="nl" lang="nl">Nederlands</a>
 <a class="button ghost" href="https://github.com/pimvd/fullyqualified">GitHub</a>
 </div>
@@ -51,6 +51,20 @@
 </div>
 </section>
 <div class="trust"><div class="wrap"><ul><li>Open source, AGPL-3.0</li><li>Read-only: never changes your systems</li><li>Self-hosted today, EU-hosted version planned</li><li>Passkey sign-in, roles and single sign-on</li></ul></div></div>
+<section class="block" id="scan"><div class="wrap two">
+<div>
+<h2>Check a domain now</h2>
+<p>See the TLS certificate and the email and security records of any public domain in a few seconds. No account, nothing stored.</p>
+<p class="note"><a href="/scan/">How the free check works</a></p>
+</div>
+<form class="scan-form" method="get" action="https://app.fullyqualified.eu/scan">
+<label for="domain-scan">Domain name</label>
+<div class="inline"><input id="domain-scan" name="domain" placeholder="example.com" required maxlength="253" autocomplete="off" inputmode="url" spellcheck="false">
+<input type="hidden" name="culture" value="en"><input type="hidden" name="ui-culture" value="en">
+<button type="submit">Check</button></div>
+<p class="note">Public domains on port 443 only. A few checks per hour.</p>
+</form>
+</div></section>
 <section class="block" id="why"><div class="wrap">
 <h2>Certificates are getting shorter. Your spreadsheet is not keeping up.</h2>
 <p class="intro">Browsers and certificate authorities are cutting the maximum lifetime of public certificates. What was a yearly chore becomes a monthly one, and a forgotten certificate or a changed DNS record is an outage or a security hole.</p>
@@ -87,7 +101,7 @@ docker compose up</code></pre>
 <section class="block alt" id="pricing"><div class="wrap">
 <h2>Hosted plans are planned</h2>
 <p class="intro">Prefer not to run it yourself? A hosted version in the EU, on Scaleway, is planned. Plans are by number of domains. Prices are not set yet.</p>
-<div class="plans"><div class="plan"><span class="badge">Planned</span><h3>Free</h3><p class="domains">3 <small>domains</small></p><ul><li>Certificate and DNS checks</li></ul></div><div class="plan"><span class="badge">Planned</span><h3>Starter</h3><p class="domains">25 <small>domains</small></p><ul><li>Everything in Free, plus the NIS2 report</li></ul></div><div class="plan"><span class="badge">Planned</span><h3>Business</h3><p class="domains">100 <small>domains</small></p><ul><li>Everything in Starter, plus cloud connectors and SSO</li></ul></div></div>
+<div class="plans"><div class="plan"><span class="badge">Planned</span><h3>Free</h3><p class="domains">3 <small>domains</small></p><ul><li>Certificate and DNS checks</li><li>History: 1 month</li></ul></div><div class="plan"><span class="badge">Planned</span><h3>Starter</h3><p class="domains">25 <small>domains</small></p><ul><li>Everything in Free, plus the NIS2 report</li><li>History: 12 months</li></ul></div><div class="plan"><span class="badge">Planned</span><h3>Business</h3><p class="domains">100 <small>domains</small></p><ul><li>Everything in Starter, plus cloud connectors and SSO</li><li>History: 24 months</li></ul></div><div class="plan"><span class="badge">Planned</span><h3>Custom</h3><p class="domains">by agreement</p><ul><li>Limits agreed per customer</li></ul></div></div>
 <p class="note" style="margin-top:1rem">Self-hosting stays free with no domain limit.</p>
 </div></section>
 <section class="block" id="faq"><div class="wrap">

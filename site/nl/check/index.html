@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gratis certificaat- en DNS-check: FullyQualified</title>
+<meta name="description" content="Controleer gratis het TLS-certificaat en de DNS-records voor e-mail en beveiliging van elk openbaar domein. Geen account, niets opgeslagen.">
+<link rel="canonical" href="https://fullyqualified.eu/nl/check/">
+<link rel="alternate" hreflang="en" href="https://fullyqualified.eu/scan/">
+<link rel="alternate" hreflang="nl" href="https://fullyqualified.eu/nl/check/">
+<link rel="alternate" hreflang="x-default" href="https://fullyqualified.eu/scan/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FullyQualified">
+<meta property="og:title" content="Gratis certificaat- en DNS-check: FullyQualified">
+<meta property="og:description" content="Controleer gratis het TLS-certificaat en de DNS-records voor e-mail en beveiliging van elk openbaar domein. Geen account, niets opgeslagen.">
+<meta property="og:url" content="https://fullyqualified.eu/nl/check/">
+<meta property="og:locale" content="nl_NL">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:image" content="https://fullyqualified.eu/img/og-nl.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="FullyQualified: elk domein, fully qualified. Certificaten, DNS en NIS2.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0b5fff">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/style.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "name": "Gratis certificaat- en DNS-check: FullyQualified", "url": "https://fullyqualified.eu/nl/check/", "inLanguage": "nl", "description": "Controleer gratis het TLS-certificaat en de DNS-records voor e-mail en beveiliging van elk openbaar domein. Geen account, niets opgeslagen."}</script>
+</head>
+<body>
+<a class="skip" href="#main">Naar de inhoud</a>
+<header class="site">
+<div class="wrap">
+<a class="brand" href="/nl/">Fully<span>Qualified</span></a>
+<nav aria-label="Hoofdmenu"><a href="/nl/">Home</a><a href="/nl/check/">Gratis check</a><a href="/nl/support/">Support</a><a href="/nl/over-ons/">Over ons</a></nav>
+<a class="lang" href="/scan/" hreflang="en" lang="en">English</a>
+<a class="button ghost" href="https://github.com/pimvd/fullyqualified">GitHub</a>
+</div>
+</header>
+<main id="main">
+<article class="block page prose"><div class="wrap">
+<h1>Gratis certificaat- en DNS-check</h1>
+<p class="lead">Typ een openbare domeinnaam en zie in een paar seconden wat een bezoeker, een mailserver en een auditor zouden zien.</p>
+
+<section class="scan-box" id="check"><div class="wrap two">
+<div>
+<h2>Controleer nu een domein</h2>
+<p>Zie in een paar seconden het TLS-certificaat en de e-mail- en beveiligingsrecords van elk openbaar domein. Geen account, niets opgeslagen.</p>
+<p class="note"><a href="/nl/check/">Hoe de gratis check werkt</a></p>
+</div>
+<form class="scan-form" method="get" action="https://app.fullyqualified.eu/scan">
+<label for="domain-check">Domeinnaam</label>
+<div class="inline"><input id="domain-check" name="domain" placeholder="example.com" required maxlength="253" autocomplete="off" inputmode="url" spellcheck="false">
+<input type="hidden" name="culture" value="nl"><input type="hidden" name="ui-culture" value="nl">
+<button type="submit">Controleren</button></div>
+<p class="note">Alleen openbare domeinen op poort 443. Een paar controles per uur.</p>
+</form>
+</div></section>
+<nav class="toc" aria-label="Op deze pagina"><ol><li><a href="#what">Wat er wordt gecontroleerd</a></li><li><a href="#privacy">Wat er met je domein gebeurt</a></li><li><a href="#limits">Grenzen</a></li><li><a href="#next">Na de controle</a></li></ol></nav>
+<section id="what"><h2>Wat er wordt gecontroleerd</h2><ul><li>Het TLS-certificaat op poort 443: wie het uitgaf, wanneer het verloopt, hoeveel dagen er nog zijn, welk protocol wordt gebruikt en of het vertrouwd wordt.</li><li>E-mailbescherming: SPF, DMARC en of DKIM-selectors in gebruik zijn.</li><li>Certificaatregels en ondertekening: CAA-records en DNSSEC.</li><li>Mail- en nameservers (MX en NS), en een dangling CNAME die subdomain takeover mogelijk maakt.</li></ul></section><section id="privacy"><h2>Wat er met je domein gebeurt</h2><p>Het domein wordt alleen voor deze controle gebruikt. Er wordt niets opgeslagen: geen resultaat, geen historie, geen account. Je IP-adres wordt hooguit een uur in het geheugen bewaard om te beperken hoe vaak één adres kan controleren, en wordt niet vastgelegd.</p><p>De controle draait vanaf onze server. Die maakt verbinding met de openbare site op poort 443 en vraagt openbare DNS, dus de eigenaar van dat domein kan een verbinding van ons zien.</p></section><section id="limits"><h2>Grenzen</h2><ul><li>Alleen openbare domeinnamen. IP-adressen, lokale namen en privénetwerken worden geweigerd.</li><li>Alleen poort 443.</li><li>Een paar controles per uur per adres. Automatiseer het alsjeblieft niet.</li><li>Het is één momentopname, geen monitoring, en geen juridisch advies of NIS2-rapport.</li></ul></section><section id="next"><h2>Na de controle</h2><p>Een momentopname vertelt hoe een domein er nu voor staat. FullyQualified blijft controleren, meldt het als een certificaat bijna verloopt of een record verandert, en maakt er een rapport van. Draai het zelf of volg de gehoste versie.</p><p><a class="button" href="https://github.com/pimvd/fullyqualified">GitHub</a> <a class="button ghost" href="/nl/#selfhost">Zelf hosten</a></p></section>
+</div></article>
+</main>
+<footer class="site"><div class="wrap"><span>FullyQualified is open source software onder de AGPL-3.0.</span><span><a href="/nl/support/">Support</a><a href="/nl/over-ons/">Over ons</a><a href="/nl/privacy/">Privacy</a><a href="/nl/voorwaarden/">Voorwaarden</a><a href="https://github.com/pimvd/fullyqualified">Broncode</a><a href="https://github.com/pimvd/fullyqualified/issues">Issues</a><a href="https://github.com/pimvd/fullyqualified/blob/master/LICENSE">Licentie</a></span></div></footer>
+</body>
+</html>

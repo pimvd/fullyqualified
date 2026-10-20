@@ -34,6 +34,11 @@ builder.Services.AddScoped<Session>();
 builder.Services.AddScoped<TenantScope>();
 builder.Services.AddScoped<DbGate>();
 builder.Services.AddScoped<TenantStats>();
+builder.Services.AddScoped<PlanService>();
+builder.Services.AddScoped<RetentionService>();
+builder.Services.AddScoped<PlanAdminService>();
+builder.Services.AddSingleton<ScanThrottle>();
+builder.Services.AddScoped<PublicScanService>();
 builder.Services.AddScoped<LogQueries>();
 builder.Services.AddScoped<AlertSettingsService>();
 builder.Services.AddScoped<SsoService>();
@@ -124,16 +129,23 @@ app.MapGet("/culture", (string culture, string? redirect, HttpContext ctx) =>
     return Results.LocalRedirect(target);
 }).AllowAnonymous();
 
-app.MapGet("/reports/nis2.xlsx", async (ReportBuilder reports, IStringLocalizer<SharedResource> l) =>
+// Reports are part of some plans only; others are sent back to the Reports page, which explains it.
+static async Task<bool> ReportsAllowed(HttpContext ctx, PlanService plans) =>
+    Roles.TenantId(ctx.User) is { } tenant && (await plans.ForAsync(tenant))?.Limits.ReportsEnabled == true;
+
+app.MapGet("/reports/nis2.xlsx", async (HttpContext ctx, PlanService plans, ReportBuilder reports, IStringLocalizer<SharedResource> l) =>
+    !await ReportsAllowed(ctx, plans) ? Results.Redirect("/reports") :
     Results.File(ReportWriter.Excel(await reports.BuildAsync(), l),
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", $"nis2-report-{DateTime.UtcNow:yyyyMMdd}.xlsx"));
 
-app.MapGet("/reports/nis2.pdf", async (ReportBuilder reports, IStringLocalizer<SharedResource> l) =>
+app.MapGet("/reports/nis2.pdf", async (HttpContext ctx, PlanService plans, ReportBuilder reports, IStringLocalizer<SharedResource> l) =>
+    !await ReportsAllowed(ctx, plans) ? Results.Redirect("/reports") :
     Results.File(ReportWriter.Pdf(await reports.BuildAsync(), l), "application/pdf", $"nis2-report-{DateTime.UtcNow:yyyyMMdd}.pdf"));
 
 app.MapAuth();
 app.MapAdmin();
 app.MapAlerts();
+app.MapPlans();
 app.MapSso();
 app.MapRazorComponents<App>();
 

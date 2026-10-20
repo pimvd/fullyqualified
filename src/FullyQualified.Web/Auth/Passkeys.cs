@@ -17,7 +17,7 @@ public record LabelRequest(string? Label);
 /// <summary>Challenge state kept between the options and the completion call, in a short-lived protected cookie.</summary>
 record Pending(string OptionsJson, string Name, Guid UserId, Guid? InviteId, string? Organization = null, bool Recovery = false);
 
-public class PasskeyService(AppDbContext db, Session session, IDataProtectionProvider dp, IConfiguration cfg)
+public class PasskeyService(AppDbContext db, Session session, PlanService plans, IDataProtectionProvider dp, IConfiguration cfg)
 {
     const string StateCookie = "fq_pk";
     readonly ITimeLimitedDataProtector protector = dp.CreateProtector("fq.passkey.state").ToTimeLimitedDataProtector();
@@ -163,7 +163,7 @@ public class PasskeyService(AppDbContext db, Session session, IDataProtectionPro
         {
             // The first account creates the first tenant, which becomes the management tenant.
             var tenant = await db.Tenants.SingleOrDefaultAsync(t => t.IsManagement); // an upgrade may already have created it for existing data
-            if (tenant is null) db.Tenants.Add(tenant = new Tenant { Name = state.Organization ?? "Management", IsManagement = true });
+            if (tenant is null) db.Tenants.Add(tenant = new Tenant { Name = state.Organization ?? "Management", IsManagement = true, TierKey = Tiers.Custom });
             user = new User { Id = state.UserId, TenantId = tenant.Id, Name = state.Name, Role = Role.Admin };
             db.Users.Add(user);
         }
@@ -183,6 +183,7 @@ public class PasskeyService(AppDbContext db, Session session, IDataProtectionPro
             }
             else
             {
+                if (await plans.ForAsync(invite.TenantId) is { } plan && !plan.HasRoomForUser(redeemingInvite: true)) return Fail(409, "user_limit");
                 user = new User { Id = state.UserId, TenantId = invite.TenantId, Name = state.Name, Role = invite.Role, Email = invite.Email };
                 db.Users.Add(user);
             }

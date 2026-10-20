@@ -3,6 +3,8 @@
 @attribute [Authorize(Policy = Roles.Platform)]
 @inject IStringLocalizer<SharedResource> L
 @inject TenantStats Stats
+@inject PlanService Plans
+@inject AppDbContext Db
 
 @if (stat is null)
 {
@@ -26,8 +28,21 @@ else
     <p class="muted">@L["Col_LastScan"]: @(stat.LastScan?.ToString("yyyy-MM-dd HH:mm") ?? "—") · @L["Col_LastLogin"]: @(stat.LastLogin?.ToString("yyyy-MM-dd HH:mm") ?? L["Passkeys_Never"].Value)</p>
 
     <AdminRoot>
+        @if (plan is not null) { <PlanEditor Plan="plan" Tiers="tiers" /> }
         <InvitePanel TenantId="Id" />
         <UsersPanel TenantId="Id" Me="Roles.UserId(Ctx?.User)" />
+        @if (!stat.Tenant.IsManagement)
+        {
+            <section class="card danger-zone" data-confirm-name="@stat.Tenant.Name">
+                <h2>@L["Delete_Title"]</h2>
+                <p>@L["Delete_PlatformText", stat.Tenant.Name, stat.Users, stat.Assets]</p>
+                <p class="inline">
+                    <input id="del-confirm" autocomplete="off" placeholder="@stat.Tenant.Name" aria-label="@L["Delete_Confirm"]" />
+                    <button type="button" class="danger" data-admin="tenant-delete" data-url="/platform/tenants/@Id/delete" data-after="/tenants">@L["Delete_Button"]</button>
+                </p>
+                <p class="muted"><small>@L["Delete_Confirm"]</small></p>
+            </section>
+        }
     </AdminRoot>
 }
 
@@ -35,6 +50,14 @@ else
     [CascadingParameter] HttpContext? Ctx { get; set; }
     [Parameter] public Guid Id { get; set; }
     TenantStat? stat;
+    Plan? plan;
+    List<Tier> tiers = [];
 
-    protected override async Task OnInitializedAsync() => stat = (await Stats.ForAsync(Id)).FirstOrDefault();
+    protected override async Task OnInitializedAsync()
+    {
+        stat = (await Stats.ForAsync(Id)).FirstOrDefault();
+        if (stat is null) return;
+        plan = await Plans.ForAsync(Id);
+        tiers = await Db.Tiers.OrderBy(t => t.SortOrder).ToListAsync();
+    }
 }

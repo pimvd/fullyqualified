@@ -7,6 +7,12 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://fullyqualified.eu/"/>
   </url>
   <url>
+    <loc>https://fullyqualified.eu/scan/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fullyqualified.eu/scan/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://fullyqualified.eu/nl/check/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fullyqualified.eu/scan/"/>
+  </url>
+  <url>
     <loc>https://fullyqualified.eu/support/</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://fullyqualified.eu/support/"/>
     <xhtml:link rel="alternate" hreflang="nl" href="https://fullyqualified.eu/nl/support/"/>
@@ -35,6 +41,12 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://fullyqualified.eu/"/>
     <xhtml:link rel="alternate" hreflang="nl" href="https://fullyqualified.eu/nl/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://fullyqualified.eu/"/>
+  </url>
+  <url>
+    <loc>https://fullyqualified.eu/nl/check/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://fullyqualified.eu/scan/"/>
+    <xhtml:link rel="alternate" hreflang="nl" href="https://fullyqualified.eu/nl/check/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://fullyqualified.eu/scan/"/>
   </url>
   <url>
     <loc>https://fullyqualified.eu/nl/support/</loc>

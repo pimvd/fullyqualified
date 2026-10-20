@@ -436,6 +436,26 @@ namespace FullyQualified.Web.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<int?>("OverrideMaxDomains")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("OverrideMaxEndpoints")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("OverrideMaxUsers")
+                        .HasColumnType("integer");
+
+                    b.Property<bool?>("OverrideReports")
+                        .HasColumnType("boolean");
+
+                    b.Property<int?>("OverrideRetentionMonths")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TierKey")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("IsManagement")
@@ -445,7 +465,46 @@ namespace FullyQualified.Web.Data.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
+                    b.HasIndex("TierKey");
+
                     b.ToTable("tenants", (string)null);
+                });
+
+            modelBuilder.Entity("FullyQualified.Web.Tier", b =>
+                {
+                    b.Property<string>("Key")
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<int?>("MaxDomains")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("MaxEndpoints")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("MaxUsers")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
+
+                    b.Property<bool>("ReportsEnabled")
+                        .HasColumnType("boolean");
+
+                    b.Property<int?>("RetentionMonths")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Key");
+
+                    b.ToTable("tiers", (string)null);
                 });
 
             modelBuilder.Entity("FullyQualified.Web.User", b =>
@@ -564,6 +623,15 @@ namespace FullyQualified.Web.Data.Migrations
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("FullyQualified.Web.Tenant", b =>
+                {
+                    b.HasOne("FullyQualified.Web.Tier", null)
+                        .WithMany()
+                        .HasForeignKey("TierKey")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

@@ -2,9 +2,10 @@
 
 Status: proposed
 
-- **What:** a static site in `site/`, five pages per language (home, support with FAQ, about, privacy, terms; English at `/`, Dutch under `/nl/`), plus `404.html`, `robots.txt`, `sitemap.xml`, a favicon and share images. It is separate from the app and needs no server code, so any static host in the EU can serve it.
+- **What:** a static site in `site/`, six pages per language (home, free check, support with FAQ, about, privacy, terms; English at `/`, Dutch under `/nl/`), plus `404.html`, `robots.txt`, `sitemap.xml`, a favicon and share images. It is separate from the app and needs no server code, so any static host in the EU can serve it.
 - **No scripts, cookies or third-party requests.** No analytics, fonts or embeds. That keeps the page fast, needs no cookie banner and matches the product's European positioning. Anchors and the FAQ use plain HTML (`details`).
 - **Search and sharing:** one canonical URL per page, reciprocal `hreflang` alternates, Open Graph and Twitter tags, a sitemap with alternates, and JSON-LD for `SoftwareApplication` and `FAQPage`. The FAQ in JSON-LD must equal the visible FAQ.
+- **The free check** is the one place the site talks to the app: a plain GET form to the app's `/scan` (ADR 0007), with the visitor's language passed along. Tests pin the form's target, method and fields.
 - **Honest claims:** prices are not set, so none are shown; the plans mirror `docs/PLAN.md`; the report is described as evidence, not as NIS2 compliance; the hosted version and cloud connectors are described as planned.
 - **Screenshots** are of the real app with fictional example domains.
 - **Legal pages are drafts.** Privacy and terms describe what the software does; company details, hosting provider, retention and liability are `[placeholders]`, and a visible notice says a lawyer must review them before the hosted service launches. A test keeps that notice in place until someone removes it on purpose.

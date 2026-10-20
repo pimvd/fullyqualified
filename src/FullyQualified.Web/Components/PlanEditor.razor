@@ -1,0 +1,36 @@
+@inject IStringLocalizer<SharedResource> L
+
+<section class="card" id="plan-editor" data-tenant="@Plan.Tenant.Id">
+    <h2>@L["Plan_Title"]</h2>
+    <p class="muted">@L["Plan_EditorIntro"]</p>
+    <label class="field">@L["Plan_Tier"]
+        <select id="pl-tier">
+            @foreach (var t in Tiers) { <option value="@t.Key" selected="@(t.Key == Plan.Tenant.TierKey)">@t.Name</option> }
+        </select>
+    </label>
+    <table class="plan-table">
+        <thead><tr><th>@L["Plan_Resource"]</th><th>@L["Plan_Used"]</th><th>@L["Plan_TierValue"]</th><th>@L["Plan_Override"]</th></tr></thead>
+        <tbody>
+            <tr><td>@L["Plan_Domains"]</td><td>@Plan.Usage.Domains</td><td>@Show(Plan.Tier.MaxDomains)</td><td><input id="pl-domains" value="@Text(Plan.Tenant.OverrideMaxDomains)" placeholder="@L["Plan_Follow"]" /></td></tr>
+            <tr><td>@L["Plan_Endpoints"]</td><td>@Plan.Usage.Endpoints</td><td>@Show(Plan.Tier.MaxEndpoints)</td><td><input id="pl-endpoints" value="@Text(Plan.Tenant.OverrideMaxEndpoints)" placeholder="@L["Plan_Follow"]" /></td></tr>
+            <tr><td>@L["Plan_Users"]</td><td>@Plan.Usage.Users</td><td>@Show(Plan.Tier.MaxUsers)</td><td><input id="pl-users" value="@Text(Plan.Tenant.OverrideMaxUsers)" placeholder="@L["Plan_Follow"]" /></td></tr>
+            <tr><td>@L["Plan_Reports"]</td><td></td><td>@(Plan.Tier.ReportsEnabled ? L["Rep_Yes"].Value : L["Rep_No"].Value)</td>
+                <td><select id="pl-reports">
+                    <option value="" selected="@(Plan.Tenant.OverrideReports is null)">@L["Plan_Follow"]</option>
+                    <option value="yes" selected="@(Plan.Tenant.OverrideReports == true)">@L["Rep_Yes"]</option>
+                    <option value="no" selected="@(Plan.Tenant.OverrideReports == false)">@L["Rep_No"]</option>
+                </select></td></tr>
+            <tr><td>@L["Plan_Retention"]</td><td></td><td>@(Plan.Tier.RetentionMonths is { } m ? ResourceText.Months(L, m) : L["Plan_AllHistory"].Value)</td><td><input id="pl-retention" value="@Text(Plan.Tenant.OverrideRetentionMonths)" placeholder="@L["Plan_Follow"]" /></td></tr>
+        </tbody>
+    </table>
+    <p class="muted"><small>@L["Plan_OverrideHelp"]</small></p>
+    <p class="actions"><button type="button" data-admin="plan-save">@L["Alerts_Save"]</button></p>
+    <p id="pl-note" class="muted" role="status" hidden></p>
+</section>
+
+@code {
+    [Parameter, EditorRequired] public Plan Plan { get; set; } = null!;
+    [Parameter, EditorRequired] public List<Tier> Tiers { get; set; } = [];
+    string Show(int? n) => n is null ? L["Plan_Unlimited"].Value : n.ToString()!;
+    static string Text(int? n) => n is null ? "" : n == -1 ? "unlimited" : n.ToString()!;
+}

@@ -71,3 +71,9 @@ footer.site span:last-child{display:flex;gap:.4rem 1.4rem;flex-wrap:wrap}
 .toc ol{margin:0;padding-left:1.3rem;columns:2;column-gap:2rem}
 .prose .grid{margin:1rem 0;grid-template-columns:repeat(2,1fr)}
 @media (max-width:600px){.toc ol{columns:1}.help-grid,.prose .grid{grid-template-columns:1fr}}
+.scan-form label{display:block;font-weight:600;margin-bottom:.4rem}
+.scan-form .inline{display:flex;gap:.6rem;flex-wrap:wrap}
+.scan-form input[name=domain]{flex:1 1 14rem;min-width:0;padding:.7rem .9rem;border:1px solid var(--line);border-radius:9px;background:var(--card);color:var(--fg);font:inherit}
+.scan-form button{padding:.7rem 1.3rem;border:0;border-radius:9px;background:var(--accent);color:var(--accent-fg);font:inherit;font-weight:600;cursor:pointer}
+.scan-box .wrap{max-width:900px}.scan-box .two{margin:1.2rem 0;padding:1.4rem;background:var(--card);border:1px solid var(--line);border-radius:12px}
+.plans .plan ul li+li{margin-top:.2rem}

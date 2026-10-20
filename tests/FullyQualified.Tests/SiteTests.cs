@@ -20,10 +20,12 @@ namespace FullyQualified.Tests;
 public class SiteFixture : IAsyncLifetime
 {
     public const string Origin = "https://fullyqualified.eu";
+    /// <summary>Where the app runs, for the free check form. A placeholder until the hosted app has an address.</summary>
+    public const string AppOrigin = "https://app.fullyqualified.eu";
     /// <summary>English page and its Dutch counterpart, per kind of page.</summary>
     public static readonly (string Kind, string En, string Nl)[] Pairs =
     [
-        ("home", "/", "/nl/"), ("support", "/support/", "/nl/support/"), ("about", "/about/", "/nl/over-ons/"),
+        ("home", "/", "/nl/"), ("scan", "/scan/", "/nl/check/"), ("support", "/support/", "/nl/support/"), ("about", "/about/", "/nl/over-ons/"),
         ("privacy", "/privacy/", "/nl/privacy/"), ("terms", "/terms/", "/nl/voorwaarden/"),
     ];
     public static readonly string[] Pages = Pairs.SelectMany(p => new[] { p.En, p.Nl }).ToArray();
@@ -181,7 +183,12 @@ public class SiteTests(SiteFixture site) : IClassFixture<SiteFixture>
     {
         var d = await site.Page(path);
         Assert.Empty(d.QuerySelectorAll("script[src]"));
-        Assert.Empty(d.QuerySelectorAll("iframe, embed, object, form"));
+        Assert.Empty(d.QuerySelectorAll("iframe, embed, object"));
+        foreach (var form in d.QuerySelectorAll("form")) // the one thing that leaves the site: a plain GET to the app's own public checker
+        {
+            Assert.Equal($"{SiteFixture.AppOrigin}/scan", form.GetAttribute("action"));
+            Assert.Equal("get", form.GetAttribute("method"));
+        }
         foreach (var e in d.QuerySelectorAll("img[src], link[rel=stylesheet][href], link[rel=icon][href], source[src]"))
         {
             var url = e.GetAttribute("src") ?? e.GetAttribute("href")!;
@@ -300,17 +307,23 @@ public class SiteTests(SiteFixture site) : IClassFixture<SiteFixture>
     }
 
     [Fact]
-    public async Task Plans_match_the_product_plan()
+    public async Task Plans_match_the_product_plan_and_the_defaults_in_the_app()
     {
-        // docs/PLAN.md is the source of truth for tiers and domain limits.
+        // docs/PLAN.md is the source of truth for tiers, domain limits and history; the app starts from the same numbers.
         var plan = await File.ReadAllTextAsync(Path.Combine(site.Root, "docs", "PLAN.md"));
-        var tiers = Regex.Matches(plan, @"^\| (Free|Starter|Business) \| (\d+) \|", RegexOptions.Multiline).Select(m => (m.Groups[1].Value, m.Groups[2].Value)).ToList();
+        var tiers = Regex.Matches(plan, @"^\| (Free|Starter|Business) \| (\d+) \| (\d+) months? \|", RegexOptions.Multiline).Select(m => (m.Groups[1].Value, m.Groups[2].Value, int.Parse(m.Groups[3].Value))).ToList();
         Assert.Equal(3, tiers.Count);
+        Assert.Contains("| Custom |", plan);
         foreach (var path in SiteFixture.HomePages)
         {
-            var shown = (await site.Page(path)).QuerySelectorAll(".plan").Select(p => (Text(p.QuerySelector("h3")!), Text(p.QuerySelector(".domains")!).Split(' ')[0])).ToList();
+            var cards = (await site.Page(path)).QuerySelectorAll(".plan").ToList();
+            Assert.Equal(4, cards.Count);
+            var shown = cards.Take(3).Select(p => (Text(p.QuerySelector("h3")!), Text(p.QuerySelector(".domains")!).Split(' ')[0], int.Parse(Regex.Match(Text(p.QuerySelectorAll("li").Last()), @"\d+").Value))).ToList();
             Assert.Equal(tiers, shown);
+            Assert.Equal("Custom", Text(cards[3].QuerySelector("h3")!));
         }
+        foreach (var (name, domains, months) in tiers)
+            Assert.Equal((int.Parse(domains), months), (Tiers.Defaults.Single(t => t.Name == name).MaxDomains, Tiers.Defaults.Single(t => t.Name == name).RetentionMonths));
     }
 
     [Fact]
@@ -386,7 +399,7 @@ public class SiteTests(SiteFixture site) : IClassFixture<SiteFixture>
         var text = Text((await site.Page(path)).QuerySelector("main")!);
         var source = string.Join("\n", Directory.GetFiles(Path.Combine(site.Root, "src"), "*.cs", SearchOption.AllDirectories).Where(f => !f.Contains($"{Path.DirectorySeparatorChar}obj{Path.DirectorySeparatorChar}"))
             .Select(File.ReadAllText)) + await File.ReadAllTextAsync(Path.Combine(site.Root, "README.md"));
-        foreach (Match m in Regex.Matches(text, @"\b(?:Sso|Scanning|Alerts|Auth):[A-Za-z]+(?::[A-Za-z]+)?"))
+        foreach (Match m in Regex.Matches(text, @"\b(?:Sso|Scanning|Alerts|Auth|PublicScan):[A-Za-z]+(?::[A-Za-z]+)?"))
             Assert.True(source.Contains(m.Value), $"{m.Value} on {path} is not a setting of the product");
 
         if (SiteFixture.Kind(path) != "support") return;
@@ -410,5 +423,51 @@ public class SiteTests(SiteFixture site) : IClassFixture<SiteFixture>
         var queue = await File.ReadAllTextAsync(Path.Combine(site.Root, "src", "FullyQualified.Web", "Services", "JobQueue.cs"));
         Assert.Contains("TimeSpan.FromMinutes(15)", queue);
         Assert.Contains("\"Scanning:IntervalHours\", 6.0", queue);
+    }
+
+    [Theory, MemberData(nameof(Pages))]
+    public async Task The_free_check_form_is_the_same_everywhere_and_points_at_the_app(string path)
+    {
+        var d = await site.Page(path);
+        var forms = d.QuerySelectorAll("form").ToList();
+        if (SiteFixture.Kind(path) is not ("home" or "scan")) { Assert.Empty(forms); return; }
+        var form = Assert.Single(forms);
+        Assert.Equal($"{SiteFixture.AppOrigin}/scan", form.GetAttribute("action"));
+        Assert.Equal("get", form.GetAttribute("method"));
+        var domain = form.QuerySelector("input[name=domain]")!;
+        Assert.NotNull(domain.GetAttribute("required"));
+        Assert.Equal("253", domain.GetAttribute("maxlength"));
+        Assert.Equal(domain.Id, form.QuerySelector("label")!.GetAttribute("for"));
+        var lang = SiteFixture.Lang(path);
+        Assert.Equal(lang, form.QuerySelector("input[name=culture]")!.GetAttribute("value"));       // the app opens in the visitor's language
+        Assert.Equal(lang, form.QuerySelector("input[name=ui-culture]")!.GetAttribute("value"));
+        Assert.Equal(new[] { "domain", "culture", "ui-culture" }, form.QuerySelectorAll("input").Select(i => i.GetAttribute("name")).ToArray());
+        Assert.NotNull(form.QuerySelector("button[type=submit]"));
+    }
+
+    [Fact]
+    public async Task The_free_check_form_matches_what_the_app_accepts()
+    {
+        // The route exists in the app, is anonymous, and is off unless switched on; the site's wording about limits matches the code.
+        var route = typeof(FullyQualified.Web.Components.Pages.PublicScan).GetCustomAttributes(typeof(Microsoft.AspNetCore.Components.RouteAttribute), false).Cast<Microsoft.AspNetCore.Components.RouteAttribute>().Single();
+        Assert.Equal("/scan", route.Template);
+        Assert.NotEmpty(typeof(FullyQualified.Web.Components.Pages.PublicScan).GetCustomAttributes(typeof(Microsoft.AspNetCore.Authorization.AllowAnonymousAttribute), false));
+        foreach (var path in new[] { "/scan/", "/nl/check/" })
+        {
+            var text = Text((await site.Page(path)).QuerySelector("main")!);
+            Assert.Contains("443", text);
+            Assert.Contains(SiteFixture.Lang(path) == "en" ? "an hour" : "een uur", text);
+        }
+        Assert.Null(FullyQualified.Web.PublicScanService.Normalize("example.com:8443")); // port 443 only, as the page says
+    }
+
+    [Theory]
+    [InlineData("/privacy/", "free check", "an hour")]
+    [InlineData("/nl/privacy/", "gratis check", "een uur")]
+    public async Task The_privacy_statement_covers_the_free_check(string path, string name, string hour)
+    {
+        var text = Text((await site.Page(path)).QuerySelector("main")!).ToLowerInvariant();
+        Assert.Contains(name, text);
+        Assert.Contains(hour, text);
     }
 }

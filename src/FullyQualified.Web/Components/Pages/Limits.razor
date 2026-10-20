@@ -1,0 +1,50 @@
+@page "/limits"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Policy = Roles.Platform)]
+@inject IStringLocalizer<SharedResource> L
+@inject AppDbContext Db
+
+<PageTitle>@L["Nav_Limits"]</PageTitle>
+<h1>@L["Limits_Title"]</h1>
+<AdminRoot>
+    <section class="card">
+        <p>@L["Limits_Intro"]</p>
+        <div class="table-scroll">
+        <table class="plan-table">
+            <thead><tr>
+                <th>@L["Plan_Tier"]</th><th>@L["Plan_Domains"]</th><th>@L["Plan_Endpoints"]</th><th>@L["Plan_Users"]</th>
+                <th>@L["Plan_Reports"]</th><th>@L["Plan_RetentionMonths"]</th><th>@L["Limits_Tenants"]</th><th></th>
+            </tr></thead>
+            <tbody>
+            @foreach (var t in tiers)
+            {
+                <tr data-tier-row="@t.Key">
+                    <td><b>@t.Name</b>@if (t.Key == Tiers.Custom) { <br /><small class="muted">@L["Limits_CustomHelp"]</small> }</td>
+                    <td><input data-f="domains" value="@Text(t.MaxDomains)" placeholder="@L["Plan_Unlimited"]" /></td>
+                    <td><input data-f="endpoints" value="@Text(t.MaxEndpoints)" placeholder="@L["Plan_Unlimited"]" /></td>
+                    <td><input data-f="users" value="@Text(t.MaxUsers)" placeholder="@L["Plan_Unlimited"]" /></td>
+                    <td><input data-f="reports" type="checkbox" checked="@t.ReportsEnabled" aria-label="@L["Plan_Reports"]" /></td>
+                    <td><input data-f="retention" value="@Text(t.RetentionMonths)" placeholder="@L["Plan_AllHistory"]" /></td>
+                    <td>@counts.GetValueOrDefault(t.Key)</td>
+                    <td><button type="button" data-admin="tier-save" data-tier="@t.Key">@L["Alerts_Save"]</button></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        </div>
+        <p class="muted"><small>@L["Limits_Blank"]</small></p>
+        <p id="tier-note" class="muted" role="status" hidden></p>
+    </section>
+</AdminRoot>
+
+@code {
+    List<Tier> tiers = [];
+    Dictionary<string, int> counts = [];
+    static string Text(int? n) => n?.ToString() ?? "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        tiers = await Db.Tiers.OrderBy(t => t.SortOrder).ToListAsync();
+        counts = await Db.Tenants.GroupBy(t => t.TierKey).ToDictionaryAsync(g => g.Key, g => g.Count());
+    }
+}

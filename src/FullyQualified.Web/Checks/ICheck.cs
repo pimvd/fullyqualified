@@ -36,18 +36,34 @@ public static class Renewal
         || (notAfter - notBefore).TotalDays <= 100 ? "Automated" : "Manual";
 }
 
-/// <summary>Keeps scans away from private addresses when the install is not allowed to reach them.</summary>
-public class HostGuard(IConfiguration cfg)
-{
-    readonly bool allowPrivate = cfg.GetValue("Scanning:AllowPrivateAddresses", true);
+/// <param name="Allowed">False when the host may not be scanned.</param>
+/// <param name="Address">When set, connect to exactly this address: it is the one that was checked, so DNS cannot change its answer in between.</param>
+/// <param name="Unresolved">The name did not resolve. Only meaningful when <paramref name="Allowed"/> is false.</param>
+public record GuardResult(bool Allowed, System.Net.IPAddress? Address = null, bool Unresolved = false);
 
-    public async Task<bool> IsAllowedAsync(string host, CancellationToken ct)
+/// <summary>Keeps scans away from private addresses when the install is not allowed to reach them.</summary>
+public class HostGuard
+{
+    readonly bool allowPrivate;
+
+    public HostGuard(IConfiguration cfg) : this(cfg.GetValue("Scanning:AllowPrivateAddresses", true)) { }
+
+    public HostGuard(bool allowPrivate) => this.allowPrivate = allowPrivate;
+
+    /// <summary>Always refuses private and local addresses, whatever the configuration says. For scans anyone on the internet can ask for.</summary>
+    public static HostGuard Strict() => new(false);
+
+    public async Task<bool> IsAllowedAsync(string host, CancellationToken ct) => (await ResolveAsync(host, ct)) is { Allowed: true } or { Unresolved: true };
+
+    public async Task<GuardResult> ResolveAsync(string host, CancellationToken ct)
     {
-        if (allowPrivate) return true;
+        if (allowPrivate) return new(true);
         System.Net.IPAddress[] addrs;
         try { addrs = await System.Net.Dns.GetHostAddressesAsync(host, ct); }
-        catch (System.Net.Sockets.SocketException) { return true; }
-        return addrs.All(a => !IsPrivate(a));
+        catch (System.Net.Sockets.SocketException) { return new(false, null, Unresolved: true); }
+        catch (ArgumentException) { return new(false); } // an unspecified address such as 0.0.0.0 is not a target
+        if (addrs.Length == 0) return new(false, null, Unresolved: true);
+        return addrs.Any(IsPrivate) ? new(false) : new(true, addrs[0]);
     }
 
     static bool IsPrivate(System.Net.IPAddress a)
@@ -57,6 +73,7 @@ public class HostGuard(IConfiguration cfg)
         if (a.AddressFamily != System.Net.Sockets.AddressFamily.InterNetwork) return false;
         var b = a.GetAddressBytes();
         return b[0] is 10 or 0 or 127 || (b[0] == 172 && b[1] is >= 16 and <= 31)
-            || (b[0] == 192 && b[1] == 168) || (b[0] == 169 && b[1] == 254) || (b[0] == 100 && b[1] is >= 64 and <= 127);
+            || (b[0] == 192 && b[1] == 168) || (b[0] == 169 && b[1] == 254) || (b[0] == 100 && b[1] is >= 64 and <= 127)
+            || (b[0] == 192 && b[1] == 0 && b[2] == 0) || b[0] >= 224;
     }
 }

@@ -1,0 +1,18 @@
+@inject IStringLocalizer<SharedResource> L
+
+<table class="plan-table">
+    <thead><tr><th>@L["Plan_Resource"]</th><th>@L["Plan_Used"]</th><th>@L["Plan_Limit"]</th></tr></thead>
+    <tbody>
+        <tr><td>@L["Plan_Domains"]</td><td>@Plan.Usage.Domains</td><td>@Limit(Plan.Limits.MaxDomains, Plan.Tenant.OverrideMaxDomains is not null)</td></tr>
+        <tr><td>@L["Plan_Endpoints"]</td><td>@Plan.Usage.Endpoints</td><td>@Limit(Plan.Limits.MaxEndpoints, Plan.Tenant.OverrideMaxEndpoints is not null)</td></tr>
+        <tr><td>@L["Plan_Users"]</td><td>@Plan.Usage.Users@(Plan.Usage.PendingInvites > 0 ? $" (+{Plan.Usage.PendingInvites} {L["Plan_Pending"]})" : "")</td><td>@Limit(Plan.Limits.MaxUsers, Plan.Tenant.OverrideMaxUsers is not null)</td></tr>
+        <tr><td>@L["Plan_Reports"]</td><td></td><td>@(Plan.Limits.ReportsEnabled ? L["Rep_Yes"].Value : L["Rep_No"].Value)@Mark(Plan.Tenant.OverrideReports is not null)</td></tr>
+        <tr><td>@L["Plan_Retention"]</td><td></td><td>@(Plan.Limits.RetentionMonths is { } m ? ResourceText.Months(L, m) : L["Plan_AllHistory"].Value)@Mark(Plan.Tenant.OverrideRetentionMonths is not null)</td></tr>
+    </tbody>
+</table>
+
+@code {
+    [Parameter, EditorRequired] public Plan Plan { get; set; } = null!;
+    string Limit(int? max, bool overridden) => (max is null ? L["Plan_Unlimited"].Value : max.ToString()) + Mark(overridden);
+    string Mark(bool overridden) => overridden ? $" ({L["Plan_Overridden"]})" : "";
+}

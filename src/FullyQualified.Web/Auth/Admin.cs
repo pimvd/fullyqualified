@@ -7,10 +7,10 @@ namespace FullyQualified.Web;
 
 public record InviteRequest(string? Email, string? Role, Guid? TenantId);
 public record RoleRequest(string? Role);
-public record TenantRequest(string? Name, string? AdminEmail);
+public record TenantRequest(string? Name, string? AdminEmail, string? Tier);
 
 /// <summary>Invitations, recovery links and people management. Tenant admins act within their tenant; admins of the management tenant act on any tenant.</summary>
-public class AdminService(AppDbContext db, Session session, AlertService mail, IStringLocalizer<SharedResource> l, ILogger<AdminService> log)
+public class AdminService(AppDbContext db, Session session, PlanService plans, AlertService mail, IStringLocalizer<SharedResource> l, ILogger<AdminService> log)
 {
     public static readonly TimeSpan InviteLifetime = TimeSpan.FromDays(7);
     public static readonly TimeSpan RecoveryLifetime = TimeSpan.FromHours(24);
@@ -56,6 +56,7 @@ public class AdminService(AppDbContext db, Session session, AlertService mail, I
             db.PlatformWrite = true;
         }
         if (email is not null && await db.AcrossTenants<User>().AnyAsync(u => u.Email == email)) return Fail(409, "email_exists");
+        if (await plans.ForAsync(target) is { } plan && !plan.HasRoomForUser()) return Fail(409, "user_limit");
 
         var (token, invite) = Issue(ctx, target, role, email, null, InviteLifetime);
         db.Invites.Add(invite);
@@ -146,8 +147,10 @@ public class AdminService(AppDbContext db, Session session, AlertService mail, I
         if (await db.Tenants.AnyAsync(t => t.Name == name)) return Fail(409, "tenant_exists");
         if (email is not null && await db.AcrossTenants<User>().AnyAsync(u => u.Email == email)) return Fail(409, "email_exists");
 
+        var tier = string.IsNullOrWhiteSpace(req.Tier) ? Tiers.Free : req.Tier.Trim().ToLowerInvariant();
+        if (!Tiers.Keys.Contains(tier)) return Fail(400, "invalid_tier");
         db.PlatformWrite = true;
-        var tenant = new Tenant { Name = name };
+        var tenant = new Tenant { Name = name, TierKey = tier };
         db.Tenants.Add(tenant);
         var (token, invite) = Issue(ctx, tenant.Id, Role.Admin, email, null, InviteLifetime);
         db.Invites.Add(invite);

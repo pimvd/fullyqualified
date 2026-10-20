@@ -34,6 +34,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, TenantScope sc
     public IQueryable<T> AcrossTenants<T>() where T : class => Set<T>().IgnoreQueryFilters();
 
     public DbSet<Tenant> Tenants => Set<Tenant>();
+    public DbSet<Tier> Tiers => Set<Tier>();
     public DbSet<AlertSettings> AlertSettings => Set<AlertSettings>();
     public DbSet<AlertLogEntry> AlertLog => Set<AlertLogEntry>();
 
@@ -116,6 +117,15 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, TenantScope sc
             e.HasIndex(x => x.Name).IsUnique();
             e.HasIndex(x => x.IsManagement).IsUnique().HasFilter("\"IsManagement\""); // exactly one management tenant
         });
+        b.Entity<Tier>(e =>
+        {
+            e.ToTable("tiers");
+            e.HasKey(x => x.Key);
+            e.Property(x => x.Key).HasMaxLength(20);
+            e.Property(x => x.Name).HasMaxLength(40);
+        });
+        b.Entity<Tenant>().HasOne<Tier>().WithMany().HasForeignKey(x => x.TierKey).OnDelete(DeleteBehavior.Restrict);
+        b.Entity<Tenant>().Property(x => x.TierKey).HasMaxLength(20);
         b.Entity<AlertSettings>(e =>
         {
             e.ToTable("alert_settings");

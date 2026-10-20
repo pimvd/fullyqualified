@@ -69,11 +69,14 @@ Open core under AGPL-3.0: anyone may self-host for free, and anyone offering a m
 
 Pricing is per number of domains, with fixed monthly tiers; usage per check is measured internally for fair use only. Prices are still open.
 
-| Tier | Domains | Includes |
-| --- | --- | --- |
-| Free | 3 | Certificate and DNS checks |
-| Starter | 25 | Plus NIS2 report |
-| Business | 100 | Plus cloud connectors and SSO |
+| Tier | Domains | History | Includes |
+| --- | --- | --- | --- |
+| Free | 3 | 1 month | Certificate and DNS checks |
+| Starter | 25 | 12 months | Plus NIS2 report |
+| Business | 100 | 24 months | Plus cloud connectors and SSO |
+| Custom | by agreement | by agreement | Limits agreed per customer |
+
+History is how long results, changes and alarm logs are kept; the newest result of every check is always kept. Besides domains, a tier limits endpoints and users and says whether the NIS2 report is included. The platform owner edits every tier, and can override any limit per tenant. The management tenant runs on Custom, unlimited. See ADR 0007.
 
 Contributions: no external pull requests at first, since the agents write the code. Once the community grows, CLA Assistant Lite is switched on, so the license can still change later.
 

@@ -1,6 +1,7 @@
 @page "/"
 @inject AppDbContext Db
 @inject JobQueue Queue
+@inject PlanService Plans
 @inject IStringLocalizer<SharedResource> L
 @inject NavigationManager Nav
 
@@ -23,6 +24,10 @@
             <button type="submit">@L["Add_Button"]</button>
         </EditForm>
         @if (error is not null) { <p class="error">@L[error]</p> }
+        @if (plan is not null)
+        {
+            <p class="muted"><small>@L["Plan_Domains"]: @Used(plan.Usage.Domains, plan.Limits.MaxDomains) · @L["Plan_Endpoints"]: @Used(plan.Usage.Endpoints, plan.Limits.MaxEndpoints) · <a href="/organization">@L["Plan_Title"]</a></small></p>
+        }
     </section>
 }
 
@@ -60,12 +65,16 @@
     List<CheckResult> latest = [];
     int expiring, problems, recentChanges;
     string? error;
+    Plan? plan;
+    string Used(int n, int? max) => max is null ? n.ToString() : $"{n} / {max}";
+    Guid? tenantId => Roles.TenantId(Ctx?.User);
 
     class AddModel { public string Name { get; set; } = ""; }
 
     protected override async Task OnInitializedAsync()
     {
         Model ??= new();
+        if (tenantId is { } t) plan = await Plans.ForAsync(t);
         assets = await Db.Assets.OrderBy(a => a.Name).ToListAsync();
         latest = await Db.LatestResultsAsync();
         var now = DateTimeOffset.UtcNow;
@@ -80,7 +89,9 @@
         var name = HostName.Normalize(Model!.Name);
         if (name is null) { error = "Add_Invalid"; return; }
         if (await Db.Assets.AnyAsync(a => a.Name == name)) { error = "Add_Duplicate"; return; }
-        var asset = new Asset { Name = name, Kind = name.Contains(':') ? AssetKind.Endpoint : AssetKind.Domain };
+        var kind = name.Contains(':') ? AssetKind.Endpoint : AssetKind.Domain;
+        if (await Plans.ForAsync(tenantId!.Value) is { } current && current.Blocks(kind) is { } blocked) { error = blocked; plan = current; return; }
+        var asset = new Asset { Name = name, Kind = kind };
         Db.Assets.Add(asset);
         await Db.SaveChangesAsync();
         await Queue.EnqueueAsync(asset);

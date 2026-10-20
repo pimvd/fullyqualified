@@ -9,6 +9,16 @@ public class Tenant
     public Guid Id { get; set; } = Guid.NewGuid();
     public required string Name { get; set; }
     public bool IsManagement { get; set; }
+    /// <summary>The plan this tenant is on; see <see cref="Tier"/>.</summary>
+    public string TierKey { get; set; } = Tiers.Free;
+    /// <summary>
+    /// Per-tenant overrides of the tier. Null follows the tier; for the numbers, -1 means unlimited (or, for retention, keep forever).
+    /// </summary>
+    public int? OverrideMaxDomains { get; set; }
+    public int? OverrideMaxEndpoints { get; set; }
+    public int? OverrideMaxUsers { get; set; }
+    public bool? OverrideReports { get; set; }
+    public int? OverrideRetentionMonths { get; set; }
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }
 
@@ -177,4 +187,37 @@ public class AlertLogEntry : ITenantOwned
     public required string Subject { get; set; }
     public bool Success { get; set; }
     public string? Error { get; set; }
+}
+
+/// <summary>
+/// A plan with its limits. Free, Starter and Business are the plans of the product plan; Custom is for agreements made per customer and
+/// is normally combined with per-tenant overrides. The management owner edits the values. A null number means unlimited.
+/// </summary>
+public class Tier
+{
+    public required string Key { get; set; }
+    public required string Name { get; set; }
+    public int SortOrder { get; set; }
+    public int? MaxDomains { get; set; }
+    public int? MaxEndpoints { get; set; }
+    public int? MaxUsers { get; set; }
+    public bool ReportsEnabled { get; set; }
+    /// <summary>How many months of results, changes and alarm history are kept. Null keeps everything.</summary>
+    public int? RetentionMonths { get; set; }
+    public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
+}
+
+public static class Tiers
+{
+    public const string Free = "free", Starter = "starter", Business = "business", Custom = "custom";
+    public static readonly string[] Keys = [Free, Starter, Business, Custom];
+
+    /// <summary>The values a fresh install starts with. Domains and history follow docs/PLAN.md; the rest are starting points to adjust.</summary>
+    public static readonly Tier[] Defaults =
+    [
+        new() { Key = Free, Name = "Free", SortOrder = 1, MaxDomains = 3, MaxEndpoints = 10, MaxUsers = 2, ReportsEnabled = false, RetentionMonths = 1 },
+        new() { Key = Starter, Name = "Starter", SortOrder = 2, MaxDomains = 25, MaxEndpoints = 100, MaxUsers = 10, ReportsEnabled = true, RetentionMonths = 12 },
+        new() { Key = Business, Name = "Business", SortOrder = 3, MaxDomains = 100, MaxEndpoints = 500, MaxUsers = 50, ReportsEnabled = true, RetentionMonths = 24 },
+        new() { Key = Custom, Name = "Custom", SortOrder = 4, MaxDomains = null, MaxEndpoints = null, MaxUsers = null, ReportsEnabled = true, RetentionMonths = null },
+    ];
 }

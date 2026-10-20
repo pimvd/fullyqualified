@@ -12,6 +12,7 @@ public class JobRunner(IServiceProvider sp, IConfiguration cfg, ILogger<JobRunne
     async Task Loop(bool scheduler, CancellationToken ct)
     {
         var nextSchedule = DateTimeOffset.MinValue;
+        var nextRetention = DateTimeOffset.MinValue;
         while (!ct.IsCancellationRequested)
         {
             try
@@ -22,6 +23,11 @@ public class JobRunner(IServiceProvider sp, IConfiguration cfg, ILogger<JobRunne
                 {
                     await scope.ServiceProvider.GetRequiredService<JobQueue>().EnqueueDueAsync(ct);
                     nextSchedule = DateTimeOffset.UtcNow.AddMinutes(1);
+                }
+                if (scheduler && DateTimeOffset.UtcNow >= nextRetention)
+                {
+                    await scope.ServiceProvider.GetRequiredService<RetentionService>().RunAsync(DateTimeOffset.UtcNow, ct);
+                    nextRetention = DateTimeOffset.UtcNow.AddHours(6);
                 }
                 if (await scope.ServiceProvider.GetRequiredService<CheckRunner>().RunNextAsync(ct)) continue;
             }

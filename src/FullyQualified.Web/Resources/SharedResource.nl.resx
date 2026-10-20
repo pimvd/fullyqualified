@@ -260,4 +260,62 @@ De link werkt één keer en verloopt na {2} dagen.</value></data>
 {1}
 
 De link werkt één keer en verloopt na {2} uur. Een nieuwe passkey instellen verwijdert je oude passkeys. Verwachtte je dit niet, negeer dit bericht dan.</value></data>
+  <data name="Nav_Limits" xml:space="preserve"><value>Limieten</value></data>
+  <data name="Nav_Organization" xml:space="preserve"><value>Organisatie</value></data>
+  <data name="Plan_Title" xml:space="preserve"><value>Pakket</value></data>
+  <data name="Plan_Intro" xml:space="preserve"><value>Wat jouw organisatie mag gebruiken, en hoeveel ze nu gebruikt. Vraag de platformbeheerder om een pakket te wijzigen.</value></data>
+  <data name="Plan_Resource" xml:space="preserve"><value>Onderdeel</value></data>
+  <data name="Plan_Used" xml:space="preserve"><value>In gebruik</value></data>
+  <data name="Plan_Limit" xml:space="preserve"><value>Limiet</value></data>
+  <data name="Plan_Domains" xml:space="preserve"><value>Domeinen</value></data>
+  <data name="Plan_Endpoints" xml:space="preserve"><value>Endpoints</value></data>
+  <data name="Plan_Users" xml:space="preserve"><value>Gebruikers</value></data>
+  <data name="Plan_Pending" xml:space="preserve"><value>uitgenodigd</value></data>
+  <data name="Plan_Reports" xml:space="preserve"><value>NIS2-rapport</value></data>
+  <data name="Plan_Retention" xml:space="preserve"><value>Bewaarde historie</value></data>
+  <data name="Plan_RetentionMonths" xml:space="preserve"><value>Historie (maanden)</value></data>
+  <data name="Plan_Unlimited" xml:space="preserve"><value>Onbeperkt</value></data>
+  <data name="Plan_Month" xml:space="preserve"><value>1 maand</value></data>
+  <data name="Plan_Months" xml:space="preserve"><value>{0} maanden</value></data>
+  <data name="Plan_AllHistory" xml:space="preserve"><value>Alles</value></data>
+  <data name="Plan_Overridden" xml:space="preserve"><value>afgesproken voor deze organisatie</value></data>
+  <data name="Plan_Tier" xml:space="preserve"><value>Pakket</value></data>
+  <data name="Plan_TierValue" xml:space="preserve"><value>Waarde pakket</value></data>
+  <data name="Plan_Override" xml:space="preserve"><value>Voor deze tenant</value></data>
+  <data name="Plan_Follow" xml:space="preserve"><value>volg pakket</value></data>
+  <data name="Plan_EditorIntro" xml:space="preserve"><value>Kies het pakket en overschrijf losse limieten voor deze tenant. Gebruik het pakket Custom voor afspraken per klant.</value></data>
+  <data name="Plan_OverrideHelp" xml:space="preserve"><value>Overschrijven: laat leeg om het pakket te volgen, typ een getal om een limiet te zetten of typ onbeperkt om hem op te heffen. Bij historie bewaart onbeperkt alles.</value></data>
+  <data name="Limits_Title" xml:space="preserve"><value>Pakketten en limieten</value></data>
+  <data name="Limits_Intro" xml:space="preserve"><value>De limieten van elk pakket. Ze gelden voor elke tenant op dat pakket, tenzij de tenant een eigen afwijking heeft. Wijzigingen gelden direct; historie wordt binnen enkele uren op de nieuwe periode gebracht.</value></data>
+  <data name="Limits_Tenants" xml:space="preserve"><value>Tenants</value></data>
+  <data name="Limits_CustomHelp" xml:space="preserve"><value>Voor afspraken per klant; stel de waarden per tenant in.</value></data>
+  <data name="Limits_Blank" xml:space="preserve"><value>Laat een getal leeg voor onbeperkt. Historie leeg bewaart alles. Domeinen tellen assets van het type domein, endpoints tellen hosts met een poort of gevonden in certificaatlogs.</value></data>
+  <data name="Limit_Domains" xml:space="preserve"><value>De domeinlimiet van dit pakket is bereikt. Verwijder een domein of vraag om een groter pakket.</value></data>
+  <data name="Limit_Endpoints" xml:space="preserve"><value>De endpointlimiet van dit pakket is bereikt. Verwijder een endpoint of vraag om een groter pakket.</value></data>
+  <data name="Err_UserLimit" xml:space="preserve"><value>De gebruikerslimiet van dit pakket is bereikt, openstaande uitnodigingen meegeteld.</value></data>
+  <data name="Err_SsoLimit" xml:space="preserve"><value>Je organisatie heeft haar gebruikerslimiet bereikt. Vraag het een beheerder.</value></data>
+  <data name="Err_InvalidTier" xml:space="preserve"><value>Kies een pakket.</value></data>
+  <data name="Err_InvalidLimit" xml:space="preserve"><value>Vul een geheel getal in, of laat het leeg.</value></data>
+  <data name="Err_ConfirmMismatch" xml:space="preserve"><value>De naam komt niet overeen, dus er is niets verwijderd.</value></data>
+  <data name="Err_ManagementTenant" xml:space="preserve"><value>De beheertenant kan niet worden verwijderd.</value></data>
+  <data name="Delete_Title" xml:space="preserve"><value>Deze organisatie verwijderen</value></data>
+  <data name="Delete_Button" xml:space="preserve"><value>Alles verwijderen</value></data>
+  <data name="Delete_OwnText" xml:space="preserve"><value>Dit verwijdert {0} definitief: alle domeinen, resultaten, historie, alarmen en elk gebruikersaccount erin. Iedereen wordt uitgelogd. Het kan niet ongedaan worden gemaakt.</value></data>
+  <data name="Delete_PlatformText" xml:space="preserve"><value>Dit verwijdert {0} definitief met alles wat de organisatie bezit, waaronder {1} gebruikersaccount(s) en {2} asset(s). Het kan niet ongedaan worden gemaakt.</value></data>
+  <data name="Delete_Confirm" xml:space="preserve"><value>Typ de exacte naam van de organisatie om te bevestigen.</value></data>
+  <data name="Reports_NotInPlan" xml:space="preserve"><value>Het NIS2-rapport hoort niet bij dit pakket. Vraag de platformbeheerder om een pakket waar het bij zit.</value></data>
+  <data name="Tenants_OverrideLegend" xml:space="preserve"><value>Een sterretje markeert een tenant met eigen afwijkingen.</value></data>
+  <data name="Scan_Title" xml:space="preserve"><value>Gratis certificaat- en DNS-check</value></data>
+  <data name="Scan_Disabled" xml:space="preserve"><value>De openbare checker staat voor deze installatie niet aan.</value></data>
+  <data name="Scan_Intro" xml:space="preserve"><value>Vul een openbare domeinnaam in om het TLS-certificaat en de DNS-records voor e-mail en beveiliging te zien. Er wordt niets opgeslagen.</value></data>
+  <data name="Scan_Domain" xml:space="preserve"><value>Domeinnaam</value></data>
+  <data name="Scan_Button" xml:space="preserve"><value>Controleren</value></data>
+  <data name="Scan_Protocol" xml:space="preserve"><value>Protocol</value></data>
+  <data name="Scan_Err_invalid" xml:space="preserve"><value>Vul een openbare domeinnaam in zoals example.com, zonder poort of pad. IP-adressen en lokale namen worden niet gecontroleerd.</value></data>
+  <data name="Scan_Err_rate_limited" xml:space="preserve"><value>Je hebt de laatste tijd veel domeinen gecontroleerd. Probeer het later opnieuw.</value></data>
+  <data name="Scan_Err_busy" xml:space="preserve"><value>De checker is druk. Probeer het over een minuut opnieuw.</value></data>
+  <data name="Scan_Err_disabled" xml:space="preserve"><value>De openbare checker is niet beschikbaar.</value></data>
+  <data name="Scan_Stored" xml:space="preserve"><value>Er wordt niets van deze controle opgeslagen. Alleen het certificaat op poort 443 en openbare DNS-records worden bekeken.</value></data>
+  <data name="Scan_Next" xml:space="preserve"><value>Blijf het volgen</value></data>
+  <data name="Scan_NextText" xml:space="preserve"><value>Dit is één momentopname. FullyQualified controleert elk domein volgens een schema, meldt het als een certificaat bijna verloopt of een record verandert, en maakt er een NIS2-rapport van.</value></data>
 </root>

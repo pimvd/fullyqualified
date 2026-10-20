@@ -314,10 +314,14 @@ public class TenancyTests : IClassFixture<PgFactory>
         Assert.Equal(HttpStatusCode.Conflict, (await mia.PostAsJsonAsync("/platform/tenants", new { name = "Initech" })).StatusCode);
         Assert.Equal(HttpStatusCode.Conflict, (await mia.PostAsJsonAsync("/platform/tenants", new { name = "Other", adminEmail = "ann@acme.test" })).StatusCode);
 
-        var invite = await mia.PostAsJsonAsync("/admin/invites", new { role = "Viewer", tenantId = w.Globex });
-        Assert.Equal(HttpStatusCode.OK, invite.StatusCode);
+        // Globex is on Free with two users, so it is full; the owner is held to the limit like anyone, until the plan is raised.
+        Assert.Equal(HttpStatusCode.Conflict, (await mia.PostAsJsonAsync("/admin/invites", new { role = "Viewer", tenantId = w.Globex })).StatusCode);
         using var scope = Scope(factory.Services, null);
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        (await db.Tenants.SingleAsync(t => t.Id == w.Globex)).TierKey = Tiers.Starter;
+        await db.SaveChangesAsync();
+        var invite = await mia.PostAsJsonAsync("/admin/invites", new { role = "Viewer", tenantId = w.Globex });
+        Assert.Equal(HttpStatusCode.OK, invite.StatusCode);
         Assert.Contains(await db.Invites.ToListAsync(), i => i.TenantId == w.Globex && i.Role == Role.Viewer && i.RecoveryForUser is null);
         var initech = await db.Tenants.SingleAsync(t => t.Name == "Initech");
         Assert.False(initech.IsManagement);

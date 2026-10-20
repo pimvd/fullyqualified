@@ -260,4 +260,62 @@ The link works once and expires in {2} days.</value></data>
 {1}
 
 The link works once and expires in {2} hours. Setting up a new passkey removes your old ones. If you did not expect this, ignore this message.</value></data>
+  <data name="Nav_Limits" xml:space="preserve"><value>Limits</value></data>
+  <data name="Nav_Organization" xml:space="preserve"><value>Organization</value></data>
+  <data name="Plan_Title" xml:space="preserve"><value>Plan</value></data>
+  <data name="Plan_Intro" xml:space="preserve"><value>What your organization may use, and how much it uses now. Ask the platform owner to change a plan.</value></data>
+  <data name="Plan_Resource" xml:space="preserve"><value>Resource</value></data>
+  <data name="Plan_Used" xml:space="preserve"><value>In use</value></data>
+  <data name="Plan_Limit" xml:space="preserve"><value>Limit</value></data>
+  <data name="Plan_Domains" xml:space="preserve"><value>Domains</value></data>
+  <data name="Plan_Endpoints" xml:space="preserve"><value>Endpoints</value></data>
+  <data name="Plan_Users" xml:space="preserve"><value>Users</value></data>
+  <data name="Plan_Pending" xml:space="preserve"><value>invited</value></data>
+  <data name="Plan_Reports" xml:space="preserve"><value>NIS2 report</value></data>
+  <data name="Plan_Retention" xml:space="preserve"><value>History kept</value></data>
+  <data name="Plan_RetentionMonths" xml:space="preserve"><value>History (months)</value></data>
+  <data name="Plan_Unlimited" xml:space="preserve"><value>Unlimited</value></data>
+  <data name="Plan_Month" xml:space="preserve"><value>1 month</value></data>
+  <data name="Plan_Months" xml:space="preserve"><value>{0} months</value></data>
+  <data name="Plan_AllHistory" xml:space="preserve"><value>Everything</value></data>
+  <data name="Plan_Overridden" xml:space="preserve"><value>agreed for this organization</value></data>
+  <data name="Plan_Tier" xml:space="preserve"><value>Plan</value></data>
+  <data name="Plan_TierValue" xml:space="preserve"><value>Plan value</value></data>
+  <data name="Plan_Override" xml:space="preserve"><value>For this tenant</value></data>
+  <data name="Plan_Follow" xml:space="preserve"><value>follow plan</value></data>
+  <data name="Plan_EditorIntro" xml:space="preserve"><value>Choose the plan, and override single limits for this tenant. Use the Custom plan for agreements made per customer.</value></data>
+  <data name="Plan_OverrideHelp" xml:space="preserve"><value>Override: leave blank to follow the plan, type a number to set a limit, or type unlimited to lift it. For history, unlimited keeps everything.</value></data>
+  <data name="Limits_Title" xml:space="preserve"><value>Plans and limits</value></data>
+  <data name="Limits_Intro" xml:space="preserve"><value>The limits of each plan. They apply to every tenant on that plan unless the tenant has its own override. Changes take effect at once; history is trimmed to the new period within hours.</value></data>
+  <data name="Limits_Tenants" xml:space="preserve"><value>Tenants</value></data>
+  <data name="Limits_CustomHelp" xml:space="preserve"><value>For agreements per customer; set the values per tenant.</value></data>
+  <data name="Limits_Blank" xml:space="preserve"><value>Leave a number blank for unlimited. History blank keeps everything. Domains count assets of type domain, endpoints count hosts with a port or found in certificate logs.</value></data>
+  <data name="Limit_Domains" xml:space="preserve"><value>This plan's domain limit is reached. Remove a domain or ask for a bigger plan.</value></data>
+  <data name="Limit_Endpoints" xml:space="preserve"><value>This plan's endpoint limit is reached. Remove an endpoint or ask for a bigger plan.</value></data>
+  <data name="Err_UserLimit" xml:space="preserve"><value>The user limit of this plan is reached, counting open invitations.</value></data>
+  <data name="Err_SsoLimit" xml:space="preserve"><value>Your organization has reached its user limit. Ask an administrator.</value></data>
+  <data name="Err_InvalidTier" xml:space="preserve"><value>Choose a plan.</value></data>
+  <data name="Err_InvalidLimit" xml:space="preserve"><value>Enter a whole number, or leave it blank.</value></data>
+  <data name="Err_ConfirmMismatch" xml:space="preserve"><value>The name does not match, so nothing was deleted.</value></data>
+  <data name="Err_ManagementTenant" xml:space="preserve"><value>The management tenant cannot be deleted.</value></data>
+  <data name="Delete_Title" xml:space="preserve"><value>Delete this organization</value></data>
+  <data name="Delete_Button" xml:space="preserve"><value>Delete everything</value></data>
+  <data name="Delete_OwnText" xml:space="preserve"><value>This permanently deletes {0}: all its domains, results, history, alarms and every user account in it. Everyone is signed out. It cannot be undone.</value></data>
+  <data name="Delete_PlatformText" xml:space="preserve"><value>This permanently deletes {0} and everything it owns, including {1} user account(s) and {2} asset(s). It cannot be undone.</value></data>
+  <data name="Delete_Confirm" xml:space="preserve"><value>Type the exact name of the organization to confirm.</value></data>
+  <data name="Reports_NotInPlan" xml:space="preserve"><value>The NIS2 report is not part of this plan. Ask the platform owner for a plan that includes it.</value></data>
+  <data name="Tenants_OverrideLegend" xml:space="preserve"><value>An asterisk marks a tenant with its own overrides.</value></data>
+  <data name="Scan_Title" xml:space="preserve"><value>Free certificate and DNS check</value></data>
+  <data name="Scan_Disabled" xml:space="preserve"><value>The public checker is not switched on for this installation.</value></data>
+  <data name="Scan_Intro" xml:space="preserve"><value>Enter a public domain name to see its TLS certificate and its DNS email and security records. Nothing is stored.</value></data>
+  <data name="Scan_Domain" xml:space="preserve"><value>Domain name</value></data>
+  <data name="Scan_Button" xml:space="preserve"><value>Check</value></data>
+  <data name="Scan_Protocol" xml:space="preserve"><value>Protocol</value></data>
+  <data name="Scan_Err_invalid" xml:space="preserve"><value>Enter a public domain name such as example.com, without a port or path. Addresses and local names are not checked.</value></data>
+  <data name="Scan_Err_rate_limited" xml:space="preserve"><value>You checked a lot of domains recently. Try again later.</value></data>
+  <data name="Scan_Err_busy" xml:space="preserve"><value>The checker is busy. Try again in a minute.</value></data>
+  <data name="Scan_Err_disabled" xml:space="preserve"><value>The public checker is not available.</value></data>
+  <data name="Scan_Stored" xml:space="preserve"><value>Nothing about this check is stored. Only the certificate on port 443 and public DNS records are looked at.</value></data>
+  <data name="Scan_Next" xml:space="preserve"><value>Keep watching it</value></data>
+  <data name="Scan_NextText" xml:space="preserve"><value>This is a single look. FullyQualified checks every domain on a schedule, tells you when a certificate is about to expire or a record changes, and turns it into a NIS2 report.</value></data>
 </root>

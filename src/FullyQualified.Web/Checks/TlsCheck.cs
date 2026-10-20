@@ -14,15 +14,18 @@ public sealed class TlsCheck(HostGuard guard) : ICheck
     public async Task<CheckOutcome> RunAsync(Asset asset, CancellationToken ct)
     {
         var (host, port) = Targets.Parse(asset.Name);
-        if (!await guard.IsAllowedAsync(host, ct))
-            return new(CheckStatus.Error, "Sum_Blocked", []);
+        var target = await guard.ResolveAsync(host, ct);
+        if (target.Unresolved) return new(CheckStatus.Error, "Sum_Error|host not found", []);
+        if (!target.Allowed) return new(CheckStatus.Error, "Sum_Blocked", []);
 
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
         cts.CancelAfter(TimeSpan.FromSeconds(15));
         try
         {
             using var tcp = new TcpClient();
-            await tcp.ConnectAsync(host, port, cts.Token);
+            // Connect to the address that was checked, not to the name again.
+            if (target.Address is { } pinned) await tcp.ConnectAsync(pinned, port, cts.Token);
+            else await tcp.ConnectAsync(host, port, cts.Token);
             var errors = SslPolicyErrors.None;
             X509Certificate2? leaf = null;
             using var ssl = new SslStream(tcp.GetStream(), false, (_, cert, _, e) =>

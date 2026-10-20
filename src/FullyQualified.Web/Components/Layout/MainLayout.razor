@@ -19,8 +19,8 @@
     </div>
     @if (signedIn)
     {
-        @if (Roles.IsPlatformAdmin(Ctx?.User)) { <a href="/tenants">@L["Nav_Tenants"]</a> }
-        @if (Roles.IsAdmin(Ctx?.User)) { <a href="/alerts">@L["Nav_Alerts"]</a><a href="/users">@L["Nav_Users"]</a> }
+        @if (Roles.IsPlatformAdmin(Ctx?.User)) { <a href="/tenants">@L["Nav_Tenants"]</a><a href="/limits">@L["Nav_Limits"]</a> }
+        @if (Roles.IsAdmin(Ctx?.User)) { <a href="/alerts">@L["Nav_Alerts"]</a><a href="/users">@L["Nav_Users"]</a><a href="/organization">@L["Nav_Organization"]</a> }
         <a href="/account">@L["Nav_Account"]</a>
         <form method="post" action="/auth/logout"><button type="submit" class="link">@L["Nav_SignOut"]</button></form>
     }

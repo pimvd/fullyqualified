@@ -32,7 +32,7 @@
 <header class="site">
 <div class="wrap">
 <a class="brand" href="/nl/">Fully<span>Qualified</span></a>
-<nav aria-label="Hoofdmenu"><a href="#why">Waarom nu</a><a href="#checks">Wat we controleren</a><a href="#how">Hoe het werkt</a><a href="#selfhost">Zelf hosten</a><a href="#pricing">Pakketten</a><a href="#faq">Veelgestelde vragen</a><a href="/nl/support/">Support</a><a href="/nl/over-ons/">Over ons</a></nav>
+<nav aria-label="Hoofdmenu"><a href="#scan">Gratis check</a><a href="#why">Waarom nu</a><a href="#checks">Wat we controleren</a><a href="#selfhost">Zelf hosten</a><a href="#pricing">Pakketten</a><a href="/nl/support/">Support</a><a href="/nl/over-ons/">Over ons</a></nav>
 <a class="lang" href="/" hreflang="en" lang="en">English</a>
 <a class="button ghost" href="https://github.com/pimvd/fullyqualified">GitHub</a>
 </div>
@@ -51,6 +51,20 @@
 </div>
 </section>
 <div class="trust"><div class="wrap"><ul><li>Open source, AGPL-3.0</li><li>Alleen lezen: wijzigt nooit je systemen</li><li>Nu zelf te hosten, EU-gehoste versie gepland</li><li>Inloggen met passkeys, rollen en single sign-on</li></ul></div></div>
+<section class="block" id="scan"><div class="wrap two">
+<div>
+<h2>Controleer nu een domein</h2>
+<p>Zie in een paar seconden het TLS-certificaat en de e-mail- en beveiligingsrecords van elk openbaar domein. Geen account, niets opgeslagen.</p>
+<p class="note"><a href="/nl/check/">Hoe de gratis check werkt</a></p>
+</div>
+<form class="scan-form" method="get" action="https://app.fullyqualified.eu/scan">
+<label for="domain-scan">Domeinnaam</label>
+<div class="inline"><input id="domain-scan" name="domain" placeholder="example.com" required maxlength="253" autocomplete="off" inputmode="url" spellcheck="false">
+<input type="hidden" name="culture" value="nl"><input type="hidden" name="ui-culture" value="nl">
+<button type="submit">Controleren</button></div>
+<p class="note">Alleen openbare domeinen op poort 443. Een paar controles per uur.</p>
+</form>
+</div></section>
 <section class="block" id="why"><div class="wrap">
 <h2>Certificaten worden korter. Je spreadsheet houdt dat niet bij.</h2>
 <p class="intro">Browsers en certificaatautoriteiten verkorten de maximale looptijd van publieke certificaten. Wat een jaarlijkse klus was, wordt een maandelijkse, en een vergeten certificaat of een gewijzigd DNS-record is een storing of een beveiligingslek.</p>
@@ -87,7 +101,7 @@ docker compose up</code></pre>
 <section class="block alt" id="pricing"><div class="wrap">
 <h2>Gehoste pakketten zijn gepland</h2>
 <p class="intro">Liever niet zelf draaien? Een gehoste versie in de EU, op Scaleway, is gepland. De pakketten verschillen naar aantal domeinen. Prijzen zijn nog niet vastgesteld.</p>
-<div class="plans"><div class="plan"><span class="badge">Gepland</span><h3>Free</h3><p class="domains">3 <small>domeinen</small></p><ul><li>Certificaat- en DNS-controles</li></ul></div><div class="plan"><span class="badge">Gepland</span><h3>Starter</h3><p class="domains">25 <small>domeinen</small></p><ul><li>Alles uit Free, plus het NIS2-rapport</li></ul></div><div class="plan"><span class="badge">Gepland</span><h3>Business</h3><p class="domains">100 <small>domeinen</small></p><ul><li>Alles uit Starter, plus cloudkoppelingen en SSO</li></ul></div></div>
+<div class="plans"><div class="plan"><span class="badge">Gepland</span><h3>Free</h3><p class="domains">3 <small>domeinen</small></p><ul><li>Certificaat- en DNS-controles</li><li>Historie: 1 maand</li></ul></div><div class="plan"><span class="badge">Gepland</span><h3>Starter</h3><p class="domains">25 <small>domeinen</small></p><ul><li>Alles uit Free, plus het NIS2-rapport</li><li>Historie: 12 maanden</li></ul></div><div class="plan"><span class="badge">Gepland</span><h3>Business</h3><p class="domains">100 <small>domeinen</small></p><ul><li>Alles uit Starter, plus cloudkoppelingen en SSO</li><li>Historie: 24 maanden</li></ul></div><div class="plan"><span class="badge">Gepland</span><h3>Custom</h3><p class="domains">op maat</p><ul><li>Limieten per klant afgesproken</li></ul></div></div>
 <p class="note" style="margin-top:1rem">Zelf hosten blijft gratis, zonder limiet op het aantal domeinen.</p>
 </div></section>
 <section class="block" id="faq"><div class="wrap">

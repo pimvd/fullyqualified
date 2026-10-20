@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FullyQualified.Web;
 
-public class CheckRunner(AppDbContext db, JobQueue queue, IEnumerable<ICheck> checks, AlertService alerts, ILogger<CheckRunner> log)
+public class CheckRunner(AppDbContext db, JobQueue queue, IEnumerable<ICheck> checks, AlertService alerts, PlanService plans, ILogger<CheckRunner> log)
 {
     const int MaxDiscoveredAssets = 200;
 
@@ -81,6 +81,8 @@ public class CheckRunner(AppDbContext db, JobQueue queue, IEnumerable<ICheck> ch
         var mine = db.Assets.Where(a => a.TenantId == origin.TenantId);
         var known = (await mine.Select(a => a.Name).ToListAsync(ct)).ToHashSet();
         var room = MaxDiscoveredAssets - await mine.CountAsync(a => a.Discovered, ct);
+        // Discovered hosts count as endpoints, so they stop at the plan's limit like anything the tenant adds by hand.
+        if ((await plans.ForAsync(origin.TenantId, ct))?.EndpointsLeft is { } left) room = Math.Min(room, left);
         foreach (var host in hosts.Where(h => !known.Contains(h)).Take(Math.Max(room, 0)))
         {
             var asset = new Asset { TenantId = origin.TenantId, Kind = AssetKind.Endpoint, Name = host, Discovered = true };

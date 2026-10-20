@@ -21,7 +21,7 @@ public static class SsoPolicy
     }
 }
 
-public class SsoService(AppDbContext db, IConfiguration cfg)
+public class SsoService(AppDbContext db, PlanService plans, IConfiguration cfg)
 {
     public const string Provider = "oidc";
     public const string ExternalScheme = "fq_external";
@@ -60,6 +60,7 @@ public class SsoService(AppDbContext db, IConfiguration cfg)
             var invite = await db.AcrossTenants<Invite>().Where(i => i.Email == email && i.RecoveryForUser == null && i.UsedAt == null && i.ExpiresAt > DateTimeOffset.UtcNow).OrderByDescending(i => i.CreatedAt).FirstOrDefaultAsync();
             if (invite is not null)
             {
+                if (await plans.ForAsync(invite.TenantId) is { } p && !p.HasRoomForUser(redeemingInvite: true)) return (null, "sso_limit");
                 invite.UsedAt = DateTimeOffset.UtcNow;
                 user = new User { TenantId = invite.TenantId, Name = name, Email = email, Role = invite.Role };
             }
@@ -68,6 +69,7 @@ public class SsoService(AppDbContext db, IConfiguration cfg)
                 var role = Enum.TryParse<Role>(cfg["Sso:DefaultRole"], out var r) && r != Role.Admin ? r : Role.Viewer;
                 // Without an invitation the account joins the management tenant, which is the only tenant of a self-hosted install.
                 var management = await db.Tenants.SingleAsync(t => t.IsManagement);
+                if (await plans.ForAsync(management.Id) is { } p2 && !p2.HasRoomForUser()) return (null, "sso_limit");
                 user = new User { TenantId = management.Id, Name = name, Email = email, Role = role };
             }
             else return (null, "sso_no_account");

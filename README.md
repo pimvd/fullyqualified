@@ -42,6 +42,7 @@ Environment variables (use `__` for `:`):
 | `Sso:DisplayName` | `SSO` | Name on the sign-in button |
 | `Sso:AllowedDomains` | unset | Comma-separated e-mail domains that may use SSO. Required for Entra ID, which does not send `email_verified`; without it only verified addresses are accepted. |
 | `Sso:AutoProvision`, `Sso:DefaultRole` | false, Viewer | Create an account on first SSO sign-in instead of requiring an invitation. Never creates admins. |
+| `PublicScan:Enabled`, `PublicScan:PerHour`, `PublicScan:Concurrent` | false, 10, 8 | The free public check at `/scan`, see above |
 | `Scanning:IntervalHours` | 6 | Rescan interval |
 | `Scanning:AllowPrivateAddresses` | true | Set false on a shared install to block scans of private networks |
 | `Dns:Server` | system | Resolver IP to use |
@@ -62,6 +63,16 @@ The first visit opens `/setup`, where you create the first account (an administr
 ```sh
 docker compose exec app dotnet FullyQualified.Web.dll recover alice@example.com --url https://fq.example.com
 ```
+
+## Plans, limits and history
+
+Every tenant is on a plan: **Free**, **Starter**, **Business** or **Custom**, edited by the platform owner on the **Limits** page. A plan limits domains, endpoints (hosts with a port, and hosts found in certificate logs), users (open invitations count) and whether the NIS2 report is included, and says how long history is kept: results, changes and alarm logs older than the period are removed automatically, but the newest result of every check is always kept. The platform owner can override any single limit per tenant; the Custom plan is for agreements per customer. The management tenant, which is the whole installation for a self-hoster, runs on Custom with no limits and keeps everything. Admins see their plan and usage on **Organization**; adding past a limit is refused with a message. The starting values are in `docs/PLAN.md`.
+
+**Deleting a tenant.** An admin can delete their own organization from the Organization page, and the platform owner can delete any tenant from its page. Both must type the exact name, everything is removed at once (domains, results, history, alarms, users and their sign-in), and it cannot be undone. The management tenant cannot be deleted.
+
+## Free public check
+
+`/scan` is a page anyone can use without an account: type a public domain and see its TLS certificate and DNS email and security records. Nothing is stored. It is **off unless you set `PublicScan:Enabled=true`**, because it lets strangers make your server connect to hosts they choose. It therefore accepts only public host names on port 443, always refuses private and local addresses (whatever `Scanning:AllowPrivateAddresses` says), connects to the address it checked, limits each client address to `PublicScan:PerHour` checks (default 10) and `PublicScan:Concurrent` scans at once (default 8). Behind a reverse proxy set `ASPNETCORE_FORWARDEDHEADERS_ENABLED=true`, or every visitor shares the proxy's address and its limit. The website's form sends visitors here.
 
 ## Alarms and the log
 

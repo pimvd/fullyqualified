@@ -50,7 +50,7 @@
   }
 
   root.querySelector('[data-admin=tenant]')?.addEventListener('click', () => run(async () => {
-    const r = await send('POST', '/platform/tenants', { name: document.getElementById('adm-tenant-name').value, adminEmail: document.getElementById('adm-email').value });
+    const r = await send('POST', '/platform/tenants', { name: document.getElementById('adm-tenant-name').value, adminEmail: document.getElementById('adm-email').value, tier: document.getElementById('adm-tier')?.value });
     const link = document.getElementById('adm-link'), note = document.getElementById('adm-note');
     link.value = r.url; link.hidden = false; link.select();
     note.textContent = r.emailed ? root.getAttribute('data-emailed') : root.getAttribute('data-copy');
@@ -71,6 +71,32 @@
     note.hidden = false;
     link.scrollIntoView({ block: 'center' });
   })));
+
+  root.querySelectorAll('[data-admin=tier-save]').forEach(button => button.addEventListener('click', () => run(async () => {
+    const row = root.querySelector(`[data-tier-row="${button.getAttribute('data-tier')}"]`);
+    const f = name => row.querySelector(`[data-f=${name}]`);
+    await send('PUT', `/platform/tiers/${button.getAttribute('data-tier')}`, {
+      maxDomains: f('domains').value, maxEndpoints: f('endpoints').value, maxUsers: f('users').value,
+      reportsEnabled: f('reports').checked, retentionMonths: f('retention').value });
+    const note = document.getElementById('tier-note');
+    note.textContent = root.getAttribute('data-saved'); note.hidden = false;
+  })));
+
+  root.querySelector('[data-admin=plan-save]')?.addEventListener('click', () => run(async () => {
+    const editor = document.getElementById('plan-editor'), v = id => document.getElementById(id).value;
+    await send('PUT', `/platform/tenants/${editor.getAttribute('data-tenant')}/plan`, {
+      tier: v('pl-tier'), maxDomains: v('pl-domains'), maxEndpoints: v('pl-endpoints'), maxUsers: v('pl-users'), reports: v('pl-reports'), retentionMonths: v('pl-retention') });
+    const note = document.getElementById('pl-note');
+    note.textContent = root.getAttribute('data-saved'); note.hidden = false;
+    setTimeout(() => location.reload(), 600);
+  }));
+
+  root.querySelector('[data-admin=tenant-delete]')?.addEventListener('click', event => run(async () => {
+    const button = event.currentTarget, zone = button.closest('[data-confirm-name]');
+    if (!confirm(zone.getAttribute('data-confirm-name') + ' — ' + button.textContent.trim() + '?')) return;
+    await send('POST', button.getAttribute('data-url'), { confirmName: document.getElementById('del-confirm').value });
+    location.assign(button.getAttribute('data-after'));
+  }));
 
   root.querySelectorAll('[data-user-role]').forEach(select => {
     const original = select.value;

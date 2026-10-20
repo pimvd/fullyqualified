@@ -15,6 +15,9 @@ public static class Queries
 
 public static class ResourceText
 {
+    /// <summary>"1 month", "12 months".</summary>
+    public static string Months(Microsoft.Extensions.Localization.IStringLocalizer l, int months) => months == 1 ? l["Plan_Month"].Value : l["Plan_Months", months].Value;
+
     /// <summary>Renders a stored "key|arg|arg" summary through the resource files.</summary>
     public static string Summary(Microsoft.Extensions.Localization.IStringLocalizer l, string summary)
     {
