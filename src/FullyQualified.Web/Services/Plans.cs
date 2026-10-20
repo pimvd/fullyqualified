@@ -4,14 +4,15 @@ namespace FullyQualified.Web;
 
 /// <summary>What a tenant may use. A null number means unlimited.</summary>
 /// <param name="ScanIntervalMinutes">Minutes between checks of an asset; null means the server default.</param>
-public record PlanLimits(int? MaxDomains, int? MaxEndpoints, int? MaxUsers, bool ReportsEnabled, int? RetentionMonths, int? ScanIntervalMinutes = null)
+/// <param name="ManualCooldownMinutes">Minutes between uses of "check everything now"; null means the server default, 0 no wait.</param>
+public record PlanLimits(int? MaxDomains, int? MaxEndpoints, int? MaxUsers, bool ReportsEnabled, int? RetentionMonths, int? ScanIntervalMinutes = null, int? ManualCooldownMinutes = null)
 {
-    public static PlanLimits Of(Tier t) => new(t.MaxDomains, t.MaxEndpoints, t.MaxUsers, t.ReportsEnabled, t.RetentionMonths, t.ScanIntervalMinutes);
+    public static PlanLimits Of(Tier t) => new(t.MaxDomains, t.MaxEndpoints, t.MaxUsers, t.ReportsEnabled, t.RetentionMonths, t.ScanIntervalMinutes, t.ManualCooldownMinutes);
 
     /// <summary>The tier's value unless the tenant overrides it; -1 overrides to unlimited.</summary>
     public static PlanLimits Resolve(Tier tier, Tenant t) => new(
         Pick(t.OverrideMaxDomains, tier.MaxDomains), Pick(t.OverrideMaxEndpoints, tier.MaxEndpoints), Pick(t.OverrideMaxUsers, tier.MaxUsers),
-        t.OverrideReports ?? tier.ReportsEnabled, Pick(t.OverrideRetentionMonths, tier.RetentionMonths), Pick(t.OverrideScanIntervalMinutes, tier.ScanIntervalMinutes));
+        t.OverrideReports ?? tier.ReportsEnabled, Pick(t.OverrideRetentionMonths, tier.RetentionMonths), Pick(t.OverrideScanIntervalMinutes, tier.ScanIntervalMinutes), Pick(t.OverrideManualCooldownMinutes, tier.ManualCooldownMinutes));
 
     static int? Pick(int? tenantValue, int? tierValue) => tenantValue is null ? tierValue : tenantValue == -1 ? null : tenantValue;
 }

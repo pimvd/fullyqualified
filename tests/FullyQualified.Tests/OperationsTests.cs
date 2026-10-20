@@ -164,13 +164,13 @@ public class ScheduleTests(PgFactory factory) : OrgTestBase<PgFactory>(factory),
         var org = await NewOrg(Tiers.Starter);
         var mia = Factory.As(owner);
         var body = new { maxDomains = "25", maxEndpoints = "100", maxUsers = "10", reportsEnabled = true, retentionMonths = "12" };
-        Assert.Equal(HttpStatusCode.NoContent, (await mia.PutAsJsonAsync("/platform/tiers/starter", new { body.maxDomains, body.maxEndpoints, body.maxUsers, body.reportsEnabled, body.retentionMonths, scanIntervalMinutes = "120" })).StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, (await mia.PutAsJsonAsync("/platform/tiers/starter", new { body.maxDomains, body.maxEndpoints, body.maxUsers, body.reportsEnabled, body.retentionMonths, scanIntervalMinutes = "120", manualCooldownMinutes = "15" })).StatusCode);
         try
         {
             using var scope = Scope();
             Assert.Equal(120, (await scope.ServiceProvider.GetRequiredService<PlanService>().ForAsync(org.Id))!.Limits.ScanIntervalMinutes);
             foreach (var bad in new[] { "0", "-5", "soon", "99999" })
-                Assert.Equal(HttpStatusCode.BadRequest, (await mia.PutAsJsonAsync("/platform/tiers/starter", new { body.maxDomains, body.maxEndpoints, body.maxUsers, body.reportsEnabled, body.retentionMonths, scanIntervalMinutes = bad })).StatusCode);
+                Assert.Equal(HttpStatusCode.BadRequest, (await mia.PutAsJsonAsync("/platform/tiers/starter", new { body.maxDomains, body.maxEndpoints, body.maxUsers, body.reportsEnabled, body.retentionMonths, scanIntervalMinutes = bad, manualCooldownMinutes = "15" })).StatusCode);
 
             Assert.Equal(HttpStatusCode.NoContent, (await mia.PutAsJsonAsync($"/platform/tenants/{org.Id}/plan", new { tier = "starter", scanIntervalMinutes = "15" })).StatusCode);
             Assert.Equal(15, (await scope.ServiceProvider.GetRequiredService<PlanService>().ForAsync(org.Id))!.Limits.ScanIntervalMinutes);
@@ -182,7 +182,7 @@ public class ScheduleTests(PgFactory factory) : OrgTestBase<PgFactory>(factory),
             Assert.Equal(-1, plan.Tenant.OverrideScanIntervalMinutes);
             Assert.Equal(HttpStatusCode.BadRequest, (await mia.PutAsJsonAsync($"/platform/tenants/{org.Id}/plan", new { tier = "starter", scanIntervalMinutes = "0" })).StatusCode);
         }
-        finally { await mia.PutAsJsonAsync("/platform/tiers/starter", new { body.maxDomains, body.maxEndpoints, body.maxUsers, body.reportsEnabled, body.retentionMonths, scanIntervalMinutes = "360" }); }
+        finally { await mia.PutAsJsonAsync("/platform/tiers/starter", new { body.maxDomains, body.maxEndpoints, body.maxUsers, body.reportsEnabled, body.retentionMonths, scanIntervalMinutes = "360", manualCooldownMinutes = "15" }); }
     }
 
     // ---- check everything now ----
@@ -190,7 +190,7 @@ public class ScheduleTests(PgFactory factory) : OrgTestBase<PgFactory>(factory),
     [DbFact]
     public async Task Check_everything_now_queues_every_check_whatever_the_interval_and_then_waits()
     {
-        var org = await NewOrg(Tiers.Free);                                                 // daily interval, so nothing is due
+        var org = await NewOrg(Tiers.Free, tweak: t => t.OverrideManualCooldownMinutes = 5);   // daily interval, so nothing is due; a five minute wait
         var other = await NewOrg(Tiers.Free);
         var domain = await AddAsset(org.Id, $"fresh.{org.Id:N}.test.com", AssetKind.Domain, resultAgeMinutes: 1);
         var endpoint = await AddAsset(org.Id, $"host.{org.Id:N}.test.com:443", AssetKind.Endpoint, resultAgeMinutes: 1);
@@ -224,6 +224,51 @@ public class ScheduleTests(PgFactory factory) : OrgTestBase<PgFactory>(factory),
     }
 
     [DbFact]
+    public async Task The_wait_between_uses_follows_the_plan_and_can_be_overridden_per_tenant()
+    {
+        async Task<int> Wait(Org org)
+        {
+            var client = Factory.As(org.Admin);
+            Assert.Equal(HttpStatusCode.OK, (await client.PostAsync("/checks/run", null)).StatusCode);
+            var second = await client.PostAsync("/checks/run", null);
+            return second.StatusCode == HttpStatusCode.TooManyRequests ? (await Json(second)).GetProperty("retryAfterSeconds").GetInt32() : 0;
+        }
+
+        Assert.InRange(await Wait(await NewOrg(Tiers.Free)), 3500, 3600);                    // an hour
+        Assert.InRange(await Wait(await NewOrg(Tiers.Business)), 250, 300);                  // five minutes
+        Assert.InRange(await Wait(await NewOrg(Tiers.Custom)), 250, 300);                    // no value in the plan: the server default of five minutes
+        Assert.Equal(0, await Wait(await NewOrg(Tiers.Free, tweak: t => t.OverrideManualCooldownMinutes = 0)));   // an override of 0 means no wait
+        Assert.InRange(await Wait(await NewOrg(Tiers.Free, tweak: t => t.OverrideManualCooldownMinutes = 30)), 1700, 1800);
+        Assert.InRange(await Wait(await NewOrg(Tiers.Free, tweak: t => t.OverrideManualCooldownMinutes = -1)), 250, 300);   // -1 is the server default again
+    }
+
+    [DbFact]
+    public async Task The_owner_sets_the_wait_on_plans_and_tenants_and_bad_values_are_refused()
+    {
+        var owner = await EnsureOwner();
+        var org = await NewOrg(Tiers.Starter);
+        var mia = Factory.As(owner);
+        object Tier(string cooldown) => new { maxDomains = "25", maxEndpoints = "100", maxUsers = "10", reportsEnabled = true, retentionMonths = "12", scanIntervalMinutes = "360", manualCooldownMinutes = cooldown };
+        try
+        {
+            Assert.Equal(HttpStatusCode.NoContent, (await mia.PutAsJsonAsync("/platform/tiers/starter", Tier("45"))).StatusCode);
+            using var scope = Scope();
+            Assert.Equal(45, (await scope.ServiceProvider.GetRequiredService<PlanService>().ForAsync(org.Id))!.Limits.ManualCooldownMinutes);
+            Assert.Contains("value=\"45\"", await (await mia.GetAsync("/limits")).Content.ReadAsStringAsync());
+            foreach (var bad in new[] { "soon", "-5", "99999" })
+                Assert.Equal(HttpStatusCode.BadRequest, (await mia.PutAsJsonAsync("/platform/tiers/starter", Tier(bad))).StatusCode);
+
+            Assert.Equal(HttpStatusCode.NoContent, (await mia.PutAsJsonAsync($"/platform/tenants/{org.Id}/plan", new { tier = "starter", manualCooldownMinutes = "0" })).StatusCode);
+            using var fresh = Scope();
+            var plan = (await fresh.ServiceProvider.GetRequiredService<PlanService>().ForAsync(org.Id))!;
+            Assert.Equal(0, plan.Limits.ManualCooldownMinutes);                              // 0 is a real value, not "blank"
+            Assert.Equal(HttpStatusCode.BadRequest, (await mia.PutAsJsonAsync($"/platform/tenants/{org.Id}/plan", new { tier = "starter", manualCooldownMinutes = "often" })).StatusCode);
+            Assert.Equal(HttpStatusCode.Forbidden, (await Factory.As(org.Admin).PutAsJsonAsync("/platform/tiers/starter", Tier("1"))).StatusCode);
+        }
+        finally { await mia.PutAsJsonAsync("/platform/tiers/starter", Tier("15")); }
+    }
+
+    [DbFact]
     public async Task Only_members_and_admins_can_check_everything_and_the_dashboard_shows_the_button_to_them()
     {
         var org = await NewOrg();
@@ -231,7 +276,8 @@ public class ScheduleTests(PgFactory factory) : OrgTestBase<PgFactory>(factory),
         Assert.Equal(HttpStatusCode.Unauthorized, (await Factory.As(null).PostAsync("/checks/run", null)).StatusCode);
         var admin = await (await Factory.As(org.Admin).GetAsync("/")).Content.ReadAsStringAsync();
         Assert.Contains("Check everything now", admin);
-        Assert.Contains("once every 5 minutes", admin);
+        Assert.Contains("once every 15 minutes", admin);                       // Starter's wait; the server default is only used by plans without one
+        Assert.Contains("once every 60 minutes", await (await Factory.As((await NewOrg(Tiers.Free)).Admin).GetAsync("/")).Content.ReadAsStringAsync());
         Assert.DoesNotContain("Check everything now", await (await Factory.As(org.Viewer).GetAsync("/")).Content.ReadAsStringAsync());
     }
 

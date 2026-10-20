@@ -416,4 +416,8 @@ The link works once and expires in {2} hours. Setting up a new passkey removes y
   <data name="Diag_PublicCheck" xml:space="preserve"><value>Free public check</value></data>
   <data name="Diag_PublicOn" xml:space="preserve"><value>The public check is on, at most {0} checks per hour per address.</value></data>
   <data name="Diag_PublicOff" xml:space="preserve"><value>The public check is off.</value></data>
+  <data name="Plan_Cooldown" xml:space="preserve"><value>Wait between "check everything now"</value></data>
+  <data name="Plan_CooldownMinutes" xml:space="preserve"><value>Check-now wait (minutes)</value></data>
+  <data name="Plan_NoWait" xml:space="preserve"><value>no wait</value></data>
+  <data name="Limits_CooldownHelp" xml:space="preserve"><value>The wait is how long a tenant must wait before it can press "check everything now" again, so it cannot be used to get around the check interval. 0 means no wait; blank uses the server default (Scanning:ManualCooldownMinutes).</value></data>
 </root>

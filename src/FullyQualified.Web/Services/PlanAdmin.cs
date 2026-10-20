@@ -4,14 +4,14 @@ using Microsoft.EntityFrameworkCore;
 namespace FullyQualified.Web;
 
 /// <summary>Limits as typed in a form: blank, "unlimited" or a number.</summary>
-public record TierRequest(string? MaxDomains, string? MaxEndpoints, string? MaxUsers, bool ReportsEnabled, string? RetentionMonths, string? ScanIntervalMinutes = null);
+public record TierRequest(string? MaxDomains, string? MaxEndpoints, string? MaxUsers, bool ReportsEnabled, string? RetentionMonths, string? ScanIntervalMinutes = null, string? ManualCooldownMinutes = null);
 /// <summary>Per-tenant overrides as typed: blank follows the tier, "unlimited" lifts the limit, a number sets it. Reports: blank, "yes" or "no".</summary>
-public record PlanRequest(string? Tier, string? MaxDomains, string? MaxEndpoints, string? MaxUsers, string? Reports, string? RetentionMonths, string? ScanIntervalMinutes = null);
+public record PlanRequest(string? Tier, string? MaxDomains, string? MaxEndpoints, string? MaxUsers, string? Reports, string? RetentionMonths, string? ScanIntervalMinutes = null, string? ManualCooldownMinutes = null);
 public record DeleteRequest(string? ConfirmName);
 
 public class PlanAdminService(AppDbContext db, Session session, ILogger<PlanAdminService> log)
 {
-    const int MaxLimit = 1_000_000, MaxRetentionMonths = 120, MaxIntervalMinutes = 7 * 24 * 60;
+    const int MaxLimit = 1_000_000, MaxRetentionMonths = 120, MaxIntervalMinutes = 7 * 24 * 60, MaxCooldownMinutes = 24 * 60;
 
     static IResult Fail(int status, string code) => Results.Json(new { error = code }, statusCode: status);
 
@@ -34,10 +34,10 @@ public class PlanAdminService(AppDbContext db, Session session, ILogger<PlanAdmi
         if (tier is null) return Fail(404, "not_found");
         if (!TryLimit(r.MaxDomains, MaxLimit, false, out var domains) || !TryLimit(r.MaxEndpoints, MaxLimit, false, out var endpoints)
             || !TryLimit(r.MaxUsers, MaxLimit, false, out var users) || !TryLimit(r.RetentionMonths, MaxRetentionMonths, false, out var months)
-            || !TryLimit(r.ScanIntervalMinutes, MaxIntervalMinutes, false, out var interval)
+            || !TryLimit(r.ScanIntervalMinutes, MaxIntervalMinutes, false, out var interval) || !TryLimit(r.ManualCooldownMinutes, MaxCooldownMinutes, false, out var cooldown)
             || months == 0 || interval == 0) return Fail(400, "invalid_limit");
-        (tier.MaxDomains, tier.MaxEndpoints, tier.MaxUsers, tier.ReportsEnabled, tier.RetentionMonths, tier.ScanIntervalMinutes, tier.UpdatedAt) =
-            (domains, endpoints, users, r.ReportsEnabled, months, interval, DateTimeOffset.UtcNow);
+        (tier.MaxDomains, tier.MaxEndpoints, tier.MaxUsers, tier.ReportsEnabled, tier.RetentionMonths, tier.ScanIntervalMinutes, tier.ManualCooldownMinutes, tier.UpdatedAt) =
+            (domains, endpoints, users, r.ReportsEnabled, months, interval, cooldown, DateTimeOffset.UtcNow);
         await db.SaveChangesAsync();
         return Results.NoContent();
     }
@@ -50,13 +50,13 @@ public class PlanAdminService(AppDbContext db, Session session, ILogger<PlanAdmi
         if (!Tiers.Keys.Contains(tier)) return Fail(400, "invalid_tier");
         if (!TryLimit(r.MaxDomains, MaxLimit, true, out var domains) || !TryLimit(r.MaxEndpoints, MaxLimit, true, out var endpoints)
             || !TryLimit(r.MaxUsers, MaxLimit, true, out var users) || !TryLimit(r.RetentionMonths, MaxRetentionMonths, true, out var months)
-            || !TryLimit(r.ScanIntervalMinutes, MaxIntervalMinutes, true, out var interval)
+            || !TryLimit(r.ScanIntervalMinutes, MaxIntervalMinutes, true, out var interval) || !TryLimit(r.ManualCooldownMinutes, MaxCooldownMinutes, true, out var cooldown)
             || months == 0 || interval == 0) return Fail(400, "invalid_limit");
         var reportsText = r.Reports?.Trim().ToLowerInvariant() ?? "";
         if (reportsText is not ("" or "yes" or "no")) return Fail(400, "invalid_limit");
         bool? reports = reportsText == "" ? null : reportsText == "yes";
-        (tenant.TierKey, tenant.OverrideMaxDomains, tenant.OverrideMaxEndpoints, tenant.OverrideMaxUsers, tenant.OverrideReports, tenant.OverrideRetentionMonths, tenant.OverrideScanIntervalMinutes) =
-            (tier, domains, endpoints, users, reports, months, interval);
+        (tenant.TierKey, tenant.OverrideMaxDomains, tenant.OverrideMaxEndpoints, tenant.OverrideMaxUsers, tenant.OverrideReports, tenant.OverrideRetentionMonths, tenant.OverrideScanIntervalMinutes, tenant.OverrideManualCooldownMinutes) =
+            (tier, domains, endpoints, users, reports, months, interval, cooldown);
         await db.SaveChangesAsync();
         return Results.NoContent();
     }

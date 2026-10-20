@@ -416,4 +416,8 @@ De link werkt één keer en verloopt na {2} uur. Een nieuwe passkey instellen ve
   <data name="Diag_PublicCheck" xml:space="preserve"><value>Gratis openbare check</value></data>
   <data name="Diag_PublicOn" xml:space="preserve"><value>De openbare check staat aan, hooguit {0} controles per uur per adres.</value></data>
   <data name="Diag_PublicOff" xml:space="preserve"><value>De openbare check staat uit.</value></data>
+  <data name="Plan_Cooldown" xml:space="preserve"><value>Wachttijd bij "alles nu controleren"</value></data>
+  <data name="Plan_CooldownMinutes" xml:space="preserve"><value>Wachttijd nu-controleren (minuten)</value></data>
+  <data name="Plan_NoWait" xml:space="preserve"><value>geen wachttijd</value></data>
+  <data name="Limits_CooldownHelp" xml:space="preserve"><value>De wachttijd is hoe lang een tenant moet wachten voordat "alles nu controleren" opnieuw kan, zodat het niet het controle-interval omzeilt. 0 betekent geen wachttijd; leeg gebruikt de serverstandaard (Scanning:ManualCooldownMinutes).</value></data>
 </root>

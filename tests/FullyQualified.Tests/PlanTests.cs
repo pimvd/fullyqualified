@@ -112,6 +112,27 @@ public class PlanLogicTests
     }
 
     [Fact]
+    public void The_wait_between_manual_checks_follows_the_tier_unless_overridden_and_0_is_a_real_value()
+    {
+        var tier = Tier(); tier.ManualCooldownMinutes = 15;
+        var tenant = new Tenant { Name = "x" };
+        Assert.Equal(15, PlanLimits.Resolve(tier, tenant).ManualCooldownMinutes);
+        tenant.OverrideManualCooldownMinutes = 0;
+        Assert.Equal(0, PlanLimits.Resolve(tier, tenant).ManualCooldownMinutes);
+        tenant.OverrideManualCooldownMinutes = -1;
+        Assert.Null(PlanLimits.Resolve(tier, tenant).ManualCooldownMinutes);
+    }
+
+    [Fact]
+    public void The_cooldown_migration_sets_the_same_waits_as_the_code()
+    {
+        var sql = Directory.GetFiles(Path.Combine(new SiteFixture().Root, "src", "FullyQualified.Web", "Data", "Migrations"), "*_ManualCooldown.cs").Select(File.ReadAllText).Single();
+        foreach (var t in Tiers.Defaults.Where(t => t.ManualCooldownMinutes is not null))
+            Assert.Contains($"WHEN '{t.Key}' THEN {t.ManualCooldownMinutes}", sql);
+        Assert.Contains("ELSE NULL", sql);
+    }
+
+    [Fact]
     public void The_scan_interval_migration_sets_the_same_intervals_as_the_code()
     {
         var sql = Directory.GetFiles(Path.Combine(new SiteFixture().Root, "src", "FullyQualified.Web", "Data", "Migrations"), "*_ScanIntervals.cs").Select(File.ReadAllText).Single();

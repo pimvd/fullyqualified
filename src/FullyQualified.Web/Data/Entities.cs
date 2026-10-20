@@ -21,6 +21,8 @@ public class Tenant
     public int? OverrideRetentionMonths { get; set; }
     /// <summary>Minutes between checks. Null follows the tier; -1 means the server default.</summary>
     public int? OverrideScanIntervalMinutes { get; set; }
+    /// <summary>Minutes to wait between uses of "check everything now". Null follows the tier; -1 means the server default; 0 means no wait.</summary>
+    public int? OverrideManualCooldownMinutes { get; set; }
     /// <summary>When someone last pressed "check everything now"; used for the cooldown.</summary>
     public DateTimeOffset? LastManualRunAt { get; set; }
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
@@ -210,6 +212,8 @@ public class Tier
     public int? RetentionMonths { get; set; }
     /// <summary>Minutes between checks of an asset. Null uses the server default (<c>Scanning:IntervalHours</c>).</summary>
     public int? ScanIntervalMinutes { get; set; }
+    /// <summary>Minutes a tenant must wait between uses of "check everything now". Null uses the server default (<c>Scanning:ManualCooldownMinutes</c>).</summary>
+    public int? ManualCooldownMinutes { get; set; }
     public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
 }
 
@@ -221,9 +225,9 @@ public static class Tiers
     /// <summary>The values a fresh install starts with. Domains and history follow docs/PLAN.md; the rest are starting points to adjust.</summary>
     public static readonly Tier[] Defaults =
     [
-        new() { Key = Free, Name = "Free", SortOrder = 1, MaxDomains = 3, MaxEndpoints = 10, MaxUsers = 2, ReportsEnabled = false, RetentionMonths = 1, ScanIntervalMinutes = 1440 },
-        new() { Key = Starter, Name = "Starter", SortOrder = 2, MaxDomains = 25, MaxEndpoints = 100, MaxUsers = 10, ReportsEnabled = true, RetentionMonths = 12, ScanIntervalMinutes = 360 },
-        new() { Key = Business, Name = "Business", SortOrder = 3, MaxDomains = 100, MaxEndpoints = 500, MaxUsers = 50, ReportsEnabled = true, RetentionMonths = 24, ScanIntervalMinutes = 60 },
-        new() { Key = Custom, Name = "Custom", SortOrder = 4, MaxDomains = null, MaxEndpoints = null, MaxUsers = null, ReportsEnabled = true, RetentionMonths = null, ScanIntervalMinutes = null },
+        new() { Key = Free, Name = "Free", SortOrder = 1, MaxDomains = 3, MaxEndpoints = 10, MaxUsers = 2, ReportsEnabled = false, RetentionMonths = 1, ScanIntervalMinutes = 1440, ManualCooldownMinutes = 60 },
+        new() { Key = Starter, Name = "Starter", SortOrder = 2, MaxDomains = 25, MaxEndpoints = 100, MaxUsers = 10, ReportsEnabled = true, RetentionMonths = 12, ScanIntervalMinutes = 360, ManualCooldownMinutes = 15 },
+        new() { Key = Business, Name = "Business", SortOrder = 3, MaxDomains = 100, MaxEndpoints = 500, MaxUsers = 50, ReportsEnabled = true, RetentionMonths = 24, ScanIntervalMinutes = 60, ManualCooldownMinutes = 5 },
+        new() { Key = Custom, Name = "Custom", SortOrder = 4, MaxDomains = null, MaxEndpoints = null, MaxUsers = null, ReportsEnabled = true, RetentionMonths = null, ScanIntervalMinutes = null, ManualCooldownMinutes = null },
     ];
 }

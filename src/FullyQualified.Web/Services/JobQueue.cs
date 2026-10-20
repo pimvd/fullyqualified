@@ -26,12 +26,14 @@ public class JobQueue(AppDbContext db, IEnumerable<ICheck> checks, IConfiguratio
 
     /// <summary>
     /// "Check everything now": queues every check of every asset of a tenant, whatever the plan's interval says. To keep this from
-    /// becoming a way around the interval, one tenant may do it once per cooldown (<c>Scanning:ManualCooldownMinutes</c>, default 5).
+    /// becoming a way around the interval, a tenant waits between uses: the cooldown of its plan, or <c>Scanning:ManualCooldownMinutes</c> (default 5)
+    /// when the plan has none.
     /// </summary>
     public async Task<CheckAllResult> EnqueueAllAsync(Guid tenantId, DateTimeOffset now, CancellationToken ct = default)
     {
         var tenant = await db.Tenants.SingleAsync(t => t.Id == tenantId, ct);
-        var cooldown = TimeSpan.FromMinutes(cfg.GetValue("Scanning:ManualCooldownMinutes", 5.0));
+        var tier = await db.Tiers.AsNoTracking().SingleAsync(t => t.Key == tenant.TierKey, ct);
+        var cooldown = TimeSpan.FromMinutes(PlanLimits.Resolve(tier, tenant).ManualCooldownMinutes ?? cfg.GetValue("Scanning:ManualCooldownMinutes", 5.0));
         if (tenant.LastManualRunAt is { } last && now - last < cooldown) return new(0, cooldown - (now - last));
 
         var assets = await db.AcrossTenants<Asset>().Where(a => a.TenantId == tenantId).ToListAsync(ct);

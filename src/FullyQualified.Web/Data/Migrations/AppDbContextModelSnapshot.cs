@@ -439,6 +439,9 @@ namespace FullyQualified.Web.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)");
 
+                    b.Property<int?>("OverrideManualCooldownMinutes")
+                        .HasColumnType("integer");
+
                     b.Property<int?>("OverrideMaxDomains")
                         .HasColumnType("integer");
 
@@ -481,6 +484,9 @@ namespace FullyQualified.Web.Data.Migrations
                     b.Property<string>("Key")
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)");
+
+                    b.Property<int?>("ManualCooldownMinutes")
+                        .HasColumnType("integer");
 
                     b.Property<int?>("MaxDomains")
                         .HasColumnType("integer");

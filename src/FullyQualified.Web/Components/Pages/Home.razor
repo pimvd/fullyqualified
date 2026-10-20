@@ -75,7 +75,7 @@
     string? error;
     string? checkNotice;
     bool checkIsError;
-    string Cooldown => Config.GetValue("Scanning:ManualCooldownMinutes", 5.0).ToString("0.##");
+    string Cooldown => (plan?.Limits.ManualCooldownMinutes ?? Config.GetValue("Scanning:ManualCooldownMinutes", 5.0)).ToString("0.##");
     Plan? plan;
     string Used(int n, int? max) => max is null ? n.ToString() : $"{n} / {max}";
     Guid? tenantId => Roles.TenantId(Ctx?.User);
