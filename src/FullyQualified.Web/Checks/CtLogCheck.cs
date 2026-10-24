@@ -8,9 +8,9 @@ public sealed class CtLogCheck(IHttpClientFactory http) : ICheck
     const int MaxCerts = 200, MaxHosts = 500;
 
     public string Type => "ct";
-    /// <summary>Discovery is optional: it sends domain names to outside services, so it runs when someone presses the button.</summary>
+    /// <summary>Discovery is optional and applies to names without a port that were not themselves discovered: it sends domain names to outside services, so it runs when someone presses the button.</summary>
     public bool Automatic => false;
-    public bool AppliesTo(Asset asset) => asset.Kind == AssetKind.Domain && !asset.Name.Contains(':');
+    public bool AppliesTo(Asset asset) => !asset.Discovered && !asset.Name.Contains(':');
 
     /// <summary>One certificate as reported by a CT search service.</summary>
     record Entry(string[] Names, string IssuerDn, string Id, DateTimeOffset NotBefore, DateTimeOffset NotAfter);

@@ -21,7 +21,7 @@ public static class Remedies
     /// <summary>Every finding the checks can report, as codes (with an example argument where the code carries one). A test holds the catalogue to this list.</summary>
     public static readonly string[] AllCodes =
     [
-        "NoSpf", "NoDmarc", "DmarcNone", "NoCaa", "NoNs", "DanglingCname", "ResolverMismatch:ns", "DkimMissing:s1", "DkimRevoked:s1", "DkimInvalid:s1", "DkimWeak:s1:512", "DnsError",
+        "NoSpf", "NoNullMx", "NoDmarc", "DmarcNone", "DmarcQuarantine", "DmarcSubdomainNotReject", "NoCaa", "NoNs", "DanglingCname", "ResolverMismatch:ns", "DkimMissing:s1", "DkimRevoked:s1", "DkimInvalid:s1", "DkimWeak:s1:512", "DnsError",
         "TlsExpired", "TlsExpiring", "TlsTrust", "TlsError", "CtError",
     ];
 
@@ -52,6 +52,15 @@ public static class Remedies
             case "DmarcNone":
                 return new("DmarcNone", [domain], [Steps("Fix_DmarcNone_Steps")], [$"dig +short TXT _dmarc.{domain}"],
                     $"_dmarc.{domain}  TXT  \"v=DMARC1; p=quarantine; pct=25; rua=mailto:dmarc@{domain}\"", Dig(($"_dmarc.{domain}", "TXT")));
+            case "NoNullMx":
+                return new("NoNullMx", [domain], [Steps("Fix_NoNullMx_Steps")], [$"dig +short MX {domain}"],
+                    $"{domain}  MX  0 .\n{domain}  TXT  \"v=spf1 -all\"", Dig((domain, "MX")));
+            case "DmarcQuarantine":
+                return new("DmarcQuarantine", [domain], [Steps("Fix_DmarcQuarantine_Steps")], [$"dig +short TXT _dmarc.{domain}"],
+                    $"_dmarc.{domain}  TXT  \"v=DMARC1; p=reject; rua=mailto:dmarc@{domain}\"", Dig(($"_dmarc.{domain}", "TXT")));
+            case "DmarcSubdomainNotReject":
+                return new("DmarcSubdomainNotReject", [domain], [Steps("Fix_DmarcSubdomainNotReject_Steps")], [$"dig +short TXT _dmarc.{domain}"],
+                    $"_dmarc.{domain}  TXT  \"v=DMARC1; p=reject; sp=reject; rua=mailto:dmarc@{domain}\"", Dig(($"_dmarc.{domain}", "TXT")));
             case "NoCaa":
                 return new("NoCaa", [domain], [Steps("Fix_NoCaa_Steps")], [$"dig +short CAA {domain}"],
                     $"{domain}  CAA  0 issue \"letsencrypt.org\"\n{domain}  CAA  0 iodef \"mailto:security@{domain}\"", Dig((domain, "CAA")));

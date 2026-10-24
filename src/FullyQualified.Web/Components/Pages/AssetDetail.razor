@@ -62,7 +62,7 @@ else
         </section>
     }
 
-    @if (asset.Kind == AssetKind.Domain && !asset.Discovered)
+    @if (!asset.Discovered && !asset.Name.Contains(':'))
     {
         var ct = status.Checks.FirstOrDefault(c => c.Result.CheckType == "ct").Result;
         <section class="card">
@@ -83,7 +83,7 @@ else
         </section>
     }
 
-    @if (asset.Kind == AssetKind.Domain && canEdit)
+    @if (!asset.Discovered && canEdit)
     {
         <section class="card">
             <h2>@L["Dkim_Title"]</h2>
@@ -236,7 +236,7 @@ else
         if (asset.Discovered)
         {
             parent = asset.DiscoveredFromId is { } from ? await Db.Assets.FirstOrDefaultAsync(a => a.Id == from) : null;
-            parent ??= (await Db.Assets.Where(a => !a.Discovered && a.Kind == AssetKind.Domain).ToListAsync())
+            parent ??= (await Db.Assets.Where(a => !a.Discovered && !a.Name.Contains(":")).ToListAsync())
                 .Where(a => asset.Name.EndsWith("." + a.Name, StringComparison.Ordinal)).OrderByDescending(a => a.Name.Length).FirstOrDefault();
         }
         results = (await Db.LatestResultsAsync()).Where(r => r.AssetId == Id).ToList();
@@ -257,7 +257,7 @@ else
 
     async Task SaveDkimAsync()
     {
-        if (asset is null || !canEdit || asset.Kind != AssetKind.Domain) return;
+        if (asset is null || !canEdit || asset.Discovered) return;
         var selectors = FullyQualified.Web.Dkim.ParseSelectors(Dkim?.Selectors);
         if (selectors is null) { dkimError = true; return; }
         asset.DkimSelectors = selectors.Count == 0 ? null : string.Join(", ", selectors);
