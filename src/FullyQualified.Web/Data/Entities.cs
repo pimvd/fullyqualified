@@ -306,3 +306,12 @@ public class CheckMute : ITenantOwned
 
     public const string WholeCheck = "*";
 }
+
+/// <summary>A process running a job runner and when it last beat (ADR 0010). Platform state: no tenant id, like <see cref="Tier"/>.</summary>
+public class WorkerHeartbeatRow
+{
+    public Guid WorkerId { get; set; }
+    public DateTimeOffset StartedAt { get; set; }
+    public DateTimeOffset BeatAt { get; set; }
+    public bool IsScheduler { get; set; }
+}

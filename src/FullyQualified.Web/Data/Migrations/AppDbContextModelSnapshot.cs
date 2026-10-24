@@ -700,6 +700,26 @@ namespace FullyQualified.Web.Data.Migrations
                     b.ToTable("users", (string)null);
                 });
 
+            modelBuilder.Entity("FullyQualified.Web.WorkerHeartbeatRow", b =>
+                {
+                    b.Property<Guid>("WorkerId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("BeatAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<bool>("IsScheduler")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTimeOffset>("StartedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("WorkerId");
+
+                    b.ToTable("worker_heartbeats", (string)null);
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.DataProtection.EntityFrameworkCore.DataProtectionKey", b =>
                 {
                     b.Property<int>("Id")
