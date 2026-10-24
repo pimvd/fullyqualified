@@ -156,6 +156,7 @@
   <data name="Login_Or" xml:space="preserve"><value>or</value></data>
   <data name="Login_Sso" xml:space="preserve"><value>Sign in with {0}</value></data>
   <data name="Err_LastAdmin" xml:space="preserve"><value>There must always be at least one administrator.</value></data>
+  <data name="Err_CannotResetSelf" xml:space="preserve"><value>You cannot reset your own passkey. Ask another admin.</value></data>
   <data name="Err_CannotRemoveSelf" xml:space="preserve"><value>You cannot remove yourself.</value></data>
   <data name="Err_EmailExists" xml:space="preserve"><value>This email address already belongs to a user.</value></data>
   <data name="Err_InvalidEmail" xml:space="preserve"><value>Enter a valid email address.</value></data>
@@ -361,7 +362,7 @@ The link works once and expires in {2} hours. Setting up a new passkey removes y
   <data name="Diag_FreshOk" xml:space="preserve"><value>All {0} assets have recent results.</value></data>
   <data name="Diag_Stale" xml:space="preserve"><value>{0} checks have no recent result (for example {1}). The scanner may be stopped or the host may be unreachable; look at the Log page.</value></data>
   <data name="Diag_AlarmSetup" xml:space="preserve"><value>Alarm settings</value></data>
-  <data name="Diag_NoChannel" xml:space="preserve"><value>No channel is configured. Nobody will be told when a certificate expires or a record changes. Add Slack, a webhook or an email address on the Alarms page.</value></data>
+  <data name="Diag_NoChannel" xml:space="preserve"><value>No channel is configured. Nobody will be told when a certificate expires or a record changes. Add Slack, Telegram, a webhook or an email address on the Alarms page.</value></data>
   <data name="Diag_AlarmsOff" xml:space="preserve"><value>Alarms are switched off for your organization.</value></data>
   <data name="Diag_AlarmsOn" xml:space="preserve"><value>Alarms are on, from status {0} upward.</value></data>
   <data name="Diag_EmailChannel" xml:space="preserve"><value>Email setup</value></data>
@@ -409,7 +410,7 @@ The link works once and expires in {2} hours. Setting up a new passkey removes y
   <data name="Diag_ResolverDown" xml:space="preserve"><value>The server cannot look up names: {0}</value></data>
   <data name="Diag_Ct" xml:space="preserve"><value>Certificate Transparency</value></data>
   <data name="Diag_CtOk" xml:space="preserve"><value>crt.sh can be reached, so certificates can be discovered.</value></data>
-  <data name="Diag_CtDown" xml:space="preserve"><value>crt.sh cannot be reached ({0}), so certificate discovery will fail and retry.</value></data>
+  <data name="Diag_CtDown" xml:space="preserve"><value>crt.sh cannot be reached ({0}), so Cert Spotter is used instead.</value></data>
   <data name="Diag_PrivateScans" xml:space="preserve"><value>Private networks</value></data>
   <data name="Diag_PrivateAllowed" xml:space="preserve"><value>Scans may reach private addresses. Right for a company network, not for a shared installation (Scanning:AllowPrivateAddresses).</value></data>
   <data name="Diag_PrivateBlocked" xml:space="preserve"><value>Scans cannot reach private addresses.</value></data>
@@ -420,4 +421,302 @@ The link works once and expires in {2} hours. Setting up a new passkey removes y
   <data name="Plan_CooldownMinutes" xml:space="preserve"><value>Check-now wait (minutes)</value></data>
   <data name="Plan_NoWait" xml:space="preserve"><value>no wait</value></data>
   <data name="Limits_CooldownHelp" xml:space="preserve"><value>The wait is how long a tenant must wait before it can press "check everything now" again, so it cannot be used to get around the check interval. 0 means no wait; blank uses the server default (Scanning:ManualCooldownMinutes).</value></data>
+  <data name="Issue_ResolverMismatch" xml:space="preserve"><value>Public resolvers disagree about the {0} records (possible hijack, or a change that is still propagating)</value></data>
+  <data name="Issue_DkimMissing" xml:space="preserve"><value>DKIM selector '{0}' not found</value></data>
+  <data name="Issue_DkimRevoked" xml:space="preserve"><value>DKIM key for selector '{0}' is revoked (empty key)</value></data>
+  <data name="Issue_DkimInvalid" xml:space="preserve"><value>DKIM record for selector '{0}' is not valid</value></data>
+  <data name="Issue_DkimWeak" xml:space="preserve"><value>DKIM key for selector '{0}' is only {1} bits</value></data>
+  <data name="Dkim_Title" xml:space="preserve"><value>DKIM selectors</value></data>
+  <data name="Dkim_Help" xml:space="preserve"><value>Selectors to check, separated by commas. You find yours in the s= tag of the DKIM-Signature header of an e-mail you sent.</value></data>
+  <data name="Dkim_Placeholder" xml:space="preserve"><value>selector1, selector2</value></data>
+  <data name="Dkim_Save" xml:space="preserve"><value>Save and scan</value></data>
+  <data name="Dkim_Invalid" xml:space="preserve"><value>Use letters, digits, dots, hyphens or underscores, at most 10 selectors.</value></data>
+  <data name="Col_Origin" xml:space="preserve"><value>Origin</value></data>
+  <data name="Col_Why" xml:space="preserve"><value>Why</value></data>
+  <data name="Origin_added" xml:space="preserve"><value>Added manually</value></data>
+  <data name="Origin_discovered" xml:space="preserve"><value>Discovered</value></data>
+  <data name="Filter_Search" xml:space="preserve"><value>Search by name</value></data>
+  <data name="Filter_AllOrigins" xml:space="preserve"><value>All origins</value></data>
+  <data name="Filter_AllTypes" xml:space="preserve"><value>All types</value></data>
+  <data name="Filter_AllStatuses" xml:space="preserve"><value>All statuses</value></data>
+  <data name="Filter_Problems" xml:space="preserve"><value>Needs attention (warning or worse)</value></data>
+  <data name="Filter_Apply" xml:space="preserve"><value>Filter</value></data>
+  <data name="Filter_Reset" xml:space="preserve"><value>Reset</value></data>
+  <data name="Filter_Count" xml:space="preserve"><value>Showing {0} of {1}</value></data>
+  <data name="Filter_None" xml:space="preserve"><value>Nothing matches these filters.</value></data>
+  <data name="Disc_Title" xml:space="preserve"><value>How it was discovered</value></data>
+  <data name="Disc_Via" xml:space="preserve"><value>via {0}</value></data>
+  <data name="Disc_ViaCt" xml:space="preserve"><value>via CT log</value></data>
+  <data name="Disc_From" xml:space="preserve"><value>from {0}</value></data>
+  <data name="Disc_Manual" xml:space="preserve"><value>Added manually.</value></data>
+  <data name="Disc_UnknownParent" xml:space="preserve"><value>a monitored domain</value></data>
+  <data name="Disc_Why" xml:space="preserve"><value>The name appears on a publicly logged certificate (issued by {2}, valid until {3}) that {1} returned when searching the Certificate Transparency logs for {0}. You added it from the review on {4}, and it is monitored like any other endpoint. If you delete it, it goes on the ignored list and does not come back.</value></data>
+  <data name="Disc_Legacy" xml:space="preserve"><value>The name appears on a publicly logged certificate found when searching the Certificate Transparency logs for {0}. It was added before the details were recorded. If you delete it, it goes on the ignored list and does not come back.</value></data>
+  <data name="Alerts_Telegram" xml:space="preserve"><value>Telegram bot token</value></data>
+  <data name="Alerts_TelegramConfigured" xml:space="preserve"><value>Configured: bot {0} (leave empty to keep it)</value></data>
+  <data name="Alerts_TelegramChat" xml:space="preserve"><value>Telegram chat ID</value></data>
+  <data name="Alerts_TelegramHelp" xml:space="preserve"><value>Create a bot with @BotFather, add it to your chat or channel, and enter its token and the chat ID. Both are needed.</value></data>
+  <data name="Err_InvalidTelegramToken" xml:space="preserve"><value>That does not look like a Telegram bot token (123456789:AAH…).</value></data>
+  <data name="Err_InvalidTelegramChat" xml:space="preserve"><value>The chat ID must be a number (negative for groups) or @channelname.</value></data>
+  <data name="Err_TelegramIncomplete" xml:space="preserve"><value>Telegram needs both a bot token and a chat ID.</value></data>
+  <data name="Diag_Channel_telegram" xml:space="preserve"><value>Telegram</value></data>
+  <data name="TgHow_Title" xml:space="preserve"><value>How do I create a Telegram bot?</value></data>
+  <data name="TgHow_1" xml:space="preserve"><value>In Telegram, open @BotFather (the official bot for making bots) and send</value></data>
+  <data name="TgHow_1b" xml:space="preserve"><value>It asks for a display name (for example “FullyQualified alarms”) and a username that ends in “bot” (for example fq_alarms_bot).</value></data>
+  <data name="TgHow_2" xml:space="preserve"><value>BotFather replies with the bot token. Paste it in the token field above. It looks like:</value></data>
+  <data name="TgHow_3" xml:space="preserve"><value>Decide where alarms should go. For yourself, open your new bot and press Start. For a team, add the bot to a group. For a channel, add the bot as an administrator. Then send any message there.</value></data>
+  <data name="TgHow_4" xml:space="preserve"><value>Find the chat ID: open this address in your browser, with your own token filled in:</value></data>
+  <data name="TgHow_4b" xml:space="preserve"><value>In the answer, the number after “id” in “chat” is the chat ID. It is negative for groups. For a public channel you can enter @channelname instead. For example:</value></data>
+  <data name="TgHow_5" xml:space="preserve"><value>Enter the chat ID above, press Save, then Send a test alarm. The message should arrive within a few seconds.</value></data>
+  <data name="TgHow_Token" xml:space="preserve"><value>token</value></data>
+  <data name="TgHow_Secret" xml:space="preserve"><value>Keep the token secret: anyone who has it can send messages as your bot. If it leaks, send /revoke to @BotFather and enter the new token here.</value></data>
+  <data name="Bulk_SelectAll" xml:space="preserve"><value>Select all shown</value></data>
+  <data name="Bulk_Delete" xml:space="preserve"><value>Delete selected</value></data>
+  <data name="Bulk_Confirm" xml:space="preserve"><value>Delete the selected assets and their history?</value></data>
+  <data name="Bulk_Deleted" xml:space="preserve"><value>Deleted {0} asset(s).</value></data>
+  <data name="Bulk_None" xml:space="preserve"><value>Select at least one asset first.</value></data>
+  <data name="Bulk_Note" xml:space="preserve"><value>A deleted hostname that was found in the certificate logs goes on the ignored list and does not come back.</value></data>
+  <data name="Sum_TlsChainMismatch" xml:space="preserve"><value>Certificate not trusted: {0}. It was checked for {1}, but the certificate is valid for: {2}</value></data>
+  <data name="Dig_Open" xml:space="preserve"><value>DNS lookup</value></data>
+  <data name="Dig_Title" xml:space="preserve"><value>DNS lookup</value></data>
+  <data name="Dig_Sub" xml:space="preserve"><value>A live dig: ask the system resolver and public resolvers, and compare what they answer.</value></data>
+  <data name="Dig_Placeholder" xml:space="preserve"><value>example.com or an IP address</value></data>
+  <data name="Dig_Name" xml:space="preserve"><value>Name</value></data>
+  <data name="Dig_Type" xml:space="preserve"><value>Type</value></data>
+  <data name="Dig_Data" xml:space="preserve"><value>Data</value></data>
+  <data name="Dig_Resolver" xml:space="preserve"><value>Resolver</value></data>
+  <data name="Dig_All" xml:space="preserve"><value>All resolvers (compare)</value></data>
+  <data name="Dig_Go" xml:space="preserve"><value>Look up</value></data>
+  <data name="Dig_Querying" xml:space="preserve"><value>Querying…</value></data>
+  <data name="Dig_Empty" xml:space="preserve"><value>Type a name to look up.</value></data>
+  <data name="Dig_NoRecords" xml:space="preserve"><value>No {0} records found (NODATA).</value></data>
+  <data name="Dig_NxDomain" xml:space="preserve"><value>{0} does not exist (NXDOMAIN).</value></data>
+  <data name="Dig_Agree" xml:space="preserve"><value>All resolvers give the same answer.</value></data>
+  <data name="Dig_Disagree" xml:space="preserve"><value>The resolvers disagree. The odd ones out are marked. This can mean a hijack, or a change that is still propagating.</value></data>
+  <data name="Dig_Differs" xml:space="preserve"><value>differs</value></data>
+  <data name="Dig_Copy" xml:space="preserve"><value>Copy</value></data>
+  <data name="Dig_Copied" xml:space="preserve"><value>Copied</value></data>
+  <data name="Dig_Command" xml:space="preserve"><value>Same query in a terminal:</value></data>
+  <data name="Dig_Close" xml:space="preserve"><value>Close</value></data>
+  <data name="Dig_Hint" xml:space="preserve"><value>Press / anywhere to open this window</value></data>
+  <data name="Dig_Err_invalid_name" xml:space="preserve"><value>That is not a valid host name or IP address.</value></data>
+  <data name="Dig_Err_invalid_type" xml:space="preserve"><value>Unsupported record type.</value></data>
+  <data name="Dig_Err_rate" xml:space="preserve"><value>Too many lookups. Wait a minute and try again.</value></data>
+  <data name="Dig_Err_failed" xml:space="preserve"><value>The lookup failed.</value></data>
+  <data name="Dig_ResolverFailed" xml:space="preserve"><value>No answer</value></data>
+  <data name="Dig_LookUp" xml:space="preserve"><value>Look up {0} ({1}) in DNS</value></data>
+  <data name="Status_Paused" xml:space="preserve"><value>Paused</value></data>
+  <data name="Pause_Title" xml:space="preserve"><value>Pause monitoring</value></data>
+  <data name="Pause_Help" xml:space="preserve"><value>A paused asset is not checked, never alarms and does not count as a problem. Resume it at any time, or set a date to resume automatically.</value></data>
+  <data name="Pause_UntilLabel" xml:space="preserve"><value>Resume on (optional)</value></data>
+  <data name="Pause_Reason" xml:space="preserve"><value>Reason (optional)</value></data>
+  <data name="Pause_Button" xml:space="preserve"><value>Pause</value></data>
+  <data name="Pause_Resume" xml:space="preserve"><value>Resume now</value></data>
+  <data name="Pause_Until" xml:space="preserve"><value>until {0}</value></data>
+  <data name="Pause_Indefinitely" xml:space="preserve"><value>until resumed</value></data>
+  <data name="Pause_UntilLong" xml:space="preserve"><value>Paused until {0}, then it is checked again by itself.</value></data>
+  <data name="Pause_IndefinitelyLong" xml:space="preserve"><value>Paused until someone resumes it.</value></data>
+  <data name="Pause_Effect" xml:space="preserve"><value>Nothing is checked and no alarms are sent while it is paused. The last results are kept.</value></data>
+  <data name="Mute_Button" xml:space="preserve"><value>Mute</value></data>
+  <data name="Mute_Unmute" xml:space="preserve"><value>Unmute</value></data>
+  <data name="Mute_MakeOptional" xml:space="preserve"><value>Make optional</value></data>
+  <data name="Mute_MakeRequired" xml:space="preserve"><value>Make required</value></data>
+  <data name="Mute_OptionalBadge" xml:space="preserve"><value>Optional</value></data>
+  <data name="Mute_Muted" xml:space="preserve"><value>muted</value></data>
+  <data name="Mute_UntilShort" xml:space="preserve"><value>muted until {0}</value></data>
+  <data name="Mute_UntilHelp" xml:space="preserve"><value>Mute until this date (optional; empty means until you unmute)</value></data>
+  <data name="Mute_ByCert" xml:space="preserve"><value>(the certificate is muted)</value></data>
+  <data name="Mute_Count" xml:space="preserve"><value>{0} muted</value></data>
+  <data name="Issue_TlsExpired" xml:space="preserve"><value>Certificate expired</value></data>
+  <data name="Issue_TlsExpiring" xml:space="preserve"><value>Certificate expires soon</value></data>
+  <data name="Issue_TlsTrust" xml:space="preserve"><value>Certificate not trusted</value></data>
+  <data name="Issue_TlsError" xml:space="preserve"><value>TLS check failed</value></data>
+  <data name="Issue_CtError" xml:space="preserve"><value>Certificate log lookup failed</value></data>
+  <data name="Issue_DnsError" xml:space="preserve"><value>DNS check failed</value></data>
+  <data name="Bulk_Pause" xml:space="preserve"><value>Pause selected</value></data>
+  <data name="Bulk_Resume" xml:space="preserve"><value>Resume selected</value></data>
+  <data name="Bulk_Paused" xml:space="preserve"><value>Paused {0} asset(s).</value></data>
+  <data name="Bulk_Resumed" xml:space="preserve"><value>Resumed {0} asset(s).</value></data>
+  <data name="Mute_UntilLabel" xml:space="preserve"><value>Until (optional)</value></data>
+  <data name="Fix_Title" xml:space="preserve"><value>How to fix: {0}</value></data>
+  <data name="Fix_Link" xml:space="preserve"><value>How to fix</value></data>
+  <data name="Fix_WhatTitle" xml:space="preserve"><value>What this means</value></data>
+  <data name="Fix_StepsTitle" xml:space="preserve"><value>What to do</value></data>
+  <data name="Fix_CommandsTitle" xml:space="preserve"><value>Check it yourself</value></data>
+  <data name="Fix_ExampleTitle" xml:space="preserve"><value>Example to start from</value></data>
+  <data name="Fix_LookupsTitle" xml:space="preserve"><value>Look it up here</value></data>
+  <data name="Fix_FoundTitle" xml:space="preserve"><value>What was found</value></data>
+  <data name="Fix_Then" xml:space="preserve"><value>When it is fixed, the next scan clears this finding. Use Scan now on the asset page to see it right away. If it is intentional, mute it on the asset page, ideally with an end date.</value></data>
+  <data name="Fix_None" xml:space="preserve"><value>There is no advice for this finding yet.</value></data>
+  <data name="Fix_BackToAsset" xml:space="preserve"><value>Back to the asset</value></data>
+  <data name="Fix_NoSpf_What" xml:space="preserve"><value>{0} has no SPF record. SPF lists the servers that may send email for your domain. Without it, anyone can send mail that appears to come from {0}, and receiving servers are more likely to treat your real mail as spam.</value></data>
+  <data name="Fix_NoSpf_Steps" xml:space="preserve"><value>List everything that sends email as {0}: your mail provider, newsletter and CRM tools, web shop, ticket system, and any server that sends alerts.
+Look up each sender's SPF include in its documentation, for example include:_spf.google.com for Google Workspace or include:spf.protection.outlook.com for Microsoft 365.
+Publish one TXT record on {0} that starts with v=spf1, lists those includes, and ends with ~all. Move to -all once you are sure the list is complete.
+A name may have only one SPF record. If one exists, merge the two instead of adding a second.
+Keep it to 10 DNS lookups in total, or receivers will ignore the record.
+Check the result with the command below, then scan again.</value></data>
+  <data name="Fix_NoDmarc_What" xml:space="preserve"><value>{0} has no DMARC policy. DMARC tells receiving servers what to do with mail that fails the SPF and DKIM checks, and sends you reports about who sends mail as your domain. Without it, spoofed mail is accepted and you cannot see abuse.</value></data>
+  <data name="Fix_NoDmarc_Steps" xml:space="preserve"><value>Make sure SPF and DKIM already work for all your mail, or DMARC will reject real messages later.
+Create a mailbox, or use a DMARC reporting service, that receives the reports.
+Publish a TXT record on _dmarc.{0}, starting in monitoring mode: p=none with an rua= address.
+Read the reports for a few weeks and fix the legitimate senders that fail.
+Tighten the policy step by step: p=quarantine (start with pct=25), then p=reject.
+Check the result with the command below, then scan again.</value></data>
+  <data name="Fix_DmarcNone_What" xml:space="preserve"><value>The DMARC policy of {0} is p=none: mail that fails is still delivered and DMARC only reports. That is the right way to start, but it does not protect against spoofing.</value></data>
+  <data name="Fix_DmarcNone_Steps" xml:space="preserve"><value>Read your DMARC reports (the rua address) and list the senders that fail SPF or DKIM.
+Fix those senders: add them to SPF, or set up DKIM signing for them. Stop senders you do not recognise.
+Change the policy to p=quarantine with pct=25, and raise pct to 100 over a few weeks.
+When nothing legitimate fails any more, move to p=reject. Add sp=reject if your subdomains do not send mail.
+If you deliberately stay in monitoring mode for now, mute this finding with an end date so it comes back.</value></data>
+  <data name="Fix_NoCaa_What" xml:space="preserve"><value>{0} has no CAA record. CAA limits which certificate authorities may issue certificates for the domain. Without it, any CA can, which makes mis-issuance harder to prevent.</value></data>
+  <data name="Fix_NoCaa_Steps" xml:space="preserve"><value>Check which CAs issued your current certificates: see the Issuer column on the certificate list.
+Publish a CAA record for every CA you use, for example 0 issue "letsencrypt.org". Use issuewild for wildcard certificates.
+Add an iodef record with an address that should be told about refused requests.
+Check that your DNS provider supports CAA records (most do) and that you have not left a CA out, or its renewals will fail.
+Check the result with the command below, then scan again.</value></data>
+  <data name="Fix_NoNs_What" xml:space="preserve"><value>No name server records were found for {0}. The name does not resolve, so nothing that depends on it (web, email, certificates) can work.</value></data>
+  <data name="Fix_NoNs_Steps" xml:space="preserve"><value>Check the spelling of the name.
+Check that the domain is registered and has not expired: run whois and look at the status and expiry date.
+Check at the registrar that the domain points to the right name servers, and that those servers have a zone for {0}.
+Run dig NS {0} +trace to see where the chain breaks.
+If the domain is retired, delete or pause the asset.</value></data>
+  <data name="Fix_DanglingCname_What" xml:space="preserve"><value>{0} is a CNAME that points to {1}, and that name does not exist. Whoever registers or claims {1} (a deleted cloud app, storage bucket or hosted service name) can serve content on {0}: a subdomain takeover.</value></data>
+  <data name="Fix_DanglingCname_Steps" xml:space="preserve"><value>Find out what {0} was for. If it is no longer used, delete the CNAME record at your DNS provider right away. That removes the risk.
+If it is still needed, restore {1}: recreate the app, bucket or custom domain at the provider under the same name, or point the CNAME to the new target.
+Check your other records for CNAMEs that point to the same provider and may be orphaned too.
+In future, remove the custom domain from the provider and the DNS record together when you retire a service.
+Check with the commands below, then scan again.</value></data>
+  <data name="Fix_ResolverMismatch_What" xml:space="preserve"><value>Public resolvers give different answers for the {1} records of {0}. That is normal for a short while after you change a record, but it can also mean that someone changed your DNS without you knowing, or that one of your name servers serves old data.</value></data>
+  <data name="Fix_ResolverMismatch_Steps" xml:space="preserve"><value>Look up the record with all resolvers (the lookup button below) and compare the answers.
+If you changed it recently, wait until the old record's TTL has passed and scan again.
+If it persists, ask each of your own name servers directly (see the commands below). One server with different data is the usual cause: sync or fix that zone.
+If an answer lists name servers or mail servers you do not recognise, treat it as a hijack: change the passwords of your registrar and DNS accounts, turn on two-factor authentication and a registry lock, and contact your registrar.
+If different answers are intended (split-horizon DNS), mute this finding.</value></data>
+  <data name="Fix_DkimMissing_What" xml:space="preserve"><value>No DKIM record was found for selector {1} on {0}. DKIM signs outgoing mail so receivers can tell it really came from you. Without a published key, signed mail fails DKIM and, with it, DMARC.</value></data>
+  <data name="Fix_DkimMissing_Steps" xml:space="preserve"><value>Check that the selector is exactly the s= value in the DKIM-Signature header of a message you sent.
+In your mail provider's settings, find the DKIM key or CNAME record for that selector and publish it at {1}._domainkey.{0}. Providers use either a TXT record or a CNAME.
+Copy the value exactly. Long keys may need to be split into several quoted strings; most DNS providers do that for you.
+Wait for the TTL and check with the command below.
+If the selector is retired, remove it from the DKIM selectors on the asset page.</value></data>
+  <data name="Fix_DkimRevoked_What" xml:space="preserve"><value>The DKIM key of selector {1} on {0} is empty (p=), which revokes it. Mail signed with this selector fails DKIM.</value></data>
+  <data name="Fix_DkimRevoked_Steps" xml:space="preserve"><value>If you retired the selector on purpose, remove it from the DKIM selectors on the asset page.
+If not, find the current public key in your mail provider's settings and publish it again at {1}._domainkey.{0}.
+Check that your mail system still signs with a selector that has a published key.
+Check with the command below, then scan again.</value></data>
+  <data name="Fix_DkimInvalid_What" xml:space="preserve"><value>The DKIM record for selector {1} on {0} cannot be read as a public key. Receivers treat signatures with this selector as failed.</value></data>
+  <data name="Fix_DkimInvalid_Steps" xml:space="preserve"><value>Copy the record again from your mail provider. Look for lost characters, extra spaces, or quotes inside the key.
+Some DNS panels limit a TXT string to 255 characters. A 2048-bit key must be split into several quoted strings.
+Keep the tags: v=DKIM1; k=rsa; p=&lt;key&gt;.
+Check the published value with the command below, then scan again.</value></data>
+  <data name="Fix_DkimWeak_What" xml:space="preserve"><value>The DKIM key of selector {1} on {0} is only {2} bits. Keys below 1024 bits can be broken with modest effort, which would let someone forge signed mail from your domain.</value></data>
+  <data name="Fix_DkimWeak_Steps" xml:space="preserve"><value>In your mail provider or mail server, generate a new DKIM key of 2048 bits.
+Publish it under a new selector name, for example the month and year.
+Switch signing to the new selector and wait a few days for mail that is still in transit.
+Remove the old selector from DNS and from the DKIM selectors on the asset page.</value></data>
+  <data name="Fix_DnsError_What" xml:space="preserve"><value>The DNS check for {0} could not finish: {1}. This is about the lookup, not necessarily about {0} itself.</value></data>
+  <data name="Fix_DnsError_Steps" xml:space="preserve"><value>Check that the server running FullyQualified can reach a DNS server: run the first command there. If it cannot, check its network and the Dns:Server setting.
+Check that outgoing DNS (UDP and TCP port 53) is not blocked by a firewall.
+Compare with a public resolver (the second command). If that works, the problem is your local resolver.
+If every resolver answers SERVFAIL for this domain, DNSSEC may be broken or the name servers are down: run the third command and ask your DNS provider.
+The check tries again by itself within 15 minutes.</value></data>
+  <data name="Fix_TlsExpired_What" xml:space="preserve"><value>The certificate of {0} expired on {1}. Browsers and apps show a security error or refuse to connect.</value></data>
+  <data name="Fix_TlsExpiring_What" xml:space="preserve"><value>The certificate of {0} expires on {1} ({2} days left). If it is not renewed in time, visitors and systems will get security errors.</value></data>
+  <data name="Fix_Tls_Renew_Steps" xml:space="preserve"><value>Renew the certificate now. With Let's Encrypt or another ACME client (certbot, acme.sh, win-acme, Caddy, cert-manager), run the renewal by hand and read the error. A blocked challenge (port 80, a DNS record), a changed DNS record or a rate limit are the usual causes.
+With a commercial certificate, request a replacement at your reseller or CA and complete the validation.
+Install the new certificate everywhere this name is served: web server or IIS binding, load balancer, Azure Key Vault with Application Gateway or Front Door, CDN, Java keystore. Then reload the service.
+Check the result with the command below: the dates and the issuer should be new.
+Automate it. Certificate lifetimes are getting shorter (100 days in 2027, 47 days in 2029), so renewing by hand will not stay manageable.
+If the system is retired, pause or delete the asset instead.</value></data>
+  <data name="Fix_TlsTrust_What" xml:space="preserve"><value>The certificate that {0} presents is not trusted ({2}). Browsers and apps will warn visitors or refuse to connect.</value></data>
+  <data name="Fix_TlsTrust_Mismatch_Title" xml:space="preserve"><value>The certificate does not cover the name</value></data>
+  <data name="Fix_TlsTrust_Mismatch_Steps" xml:space="preserve"><value>The certificate is valid for: {1}. {0} is not among those names.
+If {0} should be served by this certificate, reissue it with {0} as a subject alternative name, or use a wildcard certificate that covers it.
+If the server hosts several sites, check that it picks the right certificate for {0} (SNI or virtual host settings) and that the default certificate is not served instead.
+If {0} points to the wrong server, fix the A, AAAA or CNAME record: look it up with the button below.</value></data>
+  <data name="Fix_TlsTrust_Chain_Title" xml:space="preserve"><value>The certificate chain is not trusted</value></data>
+  <data name="Fix_TlsTrust_Chain_Steps" xml:space="preserve"><value>A missing intermediate certificate is the most common cause: install the full chain (for example fullchain.pem), not only the server certificate.
+A self-signed certificate, or one from a private CA, is not trusted by browsers. Use a certificate from a public CA. For internal systems, make sure the clients trust your CA and mute this finding.
+Check that no certificate in the chain has expired, including the intermediate ones.
+Check the chain with the second command (it prints every certificate), reload the service, then scan again.</value></data>
+  <data name="Fix_TlsError_What" xml:space="preserve"><value>The TLS check could not connect to {0} on port {1}: {2}. Nothing was checked, so the state of the certificate is unknown.</value></data>
+  <data name="Fix_TlsError_Steps" xml:space="preserve"><value>Check that the address and port are right. An endpoint is written as host:port, and without a port 443 is used.
+Check that the service runs and listens on that port (the first command), and that no firewall blocks the connection from the server running FullyQualified.
+If the name does not resolve, fix or add the DNS record.
+If the connection works but the handshake fails, the server may only support old protocols (TLS 1.0 or 1.1) or share no cipher suite with this client. Enable TLS 1.2 or higher.
+If it says the host is not allowed, this installation blocks private addresses: set Scanning:AllowPrivateAddresses to true, or use a public name.
+If it is not meant to be reachable, pause the asset or make the check optional.</value></data>
+  <data name="Fix_CtError_What" xml:space="preserve"><value>The certificate log search for {0} failed: {1}. The public services that list certificates (crt.sh, then Cert Spotter) were both unavailable. Nothing is wrong with your domain, and nothing is monitored differently because of it.</value></data>
+  <data name="Fix_CtError_Steps" xml:space="preserve"><value>Wait a little: crt.sh is a free service that is often overloaded or rate limiting, and the search falls back to Cert Spotter when crt.sh fails. Then press Find subdomains again.
+If it keeps failing for hours, check that the server running FullyQualified can reach https://crt.sh and https://api.certspotter.com (outgoing HTTPS, proxy, firewall).
+Very large domains can time out. Add the important hostnames as assets yourself instead.
+You do not need this search to monitor a domain: it only helps to find hostnames you did not know about.</value></data>
+  <data name="Nav_Review" xml:space="preserve"><value>Review</value></data>
+  <data name="Discover_Title" xml:space="preserve"><value>Find subdomains</value></data>
+  <data name="Discover_Help" xml:space="preserve"><value>Looks the domain up in the public certificate logs (crt.sh, then Cert Spotter) and lists the hostnames that have a certificate. Nothing is added by itself: you review what is found. This sends the domain name to those services, which is why it only runs when you ask.</value></data>
+  <data name="Discover_Button" xml:space="preserve"><value>Find subdomains</value></data>
+  <data name="Discover_Queued" xml:space="preserve"><value>Search queued, refresh in a minute</value></data>
+  <data name="Discover_Last" xml:space="preserve"><value>Last search</value></data>
+  <data name="Discover_Pending" xml:space="preserve"><value>{0} found hostname(s) waiting for review</value></data>
+  <data name="Discover_Reviewed" xml:space="preserve"><value>{0} found hostname(s), all reviewed</value></data>
+  <data name="Review_Title" xml:space="preserve"><value>Review found hostnames</value></data>
+  <data name="Review_Intro" xml:space="preserve"><value>Hostnames found in the certificate logs are not monitored until you add them. Add what is yours, and ignore the rest with a reason. Ignored hostnames are kept on record, do not come back at the next search, and appear in the reports.</value></data>
+  <data name="Review_DiscoverAll" xml:space="preserve"><value>Find subdomains on all domains</value></data>
+  <data name="Review_State_Pending" xml:space="preserve"><value>Waiting</value></data>
+  <data name="Review_State_Added" xml:space="preserve"><value>Added</value></data>
+  <data name="Review_State_Ignored" xml:space="preserve"><value>Ignored</value></data>
+  <data name="Review_Filter_All" xml:space="preserve"><value>All</value></data>
+  <data name="Review_Banner" xml:space="preserve"><value>{0} hostname(s) found in the certificate logs are waiting for your review.</value></data>
+  <data name="Review_BannerButton" xml:space="preserve"><value>Review now</value></data>
+  <data name="Review_Add" xml:space="preserve"><value>Add</value></data>
+  <data name="Review_AddSelected" xml:space="preserve"><value>Add selected</value></data>
+  <data name="Review_Ignore" xml:space="preserve"><value>Ignore</value></data>
+  <data name="Review_IgnoreSelected" xml:space="preserve"><value>Ignore selected</value></data>
+  <data name="Review_Restore" xml:space="preserve"><value>Restore</value></data>
+  <data name="Review_RestoreSelected" xml:space="preserve"><value>Restore selected</value></data>
+  <data name="Review_ReasonLabel" xml:space="preserve"><value>Reason (required)</value></data>
+  <data name="Review_ReasonPlaceholder" xml:space="preserve"><value>Why is this not monitored?</value></data>
+  <data name="Review_Nothing" xml:space="preserve"><value>Nothing to review here. Use Find subdomains on a domain to look for more.</value></data>
+  <data name="Review_Select" xml:space="preserve"><value>Select at least one hostname first.</value></data>
+  <data name="Review_NeedReason" xml:space="preserve"><value>Give a reason for ignoring.</value></data>
+  <data name="Review_Done_add" xml:space="preserve"><value>Added {0} hostname(s) to monitoring.</value></data>
+  <data name="Review_Done_addLimit" xml:space="preserve"><value>Added {0}. {1} could not be added because the limit of your plan is reached.</value></data>
+  <data name="Review_Done_ignore" xml:space="preserve"><value>Ignored {0} hostname(s).</value></data>
+  <data name="Review_Done_restore" xml:space="preserve"><value>Moved {0} hostname(s) back to review.</value></data>
+  <data name="Review_Done_discover" xml:space="preserve"><value>Searching {0} domain(s). Refresh in a minute to see what was found.</value></data>
+  <data name="Review_RemovedReason" xml:space="preserve"><value>Removed from monitoring</value></data>
+  <data name="Review_Automatic" xml:space="preserve"><value>added automatically, before review existed</value></data>
+  <data name="Review_FoundFrom" xml:space="preserve"><value>{0} via {1}, certificate by {2} valid until {3}</value></data>
+  <data name="Review_FoundShort" xml:space="preserve"><value>{0} via {1}</value></data>
+  <data name="Review_UnknownParent" xml:space="preserve"><value>a domain</value></data>
+  <data name="Review_More" xml:space="preserve"><value>Showing the first {0}; {1} more. Use the search to narrow it down.</value></data>
+  <data name="Col_FoundVia" xml:space="preserve"><value>Found via</value></data>
+  <data name="Col_Reason" xml:space="preserve"><value>Reason</value></data>
+  <data name="Col_Decided" xml:space="preserve"><value>Decided</value></data>
+  <data name="Col_DecidedBy" xml:space="preserve"><value>Decided by</value></data>
+  <data name="Rep_ReviewTitle" xml:space="preserve"><value>Discovery review</value></data>
+  <data name="Rep_ReviewSummary" xml:space="preserve"><value>Hostnames found in certificate logs: {0} added, {1} ignored, {2} waiting for review.</value></data>
+  <data name="Refresh" xml:space="preserve"><value>Refresh</value></data>
+  <data name="NotFound_Title" xml:space="preserve"><value>Page not found</value></data>
+  <data name="NotFound_Text" xml:space="preserve"><value>This page does not exist, or you are not allowed to see it.</value></data>
+  <data name="EmailTest_Title" xml:space="preserve"><value>Send a DMARC test email</value></data>
+  <data name="EmailTest_Intro" xml:space="preserve"><value>Send a real email from a domain you monitor, to a recipient mailbox you can inspect.</value></data>
+  <data name="EmailTest_FromNotOwned" xml:space="preserve"><value>The From address must be on a domain you monitor in FullyQualified. Add the domain first, or send from one you already monitor.</value></data>
+  <data name="EmailTest_Help" xml:space="preserve"><value>This test uses the application’s configured SMTP relay, which may reject, rewrite or sign the message. It tests this sending route. In the received message, open the original headers and check the receiving server’s Authentication-Results for dmarc, spf and dkim. SMTP acceptance does not prove delivery or a DMARC pass.</value></data>
+  <data name="EmailTest_From" xml:space="preserve"><value>From</value></data>
+  <data name="EmailTest_To" xml:space="preserve"><value>To</value></data>
+  <data name="EmailTest_Subject" xml:space="preserve"><value>Subject</value></data>
+  <data name="EmailTest_Message" xml:space="preserve"><value>Message</value></data>
+  <data name="EmailTest_DefaultSubject" xml:space="preserve"><value>FullyQualified: DMARC test email</value></data>
+  <data name="EmailTest_DefaultMessage" xml:space="preserve"><value>This is an email authentication test sent from FullyQualified. Check the receiving server’s Authentication-Results header for DMARC, SPF and DKIM results.</value></data>
+  <data name="EmailTest_Send" xml:space="preserve"><value>Send test email</value></data>
+  <data name="EmailTest_Success" xml:space="preserve"><value>The SMTP server accepted the test email. Check the recipient’s inbox or spam folder and inspect the original headers for the DMARC result.</value></data>
+  <data name="EmailTest_InvalidFrom" xml:space="preserve"><value>Enter one valid From email address, without a display name.</value></data>
+  <data name="EmailTest_InvalidTo" xml:space="preserve"><value>Enter one valid recipient email address, without a display name.</value></data>
+  <data name="EmailTest_InvalidSubject" xml:space="preserve"><value>Enter a subject of at most 200 characters, without line breaks or control characters.</value></data>
+  <data name="EmailTest_InvalidMessage" xml:space="preserve"><value>Enter a message of at most 10,000 characters.</value></data>
+  <data name="EmailTest_Failed" xml:space="preserve"><value>The SMTP server could not send the test email. Check the sender address and the server’s SMTP settings. The attempt is recorded in the log.</value></data>
+  <data name="EmailTest_Rate" xml:space="preserve"><value>Your organization can send five test emails per minute. Please wait before trying again.</value></data>
+  <data name="EmailTest_Channel" xml:space="preserve"><value>Email test</value></data>
+  <data name="EmailTest_Accepted" xml:space="preserve"><value>SMTP accepted</value></data>
 </root>

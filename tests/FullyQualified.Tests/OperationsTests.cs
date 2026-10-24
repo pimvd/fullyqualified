@@ -102,7 +102,7 @@ public abstract class OrgTestBase<TFactory>(TFactory factory) where TFactory : P
         return a;
     }
 
-    protected int ChecksFor(Asset a) { using var s = Scope(); return s.ServiceProvider.GetServices<ICheck>().Count(c => c.AppliesTo(a)); }
+    protected int ChecksFor(Asset a) { using var s = Scope(); return s.ServiceProvider.GetServices<ICheck>().Count(c => c.Automatic && c.AppliesTo(a)); }
 
     protected async Task<List<Job>> JobsOf(Guid tenant)
     {

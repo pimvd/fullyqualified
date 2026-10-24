@@ -18,10 +18,22 @@ public class JobQueue(AppDbContext db, IEnumerable<ICheck> checks, IConfiguratio
 
     public async Task EnqueueAsync(Asset asset, CancellationToken ct = default)
     {
+        if (asset.IsPaused(DateTimeOffset.UtcNow)) return; // paused assets are not checked, whoever asks
         var existing = await db.Jobs.Where(j => j.AssetId == asset.Id).Select(j => j.CheckType).ToListAsync(ct);
-        foreach (var check in checks.Where(c => c.AppliesTo(asset) && !existing.Contains(c.Type)))
+        foreach (var check in checks.Where(c => c.Automatic && c.AppliesTo(asset) && !existing.Contains(c.Type)))
             db.Jobs.Add(new Job { TenantId = asset.TenantId, AssetId = asset.Id, CheckType = check.Type });
         await db.SaveChangesAsync(ct);
+    }
+
+    /// <summary>Queues one check that does not run by itself, such as the certificate-log search. False when it cannot run now: paused, not applicable or already queued.</summary>
+    public async Task<bool> EnqueueManualAsync(Asset asset, string type, CancellationToken ct = default)
+    {
+        if (asset.IsPaused(DateTimeOffset.UtcNow)) return false;
+        var check = checks.FirstOrDefault(c => c.Type == type && c.AppliesTo(asset));
+        if (check is null || await db.Jobs.AnyAsync(j => j.AssetId == asset.Id && j.CheckType == type, ct)) return false;
+        db.Jobs.Add(new Job { TenantId = asset.TenantId, AssetId = asset.Id, CheckType = type });
+        await db.SaveChangesAsync(ct);
+        return true;
     }
 
     /// <summary>
@@ -40,8 +52,8 @@ public class JobQueue(AppDbContext db, IEnumerable<ICheck> checks, IConfiguratio
         var queued = (await db.AcrossTenants<Job>().Where(j => j.TenantId == tenantId).Select(j => new { j.AssetId, j.CheckType }).ToListAsync(ct))
             .Select(j => (j.AssetId, j.CheckType)).ToHashSet();
         var added = 0;
-        foreach (var asset in assets)
-            foreach (var check in checks.Where(c => c.AppliesTo(asset) && !queued.Contains((asset.Id, c.Type))))
+        foreach (var asset in assets.Where(a => !a.IsPaused(now)))
+            foreach (var check in checks.Where(c => c.Automatic && c.AppliesTo(asset) && !queued.Contains((asset.Id, c.Type))))
             {
                 db.Jobs.Add(new Job { TenantId = tenantId, AssetId = asset.Id, CheckType = check.Type, RunAt = now });
                 added++;
@@ -62,8 +74,8 @@ public class JobQueue(AppDbContext db, IEnumerable<ICheck> checks, IConfiguratio
         var queued = (await db.Jobs.Select(j => new { j.AssetId, j.CheckType }).ToListAsync(ct))
             .Select(j => (j.AssetId, j.CheckType)).ToHashSet();
 
-        foreach (var asset in assets)
-            foreach (var check in checks.Where(c => c.AppliesTo(asset)))
+        foreach (var asset in assets.Where(a => !a.IsPaused(DateTimeOffset.UtcNow)))
+            foreach (var check in checks.Where(c => c.Automatic && c.AppliesTo(asset)))
             {
                 var key = (asset.Id, check.Type);
                 if (queued.Contains(key)) continue;

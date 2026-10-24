@@ -8,11 +8,13 @@
 
 <PageTitle>@L["Nav_Alerts"]</PageTitle>
 <h1>@L["Alerts_Title"]</h1>
+<p><a href="/email-test">@L["EmailTest_Title"]</a></p>
 <AdminRoot>
     <section class="card narrow wide" id="alerts-form"
              data-saved="@L["Alerts_Saved"]" data-test-ok="@L["Alerts_TestOk"]" data-test-failed="@L["Alerts_TestFailed"]" data-test-none="@L["Alerts_TestNone"]"
              data-msg-invalid_status="@L["Err_InvalidStatus"]" data-msg-invalid_slack="@L["Err_InvalidSlack"]" data-msg-invalid_webhook="@L["Err_InvalidWebhook"]"
-             data-msg-blocked_host="@L["Err_BlockedHost"]" data-msg-no_channels="@L["Err_NoChannels"]">
+             data-msg-blocked_host="@L["Err_BlockedHost"]" data-msg-no_channels="@L["Err_NoChannels"]"
+             data-msg-invalid_telegram_token="@L["Err_InvalidTelegramToken"]" data-msg-invalid_telegram_chat="@L["Err_InvalidTelegramChat"]" data-msg-telegram_incomplete="@L["Err_TelegramIncomplete"]">
         <p>@L["Alerts_Intro"]</p>
         @if (usingServerSettings)
         {
@@ -29,6 +31,25 @@
         <label for="al-webhook">@L["Alerts_Webhook"]</label>
         <input id="al-webhook" type="url" autocomplete="off" placeholder="@(webhookHost is null ? "https://events.pagerduty.com/…" : L["Alerts_Configured", webhookHost].Value)" />
         @if (webhookHost is not null) { <label class="check-row"><input type="checkbox" id="al-clear-webhook" /> @L["Alerts_Remove"]</label> }
+
+        <label for="al-telegram">@L["Alerts_Telegram"]</label>
+        <input id="al-telegram" type="password" autocomplete="off" placeholder="@(telegramBot is null ? "123456789:AAH…" : L["Alerts_TelegramConfigured", telegramBot].Value)" />
+        <label for="al-telegram-chat">@L["Alerts_TelegramChat"]</label>
+        <input id="al-telegram-chat" value="@telegramChat" autocomplete="off" placeholder="-1001234567890 / @@mychannel" />
+        <small class="muted">@L["Alerts_TelegramHelp"]</small>
+        <details class="howto">
+            <summary>@L["TgHow_Title"]</summary>
+            <ol>
+                <li>@L["TgHow_1"] <code>/newbot</code>. @L["TgHow_1b"]</li>
+                <li>@L["TgHow_2"] <code>123456789:AAHdqTcvCH1vGWJxfSeofSAs0K5PALDsaw0</code></li>
+                <li>@L["TgHow_3"]</li>
+                <li>@L["TgHow_4"] <code>https://api.telegram.org/bot&lt;@L["TgHow_Token"]&gt;/getUpdates</code><br />
+                    @L["TgHow_4b"] <code>"chat":{"id":<b>-1001234567890</b>,…}</code></li>
+                <li>@L["TgHow_5"]</li>
+            </ol>
+            <p class="muted"><small>@L["TgHow_Secret"]</small></p>
+        </details>
+        @if (telegramBot is not null) { <label class="check-row"><input type="checkbox" id="al-clear-telegram" /> @L["Alerts_Remove"]</label> }
 
         <label for="al-email">@L["Alerts_Email"]</label>
         <input id="al-email" value="@emailTo" autocomplete="off" placeholder="it@example.com, security@example.com" />
@@ -55,7 +76,7 @@
 
 @code {
     bool enabled = true, recovery = true, drift = true, usingServerSettings;
-    string? slackHost, webhookHost, emailTo;
+    string? slackHost, webhookHost, emailTo, telegramBot, telegramChat;
     CheckStatus min = CheckStatus.Warning;
 
     protected override async Task OnInitializedAsync()
@@ -63,11 +84,13 @@
         var row = await Settings.CurrentAsync();
         if (row is null)
         {
-            usingServerSettings = !string.IsNullOrWhiteSpace(Config["Alerts:SlackWebhook"]) || !string.IsNullOrWhiteSpace(Config["Alerts:Webhook"]) || !string.IsNullOrWhiteSpace(Config["Alerts:Email:To"]);
+            usingServerSettings = !string.IsNullOrWhiteSpace(Config["Alerts:SlackWebhook"]) || !string.IsNullOrWhiteSpace(Config["Alerts:Webhook"]) || !string.IsNullOrWhiteSpace(Config["Alerts:Email:To"]) || !string.IsNullOrWhiteSpace(Config["Alerts:Telegram:BotToken"]);
             return;
         }
         enabled = row.Enabled; recovery = row.NotifyRecovery; drift = row.NotifyDrift; min = row.MinStatus; emailTo = row.EmailTo;
         slackHost = AlertSettingsService.Describe(Settings.Reveal(row.SlackWebhook));
         webhookHost = AlertSettingsService.Describe(Settings.Reveal(row.WebhookUrl));
+        telegramBot = AlertSettingsService.DescribeToken(Settings.Reveal(row.TelegramBotToken));
+        telegramChat = row.TelegramChatId;
     }
 }

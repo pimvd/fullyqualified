@@ -25,6 +25,16 @@ public class LogicTests
     }
 
     [Fact]
+    public void Diff_sets_a_baseline_for_addresses_and_dkim_selectors_on_first_sight_but_reports_later_changes()
+    {
+        var first = new Dictionary<string, string> { ["mx"] = "10 a" };
+        var second = new Dictionary<string, string> { ["mx"] = "10 a", ["a"] = "1.1.1.1", ["aaaa"] = "", ["dkim.s1"] = "2048-bit key abc" };
+        Assert.Empty(ChangeDetector.Diff(first, second));
+        var third = new Dictionary<string, string> { ["mx"] = "10 a", ["a"] = "6.6.6.6", ["aaaa"] = "", ["dkim.s1"] = "2048-bit key def" };
+        Assert.Equal(["a", "dkim.s1"], ChangeDetector.Diff(second, third).Select(d => d.Key));
+    }
+
+    [Fact]
     public void Diff_without_baseline_reports_nothing() =>
         Assert.Empty(ChangeDetector.Diff(null, new Dictionary<string, string> { ["mx"] = "10 a" }));
 

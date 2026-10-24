@@ -1,0 +1,29 @@
+@inject IStringLocalizer<SharedResource> L
+@if (Target() is { } t)
+{
+    <button type="button" class="dig-key" data-dig-name="@t.Name" data-dig-as="@t.Type" title="@L["Dig_LookUp", t.Name, t.Type]">@Key</button>
+}
+else
+{
+    @Key
+}
+@code {
+    /// <summary>The stored value name, such as "spf", "mx" or "dkim.selector1".</summary>
+    [Parameter] public string Key { get; set; } = "";
+    /// <summary>The asset's name; a port is ignored.</summary>
+    [Parameter] public string Asset { get; set; } = "";
+    [Parameter] public string Check { get; set; } = "dns";
+
+    (string Name, string Type)? Target()
+    {
+        if (Check != "dns") return null;
+        var d = Targets.Parse(Asset).Host;
+        return Key switch
+        {
+            "spf" => (d, "TXT"), "dmarc" => ($"_dmarc.{d}", "TXT"), "mx" => (d, "MX"), "ns" => (d, "NS"), "caa" => (d, "CAA"),
+            "a" => (d, "A"), "aaaa" => (d, "AAAA"), "cname" => (d, "CNAME"), "dnssec" => (d, "DS"),
+            _ when Key.StartsWith("dkim.", StringComparison.Ordinal) && Key.Length > 5 => ($"{Key[5..]}._domainkey.{d}", "TXT"),
+            _ => null,
+        };
+    }
+}

@@ -43,6 +43,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, TenantScope sc
     public DbSet<Change> Changes => Set<Change>();
     public DbSet<CertificateRecord> Certificates => Set<CertificateRecord>();
     public DbSet<Job> Jobs => Set<Job>();
+    public DbSet<CheckMute> Mutes => Set<CheckMute>();
+    public DbSet<ReviewHost> ReviewHosts => Set<ReviewHost>();
     public DbSet<User> Users => Set<User>();
     public DbSet<Passkey> Passkeys => Set<Passkey>();
     public DbSet<Invite> Invites => Set<Invite>();
@@ -86,6 +88,10 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, TenantScope sc
             e.ToTable("assets");
             e.HasQueryFilter(x => AllTenants || x.TenantId == CurrentTenantId);
             e.HasIndex(x => new { x.TenantId, x.Name }).IsUnique();
+            e.Property(x => x.PausedReason).HasMaxLength(200);
+            e.Property(x => x.DkimSelectors).HasMaxLength(400);
+            e.Property(x => x.DiscoveredVia).HasMaxLength(40);
+            e.Property(x => x.DiscoveredIssuer).HasMaxLength(200);
             e.Property(x => x.Name).HasMaxLength(260);
         });
         b.Entity<CheckResult>(e =>
@@ -103,11 +109,33 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, TenantScope sc
             e.HasIndex(x => x.DetectedAt);
             e.HasOne<Asset>().WithMany().HasForeignKey(x => x.AssetId).OnDelete(DeleteBehavior.Cascade);
         });
+        b.Entity<ReviewHost>(e =>
+        {
+            e.ToTable("review_hosts");
+            e.HasQueryFilter(x => AllTenants || x.TenantId == CurrentTenantId);
+            e.HasIndex(x => new { x.TenantId, x.Name }).IsUnique();
+            e.HasIndex(x => new { x.TenantId, x.State });
+            e.Property(x => x.Name).HasMaxLength(260);
+            e.Property(x => x.Service).HasMaxLength(40);
+            e.Property(x => x.Issuer).HasMaxLength(200);
+            e.Property(x => x.Reason).HasMaxLength(200);
+            e.Property(x => x.DecidedBy).HasMaxLength(100);
+        });
+        b.Entity<CheckMute>(e =>
+        {
+            e.ToTable("check_mutes");
+            e.HasQueryFilter(x => AllTenants || x.TenantId == CurrentTenantId);
+            e.HasIndex(x => new { x.AssetId, x.CheckType, x.Code }).IsUnique();
+            e.Property(x => x.Code).HasMaxLength(120);
+            e.Property(x => x.Reason).HasMaxLength(200);
+            e.HasOne<Asset>().WithMany().HasForeignKey(x => x.AssetId).OnDelete(DeleteBehavior.Cascade);
+        });
         b.Entity<CertificateRecord>(e =>
         {
             e.ToTable("certificates");
             e.HasQueryFilter(x => AllTenants || x.TenantId == CurrentTenantId);
             e.HasIndex(x => new { x.AssetId, x.Source });
+            e.Property(x => x.MutedReason).HasMaxLength(200);
             e.HasOne<Asset>().WithMany().HasForeignKey(x => x.AssetId).OnDelete(DeleteBehavior.Cascade);
         });
         b.Entity<Tenant>(e =>

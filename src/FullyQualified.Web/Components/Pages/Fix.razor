@@ -1,0 +1,98 @@
+@page "/fix"
+@inject AppDbContext Db
+@inject IStringLocalizer<SharedResource> L
+
+<PageTitle>@L["Fix_Link"]</PageTitle>
+@if (!loaded)
+{
+}
+else if (asset is null)
+{
+    <p>@L["Detail_NotFound"]</p>
+}
+else
+{
+    <p><a href="/assets/@asset.Id">← @asset.Name</a></p>
+    <h1>@L["Fix_Title", Title()] @if (result is not null) { <span> </span><StatusBadge Status="result.Status" /> }</h1>
+
+    @if (remedy is null)
+    {
+        <section class="card"><p>@L["Fix_None"]</p></section>
+    }
+    else
+    {
+        @if (result is not null)
+        {
+            <section class="card">
+                <h2>@L["Fix_FoundTitle"]</h2>
+                <p>@ResourceText.Summary(L, result.Summary) <span class="muted">· @result.ObservedAt.ToString("yyyy-MM-dd HH:mm") UTC</span></p>
+            </section>
+        }
+        <section class="card">
+            <h2>@L["Fix_WhatTitle"]</h2>
+            <p>@L[remedy.WhatKey, remedy.Args]</p>
+        </section>
+        <section class="card">
+            <h2>@L["Fix_StepsTitle"]</h2>
+            @foreach (var section in remedy.Sections)
+            {
+                @if (section.HeadingKey is not null) { <h3>@L[section.HeadingKey]</h3> }
+                <ol class="steps">
+                    @foreach (var step in Steps(section)) { <li>@step</li> }
+                </ol>
+            }
+            @if (remedy.Lookups.Count > 0)
+            {
+                <p class="lookups"><b>@L["Fix_LookupsTitle"]:</b>
+                    @foreach (var (name, type) in remedy.Lookups)
+                    {
+                        <button type="button" class="chip" data-dig-name="@name" data-dig-as="@type" title="@L["Dig_LookUp", name, type]">@type @name</button>
+                    }
+                </p>
+            }
+        </section>
+        @if (remedy.Example is not null)
+        {
+            <section class="card">
+                <h2>@L["Fix_ExampleTitle"]</h2>
+                <pre class="cmd"><code>@remedy.Example</code></pre>
+            </section>
+        }
+        @if (remedy.Commands.Count > 0)
+        {
+            <section class="card">
+                <h2>@L["Fix_CommandsTitle"]</h2>
+                <pre class="cmd"><code>@string.Join("\n", remedy.Commands)</code></pre>
+            </section>
+        }
+        <p class="muted">@L["Fix_Then"]</p>
+    }
+}
+
+@code {
+    [SupplyParameterFromQuery(Name = "asset")] Guid? AssetId { get; set; }
+    [SupplyParameterFromQuery(Name = "check")] string? Check { get; set; }
+    [SupplyParameterFromQuery(Name = "code")] string? Code { get; set; }
+    bool loaded;
+    Asset? asset;
+    CheckResult? result;
+    Remedy? remedy;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            if (AssetId is not { } id || string.IsNullOrEmpty(Code)) return;
+            asset = await Db.Assets.FirstOrDefaultAsync(a => a.Id == id); // the tenant filter makes other tenants' assets look absent
+            if (asset is null) return;
+            result = await Db.Results.Where(r => r.AssetId == id && r.CheckType == Check).OrderByDescending(r => r.ObservedAt).FirstOrDefaultAsync();
+            remedy = Remedies.For(Code, asset, result);
+        }
+        finally { loaded = true; }
+    }
+
+    string Title() => Code is null ? "" : Check == "dns" ? ResourceText.IssueText(L, Code) : L["Issue_" + Code.Split(':')[0]].Value;
+
+    IEnumerable<string> Steps(RemedySection section) =>
+        L[section.StepsKey, remedy!.Args].Value.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+}

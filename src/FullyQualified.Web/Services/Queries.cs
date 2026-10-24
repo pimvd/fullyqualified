@@ -30,5 +30,12 @@ public static class ResourceText
     }
 
     public static IEnumerable<string> Issues(Microsoft.Extensions.Localization.IStringLocalizer l, CheckResult r) =>
-        (r.Values.GetValueOrDefault("_issues") ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries).Select(i => l["Issue_" + i].Value);
+        (r.Values.GetValueOrDefault("_issues") ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries).Select(i => IssueText(l, i));
+
+    /// <summary>"Code" or "Code:arg:arg", where the arguments fill the placeholders of the resource string.</summary>
+    public static string IssueText(Microsoft.Extensions.Localization.IStringLocalizer l, string issue)
+    {
+        var parts = issue.Split(':');
+        return l["Issue_" + parts[0], parts.Skip(1).Cast<object>().ToArray()].Value;
+    }
 }

@@ -51,7 +51,7 @@ public class LogQueries(AppDbContext db)
 
         var total = perDay.Values.Sum(v => v.Sum());
         var ok = perDay.Values.Sum(v => v[0]);
-        var alertsInRange = db.AlertLog.Where(a => a.At >= since);
+        var alertsInRange = db.AlertLog.Where(a => a.At >= since && a.Channel != EmailTestEndpoints.LogChannel);
 
         var table = from r in results join a in db.Assets on r.AssetId equals a.Id select new { r, a.Name };
         if (f.Status is { } st) table = table.Where(x => x.r.Status == st);

@@ -21,6 +21,7 @@ builder.Services.AddHttpClient("ct", c =>
 });
 
 builder.Services.AddSingleton<HostGuard>();
+builder.Services.AddSingleton<DigService>();
 builder.Services.AddSingleton<ICheck, TlsCheck>();
 builder.Services.AddSingleton<ICheck, DnsCheck>();
 builder.Services.AddSingleton<ICheck, CtLogCheck>();
@@ -45,6 +46,7 @@ builder.Services.AddScoped<LogQueries>();
 builder.Services.AddScoped<AlertSettingsService>();
 builder.Services.AddScoped<SsoService>();
 builder.Services.AddMemoryCache();
+builder.Services.AddEmailTests();
 builder.Services.AddHostedService<JobRunner>();
 
 // Accounts sign in with passkeys only. Keys live in the database so cookies survive restarts and redeploys.
@@ -100,6 +102,10 @@ if (args is ["recover", var who, ..])
     return await OperatorCommands.RecoverAsync(app.Services, who, baseUrl, Console.Out);
 }
 
+// Files first, then routing: the catch-all "page not found" route would otherwise match /app.css before the file is served.
+app.UseStaticFiles();
+app.UseRouting();
+
 var cultures = new[] { new CultureInfo("en"), new CultureInfo("nl") };
 app.UseRequestLocalization(new RequestLocalizationOptions
 {
@@ -108,7 +114,6 @@ app.UseRequestLocalization(new RequestLocalizationOptions
     SupportedUICultures = cultures,
 });
 
-app.UseStaticFiles();
 app.UseAuthentication();
 // From here on the request works for the tenant in the session. Without one, queries on tenant data return nothing.
 app.Use((ctx, next) =>
@@ -117,6 +122,7 @@ app.Use((ctx, next) =>
     return next();
 });
 app.UseAuthorization();
+app.UseRateLimiter();
 app.UseAntiforgery();
 
 app.MapGet("/health", () => Results.Ok(new { status = "ok" })).AllowAnonymous();
@@ -145,8 +151,25 @@ app.MapGet("/reports/nis2.pdf", async (HttpContext ctx, PlanService plans, Repor
     Results.File(ReportWriter.Pdf(await reports.BuildAsync(), l), "application/pdf", $"nis2-report-{DateTime.UtcNow:yyyyMMdd}.pdf"));
 
 app.MapAuth();
+// Live DNS lookup for the overlay. Any signed-in user; the fallback policy already requires that.
+app.MapGet("/api/dig", async (HttpContext ctx, DigService dig, string? name, string? type, string? resolver) =>
+{
+    var who = Roles.UserId(ctx.User)?.ToString() ?? ctx.Connection.RemoteIpAddress?.ToString() ?? "?";
+    if (!dig.Allow(who)) return Results.Json(new { error = "rate" }, statusCode: 429);
+    var n = DigService.NormalizeName(name);
+    if (n is null) return Results.Json(new { error = "invalid_name" }, statusCode: 400);
+    var t = (type ?? "A").ToUpperInvariant();
+    if (!DigService.Types.Contains(t)) return Results.Json(new { error = "invalid_type" }, statusCode: 400);
+    if (System.Net.IPAddress.TryParse(n, out _) && t != "PTR") t = "PTR";
+    var results = await dig.DigAsync(n, t, resolver ?? "all", ctx.RequestAborted);
+    return results is null ? Results.Json(new { error = "invalid_resolver" }, statusCode: 400) : Results.Json(new { name = n, type = t, results });
+});
+
+app.MapAssetControls();
+app.MapReview();
 app.MapAdmin();
 app.MapAlerts();
+app.MapEmailTests();
 app.MapPlans();
 app.MapDiagnostics();
 app.MapSso();

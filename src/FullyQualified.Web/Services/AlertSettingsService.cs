@@ -3,7 +3,8 @@ using Microsoft.EntityFrameworkCore;
 namespace FullyQualified.Web;
 
 public record AlertSettingsRequest(bool Enabled, string? SlackWebhook, string? WebhookUrl, string? EmailTo, string? MinStatus,
-    bool NotifyRecovery, bool NotifyDrift, bool ClearSlack, bool ClearWebhook);
+    bool NotifyRecovery, bool NotifyDrift, bool ClearSlack, bool ClearWebhook,
+    string? TelegramBotToken = null, string? TelegramChatId = null, bool ClearTelegram = false);
 
 /// <summary>Reads and writes the alarm settings of the signed-in admin's tenant.</summary>
 public class AlertSettingsService(AppDbContext db, AlertService alerts, HostGuard guard)
@@ -16,6 +17,15 @@ public class AlertSettingsService(AppDbContext db, AlertService alerts, HostGuar
 
     /// <summary>Only the host of a stored URL is ever shown again; the rest may contain a secret token.</summary>
     public static string? Describe(string? url) => Uri.TryCreate(url, UriKind.Absolute, out var u) ? u.Host : null;
+
+    /// <summary>"123456:ABC-DEF…": the bot id, a colon and a secret.</summary>
+    public static bool ValidTelegramToken(string? token) => token is not null && System.Text.RegularExpressions.Regex.IsMatch(token, @"^\d{5,15}:[A-Za-z0-9_-]{30,60}$");
+
+    /// <summary>A numeric chat, group or supergroup id (negative for groups), or the @name of a public channel.</summary>
+    public static bool ValidTelegramChat(string? chat) => chat is not null && System.Text.RegularExpressions.Regex.IsMatch(chat, @"^(-?\d{4,20}|@[A-Za-z][A-Za-z0-9_]{4,31})$");
+
+    /// <summary>Only the bot id of a stored token is shown again.</summary>
+    public static string? DescribeToken(string? token) => token?.Split(':')[0];
 
     public string? Reveal(string? stored) => stored is null ? null : alerts.Unprotect(stored);
 
@@ -34,7 +44,17 @@ public class AlertSettingsService(AppDbContext db, AlertService alerts, HostGuar
             if (!await guard.IsAllowedAsync(uri.Host, ctx.RequestAborted)) return Fail(400, "blocked_host");
         }
 
+        var token = r.TelegramBotToken?.Trim();
+        var chat = r.TelegramChatId?.Trim();
+        if (!string.IsNullOrEmpty(token) && !ValidTelegramToken(token)) return Fail(400, "invalid_telegram_token");
+        if (!string.IsNullOrEmpty(chat) && !ValidTelegramChat(chat)) return Fail(400, "invalid_telegram_chat");
+
         var row = await CurrentAsync(ctx.RequestAborted);
+        // A token needs a chat to write to, and the other way round; check against what is stored when a field is left blank.
+        var storedToken = row?.TelegramBotToken is { Length: > 0 };
+        var willHaveToken = !r.ClearTelegram && (!string.IsNullOrEmpty(token) || storedToken);
+        var willHaveChat = !r.ClearTelegram && (!string.IsNullOrEmpty(chat) || !string.IsNullOrEmpty(row?.TelegramChatId));
+        if (willHaveToken != willHaveChat) return Fail(400, "telegram_incomplete");
         if (row is null) { row = new AlertSettings(); db.AlertSettings.Add(row); }
         row.Enabled = r.Enabled;
         row.MinStatus = min;
@@ -44,6 +64,12 @@ public class AlertSettingsService(AppDbContext db, AlertService alerts, HostGuar
         // A blank secret field keeps what is stored; it is replaced when filled in and removed on request.
         if (r.ClearSlack) row.SlackWebhook = null; else if (!string.IsNullOrWhiteSpace(r.SlackWebhook)) row.SlackWebhook = alerts.Protect(r.SlackWebhook);
         if (r.ClearWebhook) row.WebhookUrl = null; else if (!string.IsNullOrWhiteSpace(r.WebhookUrl)) row.WebhookUrl = alerts.Protect(r.WebhookUrl);
+        if (r.ClearTelegram) { row.TelegramBotToken = null; row.TelegramChatId = null; }
+        else
+        {
+            if (!string.IsNullOrEmpty(token)) row.TelegramBotToken = alerts.Protect(token);
+            if (!string.IsNullOrEmpty(chat)) row.TelegramChatId = chat;
+        }
         row.UpdatedAt = DateTimeOffset.UtcNow;
         await db.SaveChangesAsync(ctx.RequestAborted);
         return Results.NoContent();
@@ -57,7 +83,7 @@ public class AlertSettingsService(AppDbContext db, AlertService alerts, HostGuar
         if (!config.HasChannels) return Fail(409, "no_channels");
         var started = DateTimeOffset.UtcNow;
         await alerts.SendAsync(tenant, "FullyQualified: test alarm", "This is a test alarm. If you can read it, this channel works.", ctx.RequestAborted);
-        var results = await db.AlertLog.Where(a => a.At >= started).OrderBy(a => a.At)
+        var results = await db.AlertLog.Where(a => a.At >= started && a.Channel != EmailTestEndpoints.LogChannel).OrderBy(a => a.At)
             .Select(a => new { a.Channel, a.Success, a.Error }).ToListAsync(ctx.RequestAborted);
         return Results.Ok(results);
     }

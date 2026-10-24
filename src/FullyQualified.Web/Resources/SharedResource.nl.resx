@@ -156,6 +156,7 @@
   <data name="Login_Or" xml:space="preserve"><value>of</value></data>
   <data name="Login_Sso" xml:space="preserve"><value>Inloggen met {0}</value></data>
   <data name="Err_LastAdmin" xml:space="preserve"><value>Er moet altijd minimaal één beheerder zijn.</value></data>
+  <data name="Err_CannotResetSelf" xml:space="preserve"><value>Je kunt je eigen passkey niet resetten. Vraag het een andere beheerder.</value></data>
   <data name="Err_CannotRemoveSelf" xml:space="preserve"><value>Je kunt jezelf niet verwijderen.</value></data>
   <data name="Err_EmailExists" xml:space="preserve"><value>Dit e-mailadres hoort al bij een gebruiker.</value></data>
   <data name="Err_InvalidEmail" xml:space="preserve"><value>Vul een geldig e-mailadres in.</value></data>
@@ -361,7 +362,7 @@ De link werkt één keer en verloopt na {2} uur. Een nieuwe passkey instellen ve
   <data name="Diag_FreshOk" xml:space="preserve"><value>Alle {0} assets hebben recente resultaten.</value></data>
   <data name="Diag_Stale" xml:space="preserve"><value>{0} controles hebben geen recent resultaat (bijvoorbeeld {1}). De scanner staat misschien stil of de host is onbereikbaar; kijk op de pagina Log.</value></data>
   <data name="Diag_AlarmSetup" xml:space="preserve"><value>Alarminstellingen</value></data>
-  <data name="Diag_NoChannel" xml:space="preserve"><value>Er is geen kanaal ingesteld. Niemand hoort het als een certificaat verloopt of een record verandert. Voeg Slack, een webhook of een e-mailadres toe op de pagina Alarmen.</value></data>
+  <data name="Diag_NoChannel" xml:space="preserve"><value>Er is geen kanaal ingesteld. Niemand hoort het als een certificaat verloopt of een record verandert. Voeg Slack, Telegram, een webhook of een e-mailadres toe op de pagina Alarmen.</value></data>
   <data name="Diag_AlarmsOff" xml:space="preserve"><value>Alarmen staan uit voor je organisatie.</value></data>
   <data name="Diag_AlarmsOn" xml:space="preserve"><value>Alarmen staan aan, vanaf status {0}.</value></data>
   <data name="Diag_EmailChannel" xml:space="preserve"><value>E-mailinstelling</value></data>
@@ -409,7 +410,7 @@ De link werkt één keer en verloopt na {2} uur. Een nieuwe passkey instellen ve
   <data name="Diag_ResolverDown" xml:space="preserve"><value>De server kan geen namen opzoeken: {0}</value></data>
   <data name="Diag_Ct" xml:space="preserve"><value>Certificate Transparency</value></data>
   <data name="Diag_CtOk" xml:space="preserve"><value>crt.sh is bereikbaar, dus certificaten kunnen worden gevonden.</value></data>
-  <data name="Diag_CtDown" xml:space="preserve"><value>crt.sh is niet bereikbaar ({0}), dus het vinden van certificaten mislukt en wordt opnieuw geprobeerd.</value></data>
+  <data name="Diag_CtDown" xml:space="preserve"><value>crt.sh is niet bereikbaar ({0}), dus Cert Spotter wordt gebruikt.</value></data>
   <data name="Diag_PrivateScans" xml:space="preserve"><value>Privénetwerken</value></data>
   <data name="Diag_PrivateAllowed" xml:space="preserve"><value>Scans mogen privéadressen bereiken. Goed voor een bedrijfsnetwerk, niet voor een gedeelde installatie (Scanning:AllowPrivateAddresses).</value></data>
   <data name="Diag_PrivateBlocked" xml:space="preserve"><value>Scans kunnen geen privéadressen bereiken.</value></data>
@@ -420,4 +421,302 @@ De link werkt één keer en verloopt na {2} uur. Een nieuwe passkey instellen ve
   <data name="Plan_CooldownMinutes" xml:space="preserve"><value>Wachttijd nu-controleren (minuten)</value></data>
   <data name="Plan_NoWait" xml:space="preserve"><value>geen wachttijd</value></data>
   <data name="Limits_CooldownHelp" xml:space="preserve"><value>De wachttijd is hoe lang een tenant moet wachten voordat "alles nu controleren" opnieuw kan, zodat het niet het controle-interval omzeilt. 0 betekent geen wachttijd; leeg gebruikt de serverstandaard (Scanning:ManualCooldownMinutes).</value></data>
+  <data name="Issue_ResolverMismatch" xml:space="preserve"><value>Openbare resolvers geven verschillende {0}-records (mogelijk hijack, of een wijziging die nog doorwerkt)</value></data>
+  <data name="Issue_DkimMissing" xml:space="preserve"><value>DKIM-selector '{0}' niet gevonden</value></data>
+  <data name="Issue_DkimRevoked" xml:space="preserve"><value>DKIM-sleutel voor selector '{0}' is ingetrokken (lege sleutel)</value></data>
+  <data name="Issue_DkimInvalid" xml:space="preserve"><value>DKIM-record voor selector '{0}' is ongeldig</value></data>
+  <data name="Issue_DkimWeak" xml:space="preserve"><value>DKIM-sleutel voor selector '{0}' is slechts {1} bits</value></data>
+  <data name="Dkim_Title" xml:space="preserve"><value>DKIM-selectors</value></data>
+  <data name="Dkim_Help" xml:space="preserve"><value>Te controleren selectors, gescheiden door komma's. Je vindt de jouwe in de s=-tag van de DKIM-Signature-header van een verzonden e-mail.</value></data>
+  <data name="Dkim_Placeholder" xml:space="preserve"><value>selector1, selector2</value></data>
+  <data name="Dkim_Save" xml:space="preserve"><value>Opslaan en scannen</value></data>
+  <data name="Dkim_Invalid" xml:space="preserve"><value>Gebruik letters, cijfers, punten, streepjes of underscores, maximaal 10 selectors.</value></data>
+  <data name="Col_Origin" xml:space="preserve"><value>Herkomst</value></data>
+  <data name="Col_Why" xml:space="preserve"><value>Reden</value></data>
+  <data name="Origin_added" xml:space="preserve"><value>Handmatig toegevoegd</value></data>
+  <data name="Origin_discovered" xml:space="preserve"><value>Ontdekt</value></data>
+  <data name="Filter_Search" xml:space="preserve"><value>Zoek op naam</value></data>
+  <data name="Filter_AllOrigins" xml:space="preserve"><value>Alle herkomst</value></data>
+  <data name="Filter_AllTypes" xml:space="preserve"><value>Alle typen</value></data>
+  <data name="Filter_AllStatuses" xml:space="preserve"><value>Alle statussen</value></data>
+  <data name="Filter_Problems" xml:space="preserve"><value>Aandacht nodig (waarschuwing of erger)</value></data>
+  <data name="Filter_Apply" xml:space="preserve"><value>Filteren</value></data>
+  <data name="Filter_Reset" xml:space="preserve"><value>Herstel</value></data>
+  <data name="Filter_Count" xml:space="preserve"><value>{0} van {1} getoond</value></data>
+  <data name="Filter_None" xml:space="preserve"><value>Niets komt overeen met deze filters.</value></data>
+  <data name="Disc_Title" xml:space="preserve"><value>Hoe het is ontdekt</value></data>
+  <data name="Disc_Via" xml:space="preserve"><value>via {0}</value></data>
+  <data name="Disc_ViaCt" xml:space="preserve"><value>via CT-log</value></data>
+  <data name="Disc_From" xml:space="preserve"><value>vanuit {0}</value></data>
+  <data name="Disc_Manual" xml:space="preserve"><value>Handmatig toegevoegd.</value></data>
+  <data name="Disc_UnknownParent" xml:space="preserve"><value>een gemonitord domein</value></data>
+  <data name="Disc_Why" xml:space="preserve"><value>De naam staat op een openbaar gelogd certificaat (uitgegeven door {2}, geldig tot {3}) dat {1} teruggaf bij het doorzoeken van de Certificate Transparency-logs naar {0}. Je hebt het toegevoegd bij de beoordeling op {4} en het wordt gemonitord zoals elk ander endpoint. Verwijder je het, dan komt het op de lijst met genegeerde hostnamen en komt het niet terug.</value></data>
+  <data name="Disc_Legacy" xml:space="preserve"><value>De naam staat op een openbaar gelogd certificaat dat is gevonden bij het doorzoeken van de Certificate Transparency-logs naar {0}. Het is toegevoegd voordat de details werden vastgelegd. Verwijder je het, dan komt het op de lijst met genegeerde hostnamen en komt het niet terug.</value></data>
+  <data name="Alerts_Telegram" xml:space="preserve"><value>Telegram-bottoken</value></data>
+  <data name="Alerts_TelegramConfigured" xml:space="preserve"><value>Ingesteld: bot {0} (laat leeg om te behouden)</value></data>
+  <data name="Alerts_TelegramChat" xml:space="preserve"><value>Telegram-chat-ID</value></data>
+  <data name="Alerts_TelegramHelp" xml:space="preserve"><value>Maak een bot met @BotFather, voeg die toe aan je chat of kanaal en vul de token en het chat-ID in. Beide zijn nodig.</value></data>
+  <data name="Err_InvalidTelegramToken" xml:space="preserve"><value>Dat lijkt niet op een Telegram-bottoken (123456789:AAH…).</value></data>
+  <data name="Err_InvalidTelegramChat" xml:space="preserve"><value>Het chat-ID moet een getal zijn (negatief voor groepen) of @kanaalnaam.</value></data>
+  <data name="Err_TelegramIncomplete" xml:space="preserve"><value>Telegram heeft zowel een bottoken als een chat-ID nodig.</value></data>
+  <data name="Diag_Channel_telegram" xml:space="preserve"><value>Telegram</value></data>
+  <data name="TgHow_Title" xml:space="preserve"><value>Hoe maak ik een Telegram-bot?</value></data>
+  <data name="TgHow_1" xml:space="preserve"><value>Open in Telegram @BotFather (de officiële bot om bots te maken) en stuur</value></data>
+  <data name="TgHow_1b" xml:space="preserve"><value>Hij vraagt om een weergavenaam (bijvoorbeeld “FullyQualified alarmen”) en een gebruikersnaam die op “bot” eindigt (bijvoorbeeld fq_alarms_bot).</value></data>
+  <data name="TgHow_2" xml:space="preserve"><value>BotFather antwoordt met de bottoken. Plak die in het tokenveld hierboven. Hij ziet er zo uit:</value></data>
+  <data name="TgHow_3" xml:space="preserve"><value>Bepaal waar alarmen heen moeten. Voor jezelf: open je nieuwe bot en druk op Start. Voor een team: voeg de bot toe aan een groep. Voor een kanaal: voeg de bot toe als beheerder. Stuur daarna een willekeurig bericht.</value></data>
+  <data name="TgHow_4" xml:space="preserve"><value>Zoek het chat-ID: open dit adres in je browser, met je eigen token ingevuld:</value></data>
+  <data name="TgHow_4b" xml:space="preserve"><value>In het antwoord is het getal achter “id” bij “chat” het chat-ID. Voor groepen is het negatief. Voor een openbaar kanaal kun je ook @kanaalnaam invullen. Bijvoorbeeld:</value></data>
+  <data name="TgHow_5" xml:space="preserve"><value>Vul het chat-ID hierboven in, druk op Opslaan en daarna op Testalarm versturen. Het bericht hoort binnen enkele seconden aan te komen.</value></data>
+  <data name="TgHow_Token" xml:space="preserve"><value>token</value></data>
+  <data name="TgHow_Secret" xml:space="preserve"><value>Houd de token geheim: wie hem heeft, kan berichten sturen als je bot. Lekt hij, stuur dan /revoke naar @BotFather en vul hier de nieuwe token in.</value></data>
+  <data name="Bulk_SelectAll" xml:space="preserve"><value>Selecteer alles wat getoond wordt</value></data>
+  <data name="Bulk_Delete" xml:space="preserve"><value>Verwijder geselecteerde</value></data>
+  <data name="Bulk_Confirm" xml:space="preserve"><value>De geselecteerde assets en hun geschiedenis verwijderen?</value></data>
+  <data name="Bulk_Deleted" xml:space="preserve"><value>{0} asset(s) verwijderd.</value></data>
+  <data name="Bulk_None" xml:space="preserve"><value>Selecteer eerst minstens één asset.</value></data>
+  <data name="Bulk_Note" xml:space="preserve"><value>Een verwijderde hostnaam uit de certificaatlogs komt op de lijst met genegeerde hostnamen en komt niet terug.</value></data>
+  <data name="Sum_TlsChainMismatch" xml:space="preserve"><value>Certificaat niet vertrouwd: {0}. Gecontroleerd op {1}, maar het certificaat is geldig voor: {2}</value></data>
+  <data name="Dig_Open" xml:space="preserve"><value>DNS-lookup</value></data>
+  <data name="Dig_Title" xml:space="preserve"><value>DNS-lookup</value></data>
+  <data name="Dig_Sub" xml:space="preserve"><value>Een live dig: vraag de systeemresolver en openbare resolvers en vergelijk hun antwoorden.</value></data>
+  <data name="Dig_Placeholder" xml:space="preserve"><value>voorbeeld.nl of een IP-adres</value></data>
+  <data name="Dig_Name" xml:space="preserve"><value>Naam</value></data>
+  <data name="Dig_Type" xml:space="preserve"><value>Type</value></data>
+  <data name="Dig_Data" xml:space="preserve"><value>Gegevens</value></data>
+  <data name="Dig_Resolver" xml:space="preserve"><value>Resolver</value></data>
+  <data name="Dig_All" xml:space="preserve"><value>Alle resolvers (vergelijk)</value></data>
+  <data name="Dig_Go" xml:space="preserve"><value>Opzoeken</value></data>
+  <data name="Dig_Querying" xml:space="preserve"><value>Bezig met opvragen…</value></data>
+  <data name="Dig_Empty" xml:space="preserve"><value>Typ een naam om op te zoeken.</value></data>
+  <data name="Dig_NoRecords" xml:space="preserve"><value>Geen {0}-records gevonden (NODATA).</value></data>
+  <data name="Dig_NxDomain" xml:space="preserve"><value>{0} bestaat niet (NXDOMAIN).</value></data>
+  <data name="Dig_Agree" xml:space="preserve"><value>Alle resolvers geven hetzelfde antwoord.</value></data>
+  <data name="Dig_Disagree" xml:space="preserve"><value>De resolvers zijn het oneens. De afwijkende zijn gemarkeerd. Dat kan een hijack betekenen, of een wijziging die nog doorwerkt.</value></data>
+  <data name="Dig_Differs" xml:space="preserve"><value>wijkt af</value></data>
+  <data name="Dig_Copy" xml:space="preserve"><value>Kopieer</value></data>
+  <data name="Dig_Copied" xml:space="preserve"><value>Gekopieerd</value></data>
+  <data name="Dig_Command" xml:space="preserve"><value>Dezelfde vraag in een terminal:</value></data>
+  <data name="Dig_Close" xml:space="preserve"><value>Sluiten</value></data>
+  <data name="Dig_Hint" xml:space="preserve"><value>Druk overal op / om dit venster te openen</value></data>
+  <data name="Dig_Err_invalid_name" xml:space="preserve"><value>Dat is geen geldige hostnaam of IP-adres.</value></data>
+  <data name="Dig_Err_invalid_type" xml:space="preserve"><value>Niet-ondersteund recordtype.</value></data>
+  <data name="Dig_Err_rate" xml:space="preserve"><value>Te veel lookups. Wacht een minuut en probeer het opnieuw.</value></data>
+  <data name="Dig_Err_failed" xml:space="preserve"><value>De lookup is mislukt.</value></data>
+  <data name="Dig_ResolverFailed" xml:space="preserve"><value>Geen antwoord</value></data>
+  <data name="Dig_LookUp" xml:space="preserve"><value>Zoek {0} ({1}) op in DNS</value></data>
+  <data name="Status_Paused" xml:space="preserve"><value>Gepauzeerd</value></data>
+  <data name="Pause_Title" xml:space="preserve"><value>Monitoring pauzeren</value></data>
+  <data name="Pause_Help" xml:space="preserve"><value>Een gepauzeerd asset wordt niet gecontroleerd, geeft nooit alarm en telt niet als probleem. Hervat wanneer je wilt, of kies een datum waarop het vanzelf hervat.</value></data>
+  <data name="Pause_UntilLabel" xml:space="preserve"><value>Hervatten op (optioneel)</value></data>
+  <data name="Pause_Reason" xml:space="preserve"><value>Reden (optioneel)</value></data>
+  <data name="Pause_Button" xml:space="preserve"><value>Pauzeren</value></data>
+  <data name="Pause_Resume" xml:space="preserve"><value>Nu hervatten</value></data>
+  <data name="Pause_Until" xml:space="preserve"><value>tot {0}</value></data>
+  <data name="Pause_Indefinitely" xml:space="preserve"><value>tot hervat</value></data>
+  <data name="Pause_UntilLong" xml:space="preserve"><value>Gepauzeerd tot {0}; daarna wordt het vanzelf weer gecontroleerd.</value></data>
+  <data name="Pause_IndefinitelyLong" xml:space="preserve"><value>Gepauzeerd tot iemand het hervat.</value></data>
+  <data name="Pause_Effect" xml:space="preserve"><value>Zolang het gepauzeerd is, wordt niets gecontroleerd en gaan er geen alarmen uit. De laatste resultaten blijven bewaard.</value></data>
+  <data name="Mute_Button" xml:space="preserve"><value>Dempen</value></data>
+  <data name="Mute_Unmute" xml:space="preserve"><value>Dempen opheffen</value></data>
+  <data name="Mute_MakeOptional" xml:space="preserve"><value>Optioneel maken</value></data>
+  <data name="Mute_MakeRequired" xml:space="preserve"><value>Verplicht maken</value></data>
+  <data name="Mute_OptionalBadge" xml:space="preserve"><value>Optioneel</value></data>
+  <data name="Mute_Muted" xml:space="preserve"><value>gedempt</value></data>
+  <data name="Mute_UntilShort" xml:space="preserve"><value>gedempt tot {0}</value></data>
+  <data name="Mute_UntilHelp" xml:space="preserve"><value>Dempen tot deze datum (optioneel; leeg betekent tot je het opheft)</value></data>
+  <data name="Mute_ByCert" xml:space="preserve"><value>(het certificaat is gedempt)</value></data>
+  <data name="Mute_Count" xml:space="preserve"><value>{0} gedempt</value></data>
+  <data name="Issue_TlsExpired" xml:space="preserve"><value>Certificaat verlopen</value></data>
+  <data name="Issue_TlsExpiring" xml:space="preserve"><value>Certificaat verloopt binnenkort</value></data>
+  <data name="Issue_TlsTrust" xml:space="preserve"><value>Certificaat niet vertrouwd</value></data>
+  <data name="Issue_TlsError" xml:space="preserve"><value>TLS-controle mislukt</value></data>
+  <data name="Issue_CtError" xml:space="preserve"><value>Opzoeken in certificaatlogs mislukt</value></data>
+  <data name="Issue_DnsError" xml:space="preserve"><value>DNS-controle mislukt</value></data>
+  <data name="Bulk_Pause" xml:space="preserve"><value>Pauzeer geselecteerde</value></data>
+  <data name="Bulk_Resume" xml:space="preserve"><value>Hervat geselecteerde</value></data>
+  <data name="Bulk_Paused" xml:space="preserve"><value>{0} asset(s) gepauzeerd.</value></data>
+  <data name="Bulk_Resumed" xml:space="preserve"><value>{0} asset(s) hervat.</value></data>
+  <data name="Mute_UntilLabel" xml:space="preserve"><value>Tot (optioneel)</value></data>
+  <data name="Fix_Title" xml:space="preserve"><value>Oplossen: {0}</value></data>
+  <data name="Fix_Link" xml:space="preserve"><value>Oplossen</value></data>
+  <data name="Fix_WhatTitle" xml:space="preserve"><value>Wat dit betekent</value></data>
+  <data name="Fix_StepsTitle" xml:space="preserve"><value>Wat te doen</value></data>
+  <data name="Fix_CommandsTitle" xml:space="preserve"><value>Controleer het zelf</value></data>
+  <data name="Fix_ExampleTitle" xml:space="preserve"><value>Voorbeeld om mee te beginnen</value></data>
+  <data name="Fix_LookupsTitle" xml:space="preserve"><value>Zoek het hier op</value></data>
+  <data name="Fix_FoundTitle" xml:space="preserve"><value>Wat er is gevonden</value></data>
+  <data name="Fix_Then" xml:space="preserve"><value>Als het is opgelost, verdwijnt deze melding bij de volgende scan. Gebruik Nu scannen op de assetpagina om het meteen te zien. Is het bewust zo, demp het dan op de assetpagina, bij voorkeur met een einddatum.</value></data>
+  <data name="Fix_None" xml:space="preserve"><value>Voor deze melding is er nog geen advies.</value></data>
+  <data name="Fix_BackToAsset" xml:space="preserve"><value>Terug naar het asset</value></data>
+  <data name="Fix_NoSpf_What" xml:space="preserve"><value>{0} heeft geen SPF-record. SPF noemt de servers die e-mail mogen versturen voor je domein. Zonder SPF kan iedereen mail sturen die van {0} lijkt te komen, en behandelen ontvangende servers je echte mail eerder als spam.</value></data>
+  <data name="Fix_NoSpf_Steps" xml:space="preserve"><value>Maak een lijst van alles wat e-mail verstuurt als {0}: je mailprovider, nieuwsbrief- en CRM-tools, webshop, ticketsysteem en elke server die meldingen mailt.
+Zoek in de documentatie van elke verzender de SPF-include op, bijvoorbeeld include:_spf.google.com voor Google Workspace of include:spf.protection.outlook.com voor Microsoft 365.
+Publiceer één TXT-record op {0} dat begint met v=spf1, die includes noemt en eindigt op ~all. Ga over op -all als je zeker weet dat de lijst compleet is.
+Een naam mag maar één SPF-record hebben. Bestaat er al een, voeg ze dan samen in plaats van een tweede toe te voegen.
+Houd het bij in totaal 10 DNS-opzoekingen, anders negeren ontvangers het record.
+Controleer het resultaat met de opdracht hieronder en scan daarna opnieuw.</value></data>
+  <data name="Fix_NoDmarc_What" xml:space="preserve"><value>{0} heeft geen DMARC-beleid. DMARC vertelt ontvangende servers wat ze moeten doen met mail die de SPF- en DKIM-controle niet doorstaat, en stuurt je rapporten over wie mail verstuurt als je domein. Zonder DMARC wordt vervalste mail geaccepteerd en zie je misbruik niet.</value></data>
+  <data name="Fix_NoDmarc_Steps" xml:space="preserve"><value>Zorg dat SPF en DKIM al werken voor al je mail, anders weigert DMARC later echte berichten.
+Maak een mailbox aan, of gebruik een DMARC-rapportagedienst, die de rapporten ontvangt.
+Publiceer een TXT-record op _dmarc.{0}, te beginnen in bewakingsmodus: p=none met een rua=-adres.
+Lees de rapporten een paar weken en herstel de legitieme verzenders die falen.
+Scherp het beleid stap voor stap aan: p=quarantine (begin met pct=25) en daarna p=reject.
+Controleer het resultaat met de opdracht hieronder en scan daarna opnieuw.</value></data>
+  <data name="Fix_DmarcNone_What" xml:space="preserve"><value>Het DMARC-beleid van {0} is p=none: mail die faalt wordt toch afgeleverd en DMARC rapporteert alleen. Dat is de goede manier om te beginnen, maar het beschermt niet tegen vervalsing.</value></data>
+  <data name="Fix_DmarcNone_Steps" xml:space="preserve"><value>Lees je DMARC-rapporten (het rua-adres) en maak een lijst van de verzenders die falen op SPF of DKIM.
+Herstel die verzenders: voeg ze toe aan SPF of stel DKIM-ondertekening voor ze in. Stop verzenders die je niet kent.
+Zet het beleid op p=quarantine met pct=25 en verhoog pct in een paar weken naar 100.
+Faalt er niets legitiems meer, ga dan over op p=reject. Voeg sp=reject toe als je subdomeinen geen mail versturen.
+Blijf je bewust nog in bewakingsmodus, demp deze melding dan met een einddatum, zodat hij terugkomt.</value></data>
+  <data name="Fix_NoCaa_What" xml:space="preserve"><value>{0} heeft geen CAA-record. CAA beperkt welke certificeringsinstanties certificaten voor het domein mogen uitgeven. Zonder CAA mag elke CA dat, waardoor foutieve uitgifte moeilijker te voorkomen is.</value></data>
+  <data name="Fix_NoCaa_Steps" xml:space="preserve"><value>Kijk welke CA's je huidige certificaten hebben uitgegeven: zie de kolom Uitgever in de certificatenlijst.
+Publiceer een CAA-record voor elke CA die je gebruikt, bijvoorbeeld 0 issue "letsencrypt.org". Gebruik issuewild voor wildcardcertificaten.
+Voeg een iodef-record toe met een adres dat bericht moet krijgen over geweigerde aanvragen.
+Controleer of je DNS-provider CAA-records ondersteunt (de meeste doen dat) en dat je geen CA bent vergeten, anders mislukt de verlenging bij die CA.
+Controleer het resultaat met de opdracht hieronder en scan daarna opnieuw.</value></data>
+  <data name="Fix_NoNs_What" xml:space="preserve"><value>Voor {0} zijn geen nameserverrecords gevonden. De naam wordt niet opgelost, dus niets dat ervan afhangt (web, e-mail, certificaten) kan werken.</value></data>
+  <data name="Fix_NoNs_Steps" xml:space="preserve"><value>Controleer de spelling van de naam.
+Controleer of het domein geregistreerd is en niet is verlopen: voer whois uit en kijk naar de status en de verloopdatum.
+Controleer bij de registrar of het domein naar de juiste nameservers wijst en of die servers een zone voor {0} hebben.
+Voer dig NS {0} +trace uit om te zien waar de keten breekt.
+Is het domein uit gebruik, verwijder of pauzeer het asset dan.</value></data>
+  <data name="Fix_DanglingCname_What" xml:space="preserve"><value>{0} is een CNAME die wijst naar {1}, en die naam bestaat niet. Wie {1} registreert of claimt (een verwijderde cloud-app, opslagbucket of naam van een gehoste dienst) kan inhoud serveren op {0}: een subdomain takeover.</value></data>
+  <data name="Fix_DanglingCname_Steps" xml:space="preserve"><value>Zoek uit waarvoor {0} diende. Wordt het niet meer gebruikt, verwijder het CNAME-record dan meteen bij je DNS-provider. Daarmee is het risico weg.
+Is het nog nodig, herstel dan {1}: maak de app, bucket of eigen domeinnaam bij de provider opnieuw aan onder dezelfde naam, of laat de CNAME naar het nieuwe doel wijzen.
+Controleer je andere records op CNAME's naar dezelfde provider die mogelijk ook verweesd zijn.
+Verwijder voortaan de eigen domeinnaam bij de provider en het DNS-record samen als je een dienst uit gebruik neemt.
+Controleer met de opdrachten hieronder en scan daarna opnieuw.</value></data>
+  <data name="Fix_ResolverMismatch_What" xml:space="preserve"><value>Openbare resolvers geven verschillende antwoorden voor de {1}-records van {0}. Dat is normaal kort nadat je een record hebt gewijzigd, maar het kan ook betekenen dat iemand je DNS heeft aangepast zonder dat je het weet, of dat een van je nameservers oude gegevens geeft.</value></data>
+  <data name="Fix_ResolverMismatch_Steps" xml:space="preserve"><value>Zoek het record op met alle resolvers (de opzoekknop hieronder) en vergelijk de antwoorden.
+Heb je het onlangs gewijzigd, wacht dan tot de TTL van het oude record voorbij is en scan opnieuw.
+Blijft het verschillen, vraag het dan rechtstreeks aan elk van je eigen nameservers (zie de opdrachten hieronder). Eén server met andere gegevens is de gebruikelijke oorzaak: synchroniseer of herstel die zone.
+Staan er in een antwoord nameservers of mailservers die je niet kent, behandel het dan als een hijack: wijzig de wachtwoorden van je registrar- en DNS-accounts, zet tweestapsverificatie en een registry lock aan en neem contact op met je registrar.
+Zijn verschillende antwoorden de bedoeling (split-horizon DNS), demp deze melding dan.</value></data>
+  <data name="Fix_DkimMissing_What" xml:space="preserve"><value>Voor selector {1} op {0} is geen DKIM-record gevonden. DKIM ondertekent uitgaande mail zodat ontvangers kunnen zien dat die echt van jou komt. Zonder gepubliceerde sleutel faalt ondertekende mail op DKIM en daarmee op DMARC.</value></data>
+  <data name="Fix_DkimMissing_Steps" xml:space="preserve"><value>Controleer dat de selector precies de s=-waarde is in de DKIM-Signature-header van een bericht dat je hebt verstuurd.
+Zoek in de instellingen van je mailprovider de DKIM-sleutel of het CNAME-record voor die selector en publiceer het op {1}._domainkey.{0}. Providers gebruiken een TXT-record of een CNAME.
+Kopieer de waarde exact. Lange sleutels moeten soms in meerdere tekenreeksen tussen aanhalingstekens worden gesplitst; de meeste DNS-providers doen dat voor je.
+Wacht op de TTL en controleer met de opdracht hieronder.
+Is de selector uit gebruik, verwijder hem dan uit de DKIM-selectors op de assetpagina.</value></data>
+  <data name="Fix_DkimRevoked_What" xml:space="preserve"><value>De DKIM-sleutel van selector {1} op {0} is leeg (p=), en dat trekt hem in. Mail die met deze selector is ondertekend, faalt op DKIM.</value></data>
+  <data name="Fix_DkimRevoked_Steps" xml:space="preserve"><value>Heb je de selector bewust uit gebruik genomen, verwijder hem dan uit de DKIM-selectors op de assetpagina.
+Zo niet, zoek dan de actuele publieke sleutel in de instellingen van je mailprovider en publiceer hem opnieuw op {1}._domainkey.{0}.
+Controleer dat je mailsysteem nog ondertekent met een selector waarvan de sleutel gepubliceerd is.
+Controleer met de opdracht hieronder en scan daarna opnieuw.</value></data>
+  <data name="Fix_DkimInvalid_What" xml:space="preserve"><value>Het DKIM-record voor selector {1} op {0} kan niet als publieke sleutel worden gelezen. Ontvangers beschouwen handtekeningen met deze selector als mislukt.</value></data>
+  <data name="Fix_DkimInvalid_Steps" xml:space="preserve"><value>Kopieer het record opnieuw van je mailprovider. Let op ontbrekende tekens, extra spaties of aanhalingstekens midden in de sleutel.
+Sommige DNS-panelen beperken een TXT-tekenreeks tot 255 tekens. Een sleutel van 2048 bits moet in meerdere tekenreeksen tussen aanhalingstekens worden gesplitst.
+Behoud de tags: v=DKIM1; k=rsa; p=&lt;sleutel&gt;.
+Controleer de gepubliceerde waarde met de opdracht hieronder en scan daarna opnieuw.</value></data>
+  <data name="Fix_DkimWeak_What" xml:space="preserve"><value>De DKIM-sleutel van selector {1} op {0} is slechts {2} bits. Sleutels onder 1024 bits zijn met beperkte moeite te kraken, waardoor iemand ondertekende mail van je domein zou kunnen vervalsen.</value></data>
+  <data name="Fix_DkimWeak_Steps" xml:space="preserve"><value>Genereer bij je mailprovider of op je mailserver een nieuwe DKIM-sleutel van 2048 bits.
+Publiceer hem onder een nieuwe selectornaam, bijvoorbeeld de maand en het jaar.
+Schakel de ondertekening om naar de nieuwe selector en wacht een paar dagen op mail die nog onderweg is.
+Verwijder de oude selector uit DNS en uit de DKIM-selectors op de assetpagina.</value></data>
+  <data name="Fix_DnsError_What" xml:space="preserve"><value>De DNS-controle voor {0} kon niet worden afgerond: {1}. Het gaat om het opzoeken, niet per se om {0} zelf.</value></data>
+  <data name="Fix_DnsError_Steps" xml:space="preserve"><value>Controleer of de server waarop FullyQualified draait een DNS-server kan bereiken: voer daar de eerste opdracht uit. Lukt dat niet, controleer dan het netwerk en de instelling Dns:Server.
+Controleer dat uitgaand DNS (UDP- en TCP-poort 53) niet door een firewall wordt geblokkeerd.
+Vergelijk met een openbare resolver (de tweede opdracht). Werkt die wel, dan ligt het probleem bij je lokale resolver.
+Antwoordt elke resolver met SERVFAIL voor dit domein, dan is DNSSEC mogelijk kapot of liggen de nameservers eruit: voer de derde opdracht uit en vraag het je DNS-provider.
+De controle probeert het binnen 15 minuten vanzelf opnieuw.</value></data>
+  <data name="Fix_TlsExpired_What" xml:space="preserve"><value>Het certificaat van {0} is verlopen op {1}. Browsers en apps tonen een beveiligingsfout of weigeren verbinding te maken.</value></data>
+  <data name="Fix_TlsExpiring_What" xml:space="preserve"><value>Het certificaat van {0} verloopt op {1} (nog {2} dagen). Wordt het niet op tijd vernieuwd, dan krijgen bezoekers en systemen beveiligingsfouten.</value></data>
+  <data name="Fix_Tls_Renew_Steps" xml:space="preserve"><value>Vernieuw het certificaat nu. Voer bij Let's Encrypt of een andere ACME-client (certbot, acme.sh, win-acme, Caddy, cert-manager) de verlenging met de hand uit en lees de foutmelding. Een geblokkeerde challenge (poort 80, een DNS-record), een gewijzigd DNS-record of een rate limit zijn de gebruikelijke oorzaken.
+Vraag bij een commercieel certificaat een vervanger aan bij je reseller of CA en rond de validatie af.
+Installeer het nieuwe certificaat overal waar deze naam wordt geserveerd: webserver of IIS-binding, load balancer, Azure Key Vault met Application Gateway of Front Door, CDN, Java-keystore. Laad de dienst daarna opnieuw.
+Controleer het resultaat met de opdracht hieronder: de datums en de uitgever horen nieuw te zijn.
+Automatiseer het. Levensduren van certificaten worden korter (100 dagen in 2027, 47 dagen in 2029), dus met de hand vernieuwen blijft niet beheersbaar.
+Is het systeem uit gebruik, pauzeer of verwijder het asset dan.</value></data>
+  <data name="Fix_TlsTrust_What" xml:space="preserve"><value>Het certificaat dat {0} laat zien wordt niet vertrouwd ({2}). Browsers en apps waarschuwen bezoekers of weigeren verbinding te maken.</value></data>
+  <data name="Fix_TlsTrust_Mismatch_Title" xml:space="preserve"><value>Het certificaat dekt de naam niet</value></data>
+  <data name="Fix_TlsTrust_Mismatch_Steps" xml:space="preserve"><value>Het certificaat is geldig voor: {1}. {0} staat daar niet bij.
+Moet {0} door dit certificaat worden gedekt, geef het dan opnieuw uit met {0} als alternatieve naam (SAN), of gebruik een wildcardcertificaat dat de naam dekt.
+Host de server meerdere sites, controleer dan dat hij het juiste certificaat voor {0} kiest (SNI of virtual host-instellingen) en dat niet het standaardcertificaat wordt getoond.
+Wijst {0} naar de verkeerde server, herstel dan het A-, AAAA- of CNAME-record: zoek het op met de knop hieronder.</value></data>
+  <data name="Fix_TlsTrust_Chain_Title" xml:space="preserve"><value>De certificaatketen wordt niet vertrouwd</value></data>
+  <data name="Fix_TlsTrust_Chain_Steps" xml:space="preserve"><value>Een ontbrekend tussencertificaat is de meest voorkomende oorzaak: installeer de volledige keten (bijvoorbeeld fullchain.pem), niet alleen het servercertificaat.
+Een zelfondertekend certificaat, of een certificaat van een private CA, wordt door browsers niet vertrouwd. Gebruik een certificaat van een openbare CA. Zorg bij interne systemen dat de clients je CA vertrouwen en demp deze melding.
+Controleer dat geen enkel certificaat in de keten is verlopen, ook de tussencertificaten niet.
+Controleer de keten met de tweede opdracht (die toont elk certificaat), laad de dienst opnieuw en scan daarna opnieuw.</value></data>
+  <data name="Fix_TlsError_What" xml:space="preserve"><value>De TLS-controle kon geen verbinding maken met {0} op poort {1}: {2}. Er is niets gecontroleerd, dus de staat van het certificaat is onbekend.</value></data>
+  <data name="Fix_TlsError_Steps" xml:space="preserve"><value>Controleer of het adres en de poort kloppen. Een endpoint wordt geschreven als host:poort, en zonder poort wordt 443 gebruikt.
+Controleer of de dienst draait en op die poort luistert (de eerste opdracht) en of geen firewall de verbinding vanaf de server met FullyQualified blokkeert.
+Wordt de naam niet opgelost, herstel of voeg dan het DNS-record toe.
+Lukt de verbinding maar mislukt de handshake, dan ondersteunt de server mogelijk alleen oude protocollen (TLS 1.0 of 1.1) of deelt hij geen cipher suite met deze client. Schakel TLS 1.2 of hoger in.
+Staat er dat de host niet is toegestaan, dan blokkeert deze installatie privéadressen: zet Scanning:AllowPrivateAddresses op true, of gebruik een openbare naam.
+Hoort het niet bereikbaar te zijn, pauzeer het asset dan of maak de controle optioneel.</value></data>
+  <data name="Fix_CtError_What" xml:space="preserve"><value>De zoekopdracht in de certificaatlogs voor {0} is mislukt: {1}. De openbare diensten die certificaten opsommen (crt.sh, daarna Cert Spotter) waren allebei niet beschikbaar. Er is niets mis met je domein en er wordt door dit probleem niets anders gemonitord.</value></data>
+  <data name="Fix_CtError_Steps" xml:space="preserve"><value>Wacht even: crt.sh is een gratis dienst die vaak overbelast is of aanvragen afknijpt, en de zoekopdracht valt terug op Cert Spotter als crt.sh faalt. Druk daarna opnieuw op Subdomeinen zoeken.
+Blijft het uren mislukken, controleer dan of de server met FullyQualified https://crt.sh en https://api.certspotter.com kan bereiken (uitgaand HTTPS, proxy, firewall).
+Zeer grote domeinen kunnen time-outs geven. Voeg de belangrijke hostnamen dan zelf toe als assets.
+Je hebt deze zoekopdracht niet nodig om een domein te monitoren: ze helpt alleen om hostnamen te vinden die je nog niet kende.</value></data>
+  <data name="Nav_Review" xml:space="preserve"><value>Beoordelen</value></data>
+  <data name="Discover_Title" xml:space="preserve"><value>Subdomeinen zoeken</value></data>
+  <data name="Discover_Help" xml:space="preserve"><value>Zoekt het domein op in de openbare certificaatlogs (crt.sh, daarna Cert Spotter) en toont de hostnamen met een certificaat. Er wordt niets vanzelf toegevoegd: jij beoordeelt wat er is gevonden. Hierbij gaat de domeinnaam naar die diensten, daarom draait het alleen als jij erom vraagt.</value></data>
+  <data name="Discover_Button" xml:space="preserve"><value>Subdomeinen zoeken</value></data>
+  <data name="Discover_Queued" xml:space="preserve"><value>Zoekopdracht staat klaar, ververs over een minuut</value></data>
+  <data name="Discover_Last" xml:space="preserve"><value>Laatste zoekopdracht</value></data>
+  <data name="Discover_Pending" xml:space="preserve"><value>{0} gevonden hostnaam/hostnamen wachten op beoordeling</value></data>
+  <data name="Discover_Reviewed" xml:space="preserve"><value>{0} gevonden hostnaam/hostnamen, allemaal beoordeeld</value></data>
+  <data name="Review_Title" xml:space="preserve"><value>Gevonden hostnamen beoordelen</value></data>
+  <data name="Review_Intro" xml:space="preserve"><value>Hostnamen uit de certificaatlogs worden pas gemonitord als je ze toevoegt. Voeg toe wat van jou is en negeer de rest met een reden. Genegeerde hostnamen blijven vastgelegd, komen bij de volgende zoekopdracht niet terug en staan in de rapporten.</value></data>
+  <data name="Review_DiscoverAll" xml:space="preserve"><value>Subdomeinen zoeken op alle domeinen</value></data>
+  <data name="Review_State_Pending" xml:space="preserve"><value>Wacht</value></data>
+  <data name="Review_State_Added" xml:space="preserve"><value>Toegevoegd</value></data>
+  <data name="Review_State_Ignored" xml:space="preserve"><value>Genegeerd</value></data>
+  <data name="Review_Filter_All" xml:space="preserve"><value>Alle</value></data>
+  <data name="Review_Banner" xml:space="preserve"><value>{0} hostnaam/hostnamen uit de certificaatlogs wachten op je beoordeling.</value></data>
+  <data name="Review_BannerButton" xml:space="preserve"><value>Nu beoordelen</value></data>
+  <data name="Review_Add" xml:space="preserve"><value>Toevoegen</value></data>
+  <data name="Review_AddSelected" xml:space="preserve"><value>Voeg geselecteerde toe</value></data>
+  <data name="Review_Ignore" xml:space="preserve"><value>Negeren</value></data>
+  <data name="Review_IgnoreSelected" xml:space="preserve"><value>Negeer geselecteerde</value></data>
+  <data name="Review_Restore" xml:space="preserve"><value>Herstellen</value></data>
+  <data name="Review_RestoreSelected" xml:space="preserve"><value>Herstel geselecteerde</value></data>
+  <data name="Review_ReasonLabel" xml:space="preserve"><value>Reden (verplicht)</value></data>
+  <data name="Review_ReasonPlaceholder" xml:space="preserve"><value>Waarom wordt dit niet gemonitord?</value></data>
+  <data name="Review_Nothing" xml:space="preserve"><value>Hier valt niets te beoordelen. Gebruik Subdomeinen zoeken bij een domein om meer te vinden.</value></data>
+  <data name="Review_Select" xml:space="preserve"><value>Selecteer eerst minstens één hostnaam.</value></data>
+  <data name="Review_NeedReason" xml:space="preserve"><value>Geef een reden voor het negeren.</value></data>
+  <data name="Review_Done_add" xml:space="preserve"><value>{0} hostnaam/hostnamen toegevoegd aan de monitoring.</value></data>
+  <data name="Review_Done_addLimit" xml:space="preserve"><value>{0} toegevoegd. {1} konden niet worden toegevoegd omdat de limiet van je abonnement is bereikt.</value></data>
+  <data name="Review_Done_ignore" xml:space="preserve"><value>{0} hostnaam/hostnamen genegeerd.</value></data>
+  <data name="Review_Done_restore" xml:space="preserve"><value>{0} hostnaam/hostnamen teruggezet naar beoordeling.</value></data>
+  <data name="Review_Done_discover" xml:space="preserve"><value>Zoeken op {0} domein(en). Ververs over een minuut om te zien wat er is gevonden.</value></data>
+  <data name="Review_RemovedReason" xml:space="preserve"><value>Verwijderd uit de monitoring</value></data>
+  <data name="Review_Automatic" xml:space="preserve"><value>automatisch toegevoegd, voordat beoordelen bestond</value></data>
+  <data name="Review_FoundFrom" xml:space="preserve"><value>{0} via {1}, certificaat van {2} geldig tot {3}</value></data>
+  <data name="Review_FoundShort" xml:space="preserve"><value>{0} via {1}</value></data>
+  <data name="Review_UnknownParent" xml:space="preserve"><value>een domein</value></data>
+  <data name="Review_More" xml:space="preserve"><value>De eerste {0} getoond; nog {1}. Gebruik zoeken om het te beperken.</value></data>
+  <data name="Col_FoundVia" xml:space="preserve"><value>Gevonden via</value></data>
+  <data name="Col_Reason" xml:space="preserve"><value>Reden</value></data>
+  <data name="Col_Decided" xml:space="preserve"><value>Besloten</value></data>
+  <data name="Col_DecidedBy" xml:space="preserve"><value>Besloten door</value></data>
+  <data name="Rep_ReviewTitle" xml:space="preserve"><value>Beoordeling gevonden hostnamen</value></data>
+  <data name="Rep_ReviewSummary" xml:space="preserve"><value>Hostnamen uit certificaatlogs: {0} toegevoegd, {1} genegeerd, {2} wachten op beoordeling.</value></data>
+  <data name="Refresh" xml:space="preserve"><value>Vernieuwen</value></data>
+  <data name="NotFound_Title" xml:space="preserve"><value>Pagina niet gevonden</value></data>
+  <data name="NotFound_Text" xml:space="preserve"><value>Deze pagina bestaat niet, of je mag hem niet zien.</value></data>
+  <data name="EmailTest_Title" xml:space="preserve"><value>Een DMARC-testmail versturen</value></data>
+  <data name="EmailTest_Intro" xml:space="preserve"><value>Verstuur een echte e-mail vanaf een domein dat je monitort, naar een ontvangende mailbox die je kunt bekijken.</value></data>
+  <data name="EmailTest_FromNotOwned" xml:space="preserve"><value>Het afzenderadres moet op een domein staan dat je monitort in FullyQualified. Voeg het domein eerst toe, of verstuur vanaf een domein dat je al monitort.</value></data>
+  <data name="EmailTest_Help" xml:space="preserve"><value>Deze test gebruikt de ingestelde SMTP-server van de applicatie. Die kan het bericht weigeren, aanpassen of ondertekenen. Je test deze verzendroute. Open bij het ontvangen bericht de oorspronkelijke headers en bekijk Authentication-Results van de ontvangende server voor dmarc, spf en dkim. SMTP-acceptatie bewijst geen aflevering of geslaagde DMARC-controle.</value></data>
+  <data name="EmailTest_From" xml:space="preserve"><value>Van</value></data>
+  <data name="EmailTest_To" xml:space="preserve"><value>Aan</value></data>
+  <data name="EmailTest_Subject" xml:space="preserve"><value>Onderwerp</value></data>
+  <data name="EmailTest_Message" xml:space="preserve"><value>Bericht</value></data>
+  <data name="EmailTest_DefaultSubject" xml:space="preserve"><value>FullyQualified: DMARC-testmail</value></data>
+  <data name="EmailTest_DefaultMessage" xml:space="preserve"><value>Dit is een e-mailauthenticatietest vanuit FullyQualified. Bekijk de Authentication-Results-header van de ontvangende server voor de resultaten van DMARC, SPF en DKIM.</value></data>
+  <data name="EmailTest_Send" xml:space="preserve"><value>Testmail versturen</value></data>
+  <data name="EmailTest_Success" xml:space="preserve"><value>De SMTP-server heeft de testmail geaccepteerd. Bekijk het postvak of de spammap van de ontvanger en controleer de oorspronkelijke headers voor het DMARC-resultaat.</value></data>
+  <data name="EmailTest_InvalidFrom" xml:space="preserve"><value>Vul één geldig afzenderadres in, zonder weergavenaam.</value></data>
+  <data name="EmailTest_InvalidTo" xml:space="preserve"><value>Vul één geldig e-mailadres van een ontvanger in, zonder weergavenaam.</value></data>
+  <data name="EmailTest_InvalidSubject" xml:space="preserve"><value>Vul een onderwerp in van maximaal 200 tekens, zonder regeleinden of besturingstekens.</value></data>
+  <data name="EmailTest_InvalidMessage" xml:space="preserve"><value>Vul een bericht in van maximaal 10.000 tekens.</value></data>
+  <data name="EmailTest_Failed" xml:space="preserve"><value>De SMTP-server kon de testmail niet versturen. Controleer het afzenderadres en de SMTP-instellingen van de server. De poging staat in het logboek.</value></data>
+  <data name="EmailTest_Rate" xml:space="preserve"><value>Je organisatie kan vijf testmails per minuut versturen. Wacht voordat je het opnieuw probeert.</value></data>
+  <data name="EmailTest_Channel" xml:space="preserve"><value>E-mailtest</value></data>
+  <data name="EmailTest_Accepted" xml:space="preserve"><value>SMTP geaccepteerd</value></data>
 </root>

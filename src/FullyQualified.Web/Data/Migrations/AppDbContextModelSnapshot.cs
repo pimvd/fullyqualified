@@ -82,6 +82,12 @@ namespace FullyQualified.Web.Data.Migrations
                     b.Property<string>("SlackWebhook")
                         .HasColumnType("text");
 
+                    b.Property<string>("TelegramBotToken")
+                        .HasColumnType("text");
+
+                    b.Property<string>("TelegramChatId")
+                        .HasColumnType("text");
+
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
 
@@ -111,6 +117,24 @@ namespace FullyQualified.Web.Data.Migrations
                     b.Property<bool>("Discovered")
                         .HasColumnType("boolean");
 
+                    b.Property<DateTimeOffset?>("DiscoveredCertExpires")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("DiscoveredFromId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("DiscoveredIssuer")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("DiscoveredVia")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
+
+                    b.Property<string>("DkimSelectors")
+                        .HasMaxLength(400)
+                        .HasColumnType("character varying(400)");
+
                     b.Property<int>("Kind")
                         .HasColumnType("integer");
 
@@ -118,6 +142,16 @@ namespace FullyQualified.Web.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(260)
                         .HasColumnType("character varying(260)");
+
+                    b.Property<DateTimeOffset?>("PausedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PausedReason")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTimeOffset?>("PausedUntil")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("TenantId")
                         .HasColumnType("uuid");
@@ -150,6 +184,16 @@ namespace FullyQualified.Web.Data.Migrations
                     b.Property<string>("Issuer")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<bool>("Muted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("MutedReason")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTimeOffset?>("MutedUntil")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTimeOffset>("NotAfter")
                         .HasColumnType("timestamp with time zone");
@@ -220,6 +264,45 @@ namespace FullyQualified.Web.Data.Migrations
                     b.HasIndex("DetectedAt");
 
                     b.ToTable("changes", (string)null);
+                });
+
+            modelBuilder.Entity("FullyQualified.Web.CheckMute", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AssetId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CheckType")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("Until")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssetId", "CheckType", "Code")
+                        .IsUnique();
+
+                    b.ToTable("check_mutes", (string)null);
                 });
 
             modelBuilder.Entity("FullyQualified.Web.CheckResult", b =>
@@ -419,6 +502,64 @@ namespace FullyQualified.Web.Data.Migrations
                     b.ToTable("passkeys", (string)null);
                 });
 
+            modelBuilder.Entity("FullyQualified.Web.ReviewHost", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("CertExpires")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("DecidedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("DecidedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<DateTimeOffset>("FirstSeenAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Issuer")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTimeOffset>("LastSeenAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(260)
+                        .HasColumnType("character varying(260)");
+
+                    b.Property<Guid?>("ParentAssetId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("Service")
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
+
+                    b.Property<int>("State")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "Name")
+                        .IsUnique();
+
+                    b.HasIndex("TenantId", "State");
+
+                    b.ToTable("review_hosts", (string)null);
+                });
+
             modelBuilder.Entity("FullyQualified.Web.Tenant", b =>
                 {
                     b.Property<Guid>("Id")
@@ -588,6 +729,15 @@ namespace FullyQualified.Web.Data.Migrations
                 });
 
             modelBuilder.Entity("FullyQualified.Web.Change", b =>
+                {
+                    b.HasOne("FullyQualified.Web.Asset", null)
+                        .WithMany()
+                        .HasForeignKey("AssetId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("FullyQualified.Web.CheckMute", b =>
                 {
                     b.HasOne("FullyQualified.Web.Asset", null)
                         .WithMany()

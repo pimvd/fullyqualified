@@ -111,9 +111,9 @@
                 {
                     <tr>
                         <td class="nowrap">@a.At.ToString("yyyy-MM-dd HH:mm")</td>
-                        <td>@a.Channel</td>
+                        <td>@(a.Channel == EmailTestEndpoints.LogChannel ? L["EmailTest_Channel"].Value : a.Channel)</td>
                         <td>@a.Subject</td>
-                        <td>@if (a.Success) { <span class="badge ok">@L["Log_Delivered"]</span> } else { <span class="badge error" title="@a.Error">@L["Log_Failed"]</span> }</td>
+                        <td>@if (a.Success) { <span class="badge ok">@L[a.Channel == EmailTestEndpoints.LogChannel ? "EmailTest_Accepted" : "Log_Delivered"]</span> } else { <span class="badge error" title="@a.Error">@L["Log_Failed"]</span> }</td>
                     </tr>
                 }
                 </tbody>

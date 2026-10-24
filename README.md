@@ -6,8 +6,9 @@ FullyQualified monitors certificates and DNS records for your domains and turns 
 
 ## What it does
 
-- **Certificate discovery** from Certificate Transparency logs (crt.sh) and TLS endpoint scans, with expiry, issuer and a manual/automated renewal guess.
-- **DNS checks:** SPF, DKIM (common selectors), DMARC, CAA, MX, NS, DNSSEC, and dangling CNAMEs (subdomain takeover risk). Every value is a baseline; a change is recorded and alerted.
+- **Certificates** found by TLS endpoint scans, with expiry, issuer and a manual/automated renewal guess.
+- **Subdomain discovery** on request (*Find subdomains*): the public Certificate Transparency logs (crt.sh, with Cert Spotter as fallback) list hostnames that have a certificate. Nothing is added by itself: you review them, add what is yours and ignore the rest with a reason. See below.
+- **DNS checks:** A/AAAA, SPF, DKIM (common selectors plus the ones you configure per domain, with key size and revocation), DMARC, CAA, MX, NS, DNSSEC, and dangling CNAMEs (subdomain takeover risk). Every value is a baseline; a change is recorded and alerted. NS, MX and CAA are cross-checked against other public resolvers.
 - **Alerts** on status changes and drift via Slack, a generic webhook (PagerDuty, Opsgenie) or email.
 - **NIS2 report** as PDF and Excel.
 - **UI** in English and Dutch (`EN`/`NL` in the header).
@@ -16,18 +17,50 @@ Nothing is ever changed in your environment: it only reads.
 
 ## Run it
 
+Install Docker with the Docker Compose plugin. From the repository root, build and start the application, PostgreSQL database and private SMTP relay:
+
 ```sh
-docker compose up
+docker compose up --build -d
 ```
 
-Open http://localhost:8080. Without Docker you need .NET 10 and Postgres:
+Open http://localhost:8080. On a fresh database, follow `/setup` to create the first administrator with a passkey. Migrations are applied on startup; database and mail queue data are kept in Docker volumes.
+
+Check the services, follow application logs, or stop the stack while keeping its data:
+
+```sh
+docker compose ps
+docker compose logs -f app
+docker compose down
+```
+
+The marketing website runs separately. With Python 3 installed, start it in another terminal from the repository root:
+
+```sh
+python3 -m http.server -d site 8090
+```
+
+Open http://localhost:8090 (English) or http://localhost:8090/nl/ (Dutch). Stop this server with Ctrl+C.
+
+Without Docker you need the .NET 10 SDK and a running PostgreSQL server. Set the connection string to match your database, then run:
 
 ```sh
 ConnectionStrings__Default="Host=localhost;Database=fullyqualified;Username=postgres;Password=postgres" \
   dotnet run --project src/FullyQualified.Web
 ```
 
-Migrations are applied on startup.
+The default development URL is http://localhost:5089. For email in this mode, configure a reachable SMTP server as described below.
+
+### Built-in SMTP relay
+
+Docker Compose includes a private Postfix relay and connects the application to it automatically. The relay has no published SMTP port and shares a dedicated network only with the application. Its queue is stored in the `mailqueue` volume, and its delivery logs are available through `docker compose logs -f postfix`.
+
+For external delivery, copy `.env.example` to `.env` and set `FQ_MAIL_HOSTNAME` to the mail server's public hostname and `FQ_MAIL_FROM` to the default sender address. Then run `docker compose up --build -d`. The hostname must resolve to the outbound public IP; arrange matching reverse DNS with your hosting provider and allow outbound TCP port 25. On Scaleway Instances, SMTP must also be enabled in the security group. The default `.invalid` hostname and sender are placeholders for local startup, not working public mail identities.
+
+Admins can open **Alerts → Send a DMARC test email**, enter From, To, Subject and Message, and submit the message. Postfix preserves the sender and does not add DKIM signatures, so it can test unauthorized sending for domains you are authorized to test. For that test, do not authorize this test relay in the tested domain's SPF record. Check the receiving server's `Authentication-Results` header for the DMARC result: a queued message or a rejection alone does not establish that result. A message may also be delayed or rejected because of IP reputation, reverse DNS or network restrictions. Queue acceptance is not confirmation of delivery.
+
+This relay is also the default route for alarm emails and invitations. You can use an external SMTP service by setting `FQ_SMTP_HOST`, `FQ_SMTP_PORT`, `FQ_SMTP_SSL`, `FQ_SMTP_USER` and `FQ_SMTP_PASSWORD` in `.env`. `Ssl=true` enables STARTTLS; use the provider's STARTTLS port. Change `FQ_SMTP_SUBNET` if the default `172.30.25.0/29` overlaps an existing network. SMTP is unencrypted inside this dedicated Docker network; outgoing delivery uses opportunistic TLS.
+
+When running the application outside Docker, configure its existing `Alerts__Email__*` environment variables with a reachable SMTP server. The Compose hostname `postfix` is available only to containers on the mail network; the relay is deliberately not exposed on the host.
 
 ## Configuration
 
@@ -47,7 +80,9 @@ Environment variables (use `__` for `:`):
 | `Scanning:ManualCooldownMinutes` | 5 | Minimum time between two uses of "check everything now" per tenant |
 | `Scanning:AllowPrivateAddresses` | true | Set false on a shared install to block scans of private networks |
 | `Dns:Server` | system | Resolver IP to use |
+| `Dns:CompareResolvers` | `1.1.1.1,9.9.9.9,8.8.8.8` | Public resolvers that NS, MX and CAA answers are cross-checked against to spot DNS tampering. Empty turns it off; resolvers that cannot be reached are ignored. |
 | `Alerts:SlackWebhook` | unset | Slack incoming webhook |
+| `Alerts:Telegram:BotToken`, `Alerts:Telegram:ChatId` | unset | Telegram bot and the chat, group or channel it writes to. Both are needed. |
 | `Alerts:Webhook` | unset | Generic JSON webhook |
 | `Alerts:Email:Host/Port/Ssl/User/Password/From/To` | unset | SMTP |
 
@@ -83,9 +118,35 @@ Every asset is checked again once its newest result is older than the **scan int
 
 `/scan` is a page anyone can use without an account: type a public domain and see its TLS certificate and DNS email and security records. Nothing is stored. It is **off unless you set `PublicScan:Enabled=true`**, because it lets strangers make your server connect to hosts they choose. It therefore accepts only public host names on port 443, always refuses private and local addresses (whatever `Scanning:AllowPrivateAddresses` says), connects to the address it checked, limits each client address to `PublicScan:PerHour` checks (default 10) and `PublicScan:Concurrent` scans at once (default 8). Behind a reverse proxy set `ASPNETCORE_FORWARDEDHEADERS_ENABLED=true`, or every visitor shares the proxy's address and its limit. The website's form sends visitors here.
 
+## Finding and reviewing subdomains
+
+The certificate-log search is optional and runs only when you press **Find subdomains** on a domain, or on all domains from the **Review** page. It sends the domain name to crt.sh (and to Cert Spotter if crt.sh fails), which is why it never runs by itself. It is not part of a domain's status: a failed search is not a problem and never alarms.
+
+What it finds is not monitored yet. The **Review** page lists every hostname, with the domain and service that found it, the issuer and the certificate's expiry. For each one you:
+
+- **Add** it, which makes it an endpoint that is monitored like any other (within your plan's limit), or
+- **Ignore** it with a **reason**, which is required. An ignored hostname is kept on record, does not come back at the next search, and can be restored.
+
+Deleting an endpoint that came from the logs puts it on the ignored list too ("Removed from monitoring"). The dashboard says how many hostnames are waiting. The NIS2 report (Excel and PDF) has a *Discovery review* section with every decision, its reason, and who decided when, so you can show that what was found was looked at.
+
+## How to fix what is found
+
+Every finding and error comes with advice. Next to each one on the dashboard and on the asset page is a **How to fix** link to a page that says what the finding means, gives numbered steps to fix it, shows commands to check it yourself, an example record where one helps, and buttons that open the DNS lookup on the right record. It uses the asset's own names, so a DKIM problem shows the exact `selector._domainkey.example.com` to check, and a certificate name mismatch shows which names the certificate covers. It is in English and Dutch. When `Auth:Origin` is set, alarms by Slack, Telegram, webhook and email include the same links.
+
+## Pausing and muting
+
+Not everything needs attention all the time. On an asset's page, editors can:
+
+- **Pause** the asset, optionally until a date. A paused asset is not checked, never alarms, and does not count as a problem (shown as *Paused* on the dashboard). It resumes by itself on the end date, or when someone presses *Resume now*. The dashboard can pause and resume several assets at once.
+- **Mute a finding**, such as *No CAA record* or *Certificate expires soon*, optionally until a date. A muted finding stays visible but is not a warning and never alarms. After the end date it counts again.
+- **Make a check optional** (*Make optional*), which mutes everything that check can report for that asset.
+- **Mute a certificate** in the certificate list: it is left out of the expiring counts and the report, and its expiry never turns the TLS check into a warning. Trust problems still count.
+
+Alarms follow what counts: muting a finding does not raise or clear an alarm, and nothing is sent for a paused asset or an optional check.
+
 ## Alarms and the log
 
-Admins set where alarms go on the **Alarms** page: a Slack webhook, a generic webhook (PagerDuty, Opsgenie), email recipients, the lowest status that should alarm, and whether recoveries and drift are reported. Webhook addresses are stored encrypted, a tenant cannot point them at private networks when `Scanning:AllowPrivateAddresses` is false, and *Send a test alarm* shows what happened per channel. Without settings, the server-wide `Alerts:*` configuration is used. The **Log** page shows check results and delivered or failed alarms over 7, 30 or 90 days, with charts per day, per check and for changes, filters, and a table view of the chart data.
+Admins set where alarms go on the **Alarms** page: a Slack webhook, a Telegram bot and chat, a generic webhook (PagerDuty, Opsgenie), email recipients, the lowest status that should alarm, and whether recoveries and drift are reported. Webhook addresses and the Telegram bot token are stored encrypted, a tenant cannot point them at private networks when `Scanning:AllowPrivateAddresses` is false, and *Send a test alarm* shows what happened per channel. Without settings, the server-wide `Alerts:*` configuration is used. The **Log** page shows check results and delivered or failed alarms over 7, 30 or 90 days, with charts per day, per check and for changes, filters, and a table view of the chart data.
 
 ## Website
 

@@ -1,0 +1,42 @@
+# A private submission relay; the application is the only network client.
+compatibility_level = 3.6
+myhostname = mail.fullyqualified.invalid
+myorigin = $myhostname
+mydestination =
+relay_domains =
+relayhost =
+inet_interfaces = all
+inet_protocols = ipv4
+mynetworks = 127.0.0.0/8
+smtpd_client_restrictions = permit_mynetworks, reject
+smtpd_relay_restrictions = permit_mynetworks, reject_unauth_destination
+smtpd_helo_required = yes
+strict_rfc821_envelopes = yes
+disable_vrfy_command = yes
+smtpd_banner = $myhostname ESMTP
+
+# Submit on the private Docker network; relay through the authenticated submission
+# server named by POSTFIX_RELAY_HOST (set by the entrypoint), always over STARTTLS.
+smtpd_tls_security_level = none
+smtp_sasl_auth_enable = yes
+smtp_sasl_password_maps = texthash:/etc/postfix/sasl_passwd
+smtp_sasl_security_options = noanonymous
+smtp_tls_security_level = encrypt
+smtp_tls_CAfile = /etc/ssl/certs/ca-certificates.crt
+smtp_tls_loglevel = 1
+
+# Preserve the test sender. There is no DKIM signer or address rewriting.
+append_dot_mydomain = no
+canonical_maps =
+sender_canonical_maps =
+smtp_generic_maps =
+smtpd_milters =
+non_smtpd_milters =
+alias_maps =
+alias_database =
+local_transport = error:Local mailbox delivery is disabled
+
+maillog_file = /dev/stdout
+message_size_limit = 1048576
+maximal_queue_lifetime = 1d
+bounce_queue_lifetime = 1d

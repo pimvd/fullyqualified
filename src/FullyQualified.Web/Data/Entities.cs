@@ -46,7 +46,23 @@ public class Asset : ITenantOwned
     public AssetKind Kind { get; set; }
     public required string Name { get; set; }
     public bool Discovered { get; set; }
+    /// <summary>Which service listed the name: "crt.sh" or "Cert Spotter". Empty for assets discovered before this was recorded.</summary>
+    public string? DiscoveredVia { get; set; }
+    /// <summary>The asset whose certificate search found this one.</summary>
+    public Guid? DiscoveredFromId { get; set; }
+    public string? DiscoveredIssuer { get; set; }
+    public DateTimeOffset? DiscoveredCertExpires { get; set; }
+    /// <summary>Comma-separated DKIM selectors to check for this domain.</summary>
+    public string? DkimSelectors { get; set; }
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+
+    /// <summary>Set while monitoring is paused: no scans, no alarms, and the asset does not count as a problem.</summary>
+    public DateTimeOffset? PausedAt { get; set; }
+    /// <summary>When set, monitoring resumes by itself at this moment.</summary>
+    public DateTimeOffset? PausedUntil { get; set; }
+    public string? PausedReason { get; set; }
+
+    public bool IsPaused(DateTimeOffset now) => PausedAt is not null && (PausedUntil is null || PausedUntil > now);
 }
 
 public class CheckResult : ITenantOwned
@@ -93,6 +109,13 @@ public class CertificateRecord : ITenantOwned
     public DateTimeOffset NotAfter { get; set; }
     public string Renewal { get; set; } = "Manual";
     public DateTimeOffset SeenAt { get; set; } = DateTimeOffset.UtcNow;
+    /// <summary>A muted certificate is left out of the expiring counts, and its expiry never turns the TLS check into a warning.</summary>
+    public bool Muted { get; set; }
+    public string? MutedReason { get; set; }
+    /// <summary>When set, the mute ends at this moment and the certificate counts again.</summary>
+    public DateTimeOffset? MutedUntil { get; set; }
+
+    public bool IsMuted(DateTimeOffset now) => Muted && (MutedUntil is null || MutedUntil > now);
 
     [NotMapped]
     public int DaysLeft => (int)Math.Floor((NotAfter - DateTimeOffset.UtcNow).TotalDays);
@@ -174,6 +197,10 @@ public class AlertSettings : ITenantOwned
     public bool Enabled { get; set; } = true;
     public string? SlackWebhook { get; set; }
     public string? WebhookUrl { get; set; }
+    /// <summary>Telegram bot token, protected like the webhooks. Sent with <see cref="TelegramChatId"/>.</summary>
+    public string? TelegramBotToken { get; set; }
+    /// <summary>Numeric chat, group or channel id, or @channelname.</summary>
+    public string? TelegramChatId { get; set; }
     /// <summary>Comma-separated recipients.</summary>
     public string? EmailTo { get; set; }
     /// <summary>Alert only when a check reaches at least this status.</summary>
@@ -230,4 +257,52 @@ public static class Tiers
         new() { Key = Business, Name = "Business", SortOrder = 3, MaxDomains = 100, MaxEndpoints = 500, MaxUsers = 50, ReportsEnabled = true, RetentionMonths = 24, ScanIntervalMinutes = 60, ManualCooldownMinutes = 5 },
         new() { Key = Custom, Name = "Custom", SortOrder = 4, MaxDomains = null, MaxEndpoints = null, MaxUsers = null, ReportsEnabled = true, RetentionMonths = null, ScanIntervalMinutes = null, ManualCooldownMinutes = null },
     ];
+}
+
+public enum ReviewState { Pending = 0, Added = 1, Ignored = 2 }
+
+/// <summary>
+/// A hostname found in the certificate logs. It is not monitored until someone adds it; ignoring it needs a reason, and an ignored
+/// hostname does not come back at the next search. The decisions are part of the reports.
+/// </summary>
+public class ReviewHost : ITenantOwned
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid TenantId { get; set; }
+    /// <summary>The domain whose search found it.</summary>
+    public Guid? ParentAssetId { get; set; }
+    public required string Name { get; set; }
+    public DateTimeOffset FirstSeenAt { get; set; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset LastSeenAt { get; set; } = DateTimeOffset.UtcNow;
+    public string? Service { get; set; }
+    public string? Issuer { get; set; }
+    public DateTimeOffset? CertExpires { get; set; }
+    public ReviewState State { get; set; } = ReviewState.Pending;
+    public string? Reason { get; set; }
+    public DateTimeOffset? DecidedAt { get; set; }
+    public string? DecidedBy { get; set; }
+
+    /// <summary>Stored as the reason when a discovered asset is deleted, shown in the reader's language.</summary>
+    public const string RemovedReason = "@removed";
+}
+
+/// <summary>
+/// A finding of one asset that does not count: it stays visible but is not a warning and never alarms.
+/// <see cref="Code"/> is a finding such as "NoCaa", "DkimMissing:s1" or "TlsTrust", or "*" for the whole check (an optional check).
+/// </summary>
+public class CheckMute : ITenantOwned
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid TenantId { get; set; }
+    public Guid AssetId { get; set; }
+    public required string CheckType { get; set; }
+    public required string Code { get; set; }
+    public string? Reason { get; set; }
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+    /// <summary>When set, the mute ends at this moment and the finding counts again.</summary>
+    public DateTimeOffset? Until { get; set; }
+
+    public bool IsActive(DateTimeOffset now) => Until is null || Until > now;
+
+    public const string WholeCheck = "*";
 }

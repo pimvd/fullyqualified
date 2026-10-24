@@ -42,4 +42,17 @@ public class AuthTests(NoDbFactory factory) : IClassFixture<NoDbFactory>
             Assert.Equal(System.Net.HttpStatusCode.Unauthorized, (await client.PostAsJsonAsync(path, new { })).StatusCode);
         Assert.Equal(System.Net.HttpStatusCode.Unauthorized, (await client.DeleteAsync($"/auth/passkeys/{Guid.NewGuid()}")).StatusCode);
     }
+
+    /// <summary>A catch-all "not found" page must never get in front of the stylesheet and scripts: without them every screen loses its layout.</summary>
+    [Theory]
+    [InlineData("/app.css", "text/css")]
+    [InlineData("/dig.js", "javascript")]
+    [InlineData("/admin.js", "javascript")]
+    [InlineData("/passkey.js", "javascript")]
+    public async Task Static_files_are_served_and_not_swallowed_by_the_not_found_page(string path, string type)
+    {
+        var response = await factory.CreateClient().GetAsync(path);
+        Assert.Equal(System.Net.HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains(type, response.Content.Headers.ContentType?.ToString());
+    }
 }

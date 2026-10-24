@@ -14,7 +14,7 @@ else
         @foreach (var c in changes)
         {
             <tr><td>@c.DetectedAt.ToString("yyyy-MM-dd HH:mm")</td><td><a href="/assets/@c.AssetId">@names.GetValueOrDefault(c.AssetId)</a></td>
-                <td>@c.Key</td><td class="wrap">@c.Before</td><td class="wrap">@c.After</td></tr>
+                <td><DnsKey Key="@c.Key" Asset="@names.GetValueOrDefault(c.AssetId, "")" Check="@c.CheckType" /></td><td class="wrap">@c.Before</td><td class="wrap">@c.After</td></tr>
         }
         </tbody>
     </table>

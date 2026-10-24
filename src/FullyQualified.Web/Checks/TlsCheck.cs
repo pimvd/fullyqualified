@@ -49,6 +49,8 @@ public sealed class TlsCheck(HostGuard guard) : ICheck
             var (status, summary) = true switch
             {
                 _ when days < 0 => (CheckStatus.Critical, $"Sum_TlsExpired|{notAfter:yyyy-MM-dd}"),
+                _ when errors.HasFlag(SslPolicyErrors.RemoteCertificateNameMismatch) =>
+                    (CheckStatus.Warning, $"Sum_TlsChainMismatch|{errors}|{host}|{CoveredNames(leaf)}"),
                 _ when errors != SslPolicyErrors.None => (CheckStatus.Warning, $"Sum_TlsChain|{errors}"),
                 _ when days <= 14 => (CheckStatus.Critical, $"Sum_TlsOk|{days}|{notAfter:yyyy-MM-dd}|{issuer}"),
                 _ when days <= 30 => (CheckStatus.Warning, $"Sum_TlsOk|{days}|{notAfter:yyyy-MM-dd}|{issuer}"),
@@ -61,5 +63,15 @@ public sealed class TlsCheck(HostGuard guard) : ICheck
             if (ct.IsCancellationRequested) throw;
             return new(CheckStatus.Error, $"Sum_Error|{ex.Message.Replace('|', '/')}", []);
         }
+    }
+
+    /// <summary>The names the certificate is valid for: its DNS subject alternative names, or the subject name when it has none.</summary>
+    static string CoveredNames(X509Certificate2 cert)
+    {
+        var names = cert.Extensions.OfType<X509SubjectAlternativeNameExtension>().FirstOrDefault()?.EnumerateDnsNames().Distinct().ToList() ?? [];
+        if (names.Count == 0) names.Add(cert.GetNameInfo(X509NameType.SimpleName, false));
+        const int max = 8;
+        var shown = string.Join(", ", names.Take(max)).Replace('|', '/');
+        return names.Count > max ? $"{shown} (+{names.Count - max})" : shown;
     }
 }

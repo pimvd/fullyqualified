@@ -37,6 +37,7 @@
         enabled: checked('al-enabled'), slackWebhook: val('al-slack'), webhookUrl: val('al-webhook'), emailTo: val('al-email'),
         minStatus: val('al-min'), notifyRecovery: checked('al-recovery'), notifyDrift: checked('al-drift'),
         clearSlack: checked('al-clear-slack'), clearWebhook: checked('al-clear-webhook'),
+        telegramBotToken: val('al-telegram'), telegramChatId: val('al-telegram-chat'), clearTelegram: checked('al-clear-telegram'),
       });
       say(form.getAttribute('data-saved'));
       setTimeout(() => location.reload(), 600);
@@ -125,6 +126,14 @@
     select.addEventListener('change', () => run(async () => {
       try { await send('PUT', `/admin/users/${select.getAttribute('data-user-role')}/role`, { role: select.value }); location.reload(); }
       catch (e) { select.value = original; throw e; }
+    }));
+  });
+
+  root.querySelectorAll('[data-user-name]').forEach(input => {
+    const original = input.value;
+    input.addEventListener('change', () => run(async () => {
+      try { await send('PUT', `/admin/users/${input.getAttribute('data-user-name')}/name`, { name: input.value }); location.reload(); }
+      catch (e) { input.value = original; throw e; }
     }));
   });
 

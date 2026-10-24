@@ -7,13 +7,18 @@ public record CertInfo(string Host, string Subject, string Issuer, string Finger
 /// <param name="Values">Baseline values; a difference with the previous run is recorded as a change.
 /// Keys starting with '_' are informational and never produce changes.</param>
 public record CheckOutcome(CheckStatus Status, string Summary, Dictionary<string, string> Values,
-    List<CertInfo>? Certs = null, List<string>? DiscoveredHosts = null);
+    List<CertInfo>? Certs = null, List<DiscoveredHost>? DiscoveredHosts = null);
+
+/// <summary>A hostname found by a check, with the evidence it was found on.</summary>
+public record DiscoveredHost(string Name, string Service, string Issuer, DateTimeOffset CertExpires);
 
 /// <summary>Every check is a plugin behind this interface.</summary>
 public interface ICheck
 {
     string Type { get; }
     bool AppliesTo(Asset asset);
+    /// <summary>False for a check that only runs when someone asks for it (certificate-log discovery); the scheduler leaves it alone.</summary>
+    bool Automatic => true;
     Task<CheckOutcome> RunAsync(Asset asset, CancellationToken ct);
 }
 

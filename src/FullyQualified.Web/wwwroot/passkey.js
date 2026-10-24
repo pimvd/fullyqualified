@@ -58,7 +58,7 @@
     login: async () => { await login(); location.assign(target()); },
     register: async () => {
       await create('/auth/register/options', '/auth/register/complete',
-        { name: value('pk-name'), inviteToken: root.getAttribute('data-invite'), setupCode: value('pk-code'), organization: value('pk-org') });
+        { name: value('pk-name'), inviteToken: root.getAttribute('data-invite'), setupCode: value('pk-code'), organization: value('pk-org'), email: value('pk-email') });
       location.assign('/');
     },
     add: async () => { await create('/auth/passkeys/options', '/auth/passkeys/complete', { label: value('pk-label') }); location.reload(); },

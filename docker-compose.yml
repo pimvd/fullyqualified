@@ -1,6 +1,7 @@
 services:
   app:
     build: .
+    restart: unless-stopped
     ports: ["8080:8080"]
     environment:
       ConnectionStrings__Default: Host=db;Database=fullyqualified;Username=postgres;Password=${POSTGRES_PASSWORD:-postgres}
@@ -9,12 +10,49 @@ services:
       Sso__ClientId: ${FQ_SSO_CLIENT_ID:-}
       Sso__ClientSecret: ${FQ_SSO_CLIENT_SECRET:-}
       Sso__AllowedDomains: ${FQ_SSO_DOMAINS:-}
-    depends_on: [db]
+      Alerts__Email__Host: ${FQ_SMTP_HOST:-postfix}
+      Alerts__Email__Port: ${FQ_SMTP_PORT:-25}
+      Alerts__Email__Ssl: ${FQ_SMTP_SSL:-false}
+      Alerts__Email__User: ${FQ_SMTP_USER:-}
+      Alerts__Email__Password: ${FQ_SMTP_PASSWORD:-}
+      Alerts__Email__From: ${FQ_MAIL_FROM:-fullyqualified@fullyqualified.invalid}
+    depends_on:
+      db:
+        condition: service_started
+      postfix:
+        condition: service_healthy
+    networks: [default, mail]
   db:
     image: postgres:17
+    restart: unless-stopped
     environment:
       POSTGRES_DB: fullyqualified
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
     volumes: [pgdata:/var/lib/postgresql/data]
+  postfix:
+    build: ./deploy/postfix
+    restart: unless-stopped
+    environment:
+      POSTFIX_HOSTNAME: ${FQ_MAIL_HOSTNAME:-mail.fullyqualified.invalid}
+      POSTFIX_RELAY_HOST: ${FQ_RELAY_HOST:-}
+      POSTFIX_RELAY_USER: ${FQ_RELAY_USER:-}
+      POSTFIX_RELAY_PASSWORD: ${FQ_RELAY_PASSWORD:-}
+      POSTFIX_MYNETWORKS: 127.0.0.0/8 ${FQ_SMTP_SUBNET:-172.30.25.0/29}
+    volumes: [mailqueue:/var/spool/postfix]
+    networks: [mail]
+    healthcheck:
+      test: [CMD, postfix, status]
+      interval: 10s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+    stop_grace_period: 30s
 volumes:
   pgdata:
+  mailqueue:
+networks:
+  default:
+  mail:
+    ipam:
+      config:
+        - subnet: ${FQ_SMTP_SUBNET:-172.30.25.0/29}

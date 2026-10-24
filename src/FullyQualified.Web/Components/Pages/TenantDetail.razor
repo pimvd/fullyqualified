@@ -1,6 +1,7 @@
 @page "/tenants/{Id:guid}"
 @using Microsoft.AspNetCore.Authorization
 @attribute [Authorize(Policy = Roles.Platform)]
+@inject DbGate Gate
 @inject IStringLocalizer<SharedResource> L
 @inject TenantStats Stats
 @inject PlanService Plans
@@ -53,11 +54,12 @@ else
     Plan? plan;
     List<Tier> tiers = [];
 
-    protected override async Task OnInitializedAsync()
+    /// <summary>Through the gate: the panels below start their own queries as soon as this page first yields, and a DbContext allows one operation at a time.</summary>
+    protected override Task OnInitializedAsync() => Gate.RunAsync(async () =>
     {
         stat = (await Stats.ForAsync(Id)).FirstOrDefault();
         if (stat is null) return;
         plan = await Plans.ForAsync(Id);
         tiers = await Db.Tiers.OrderBy(t => t.SortOrder).ToListAsync();
-    }
+    });
 }

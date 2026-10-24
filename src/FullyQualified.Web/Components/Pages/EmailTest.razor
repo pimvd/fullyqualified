@@ -1,0 +1,35 @@
+@page "/email-test"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Policy = Roles.Admin)]
+@inject IStringLocalizer<SharedResource> L
+@inject AlertService Alerts
+@inject IConfiguration Config
+
+<PageTitle>@L["EmailTest_Title"]</PageTitle>
+<h1>@L["EmailTest_Title"]</h1>
+<p><a href="/alerts">@L["Nav_Alerts"]</a></p>
+<section class="card narrow wide">
+    <p>@L["EmailTest_Intro"]</p>
+    <p class="muted" id="email-test-help">@L["EmailTest_Help"]</p>
+    @if (!Alerts.CanMail)
+    {
+        <p class="error">@L["Alerts_NoSmtp"]</p>
+    }
+    <form id="email-test-form" method="post" action="/admin/email-test" aria-describedby="email-test-help"
+          data-success="@L["EmailTest_Success"]" data-failed="@L["Err_Failed"]"
+          data-invalid_from="@L["EmailTest_InvalidFrom"]" data-invalid_to="@L["EmailTest_InvalidTo"]" data-from_not_owned="@L["EmailTest_FromNotOwned"]"
+          data-invalid_subject="@L["EmailTest_InvalidSubject"]" data-invalid_message="@L["EmailTest_InvalidMessage"]"
+          data-no_smtp="@L["Alerts_NoSmtp"]" data-smtp_failed="@L["EmailTest_Failed"]" data-rate="@L["EmailTest_Rate"]">
+        <label for="email-test-from">@L["EmailTest_From"]</label>
+        <input id="email-test-from" name="from" type="email" maxlength="254" value="@Config["Alerts:Email:From"]" required />
+        <label for="email-test-to">@L["EmailTest_To"]</label>
+        <input id="email-test-to" name="to" type="email" maxlength="254" required />
+        <label for="email-test-subject">@L["EmailTest_Subject"]</label>
+        <input id="email-test-subject" name="subject" maxlength="200" value="@L["EmailTest_DefaultSubject"]" required />
+        <label for="email-test-message">@L["EmailTest_Message"]</label>
+        <textarea id="email-test-message" name="message" rows="6" maxlength="10000" required>@L["EmailTest_DefaultMessage"]</textarea>
+        <button type="submit" disabled="@(!Alerts.CanMail)">@L["EmailTest_Send"]</button>
+        <p id="email-test-result" role="status" aria-live="polite" hidden></p>
+    </form>
+</section>
+<script src="email-test.js" defer></script>

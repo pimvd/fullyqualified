@@ -11,11 +11,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FullyQualified.Web;
 
-public record RegisterRequest(string? Name, string? InviteToken, string? SetupCode, string? Organization);
+public record RegisterRequest(string? Name, string? InviteToken, string? SetupCode, string? Organization, string? Email = null);
 public record LabelRequest(string? Label);
 
 /// <summary>Challenge state kept between the options and the completion call, in a short-lived protected cookie.</summary>
-record Pending(string OptionsJson, string Name, Guid UserId, Guid? InviteId, string? Organization = null, bool Recovery = false);
+record Pending(string OptionsJson, string Name, Guid UserId, Guid? InviteId, string? Organization = null, bool Recovery = false, string? Email = null);
 
 public class PasskeyService(AppDbContext db, Session session, PlanService plans, IDataProtectionProvider dp, IConfiguration cfg)
 {
@@ -69,6 +69,7 @@ public class PasskeyService(AppDbContext db, Session session, PlanService plans,
         string name;
         Guid userId;
         string? organization = null;
+        string? email = null;
         var recovery = false;
         List<PublicKeyCredentialDescriptor> exclude = [];
 
@@ -78,6 +79,8 @@ public class PasskeyService(AppDbContext db, Session session, PlanService plans,
             if (name.Length is 0 or > 100) return Fail(400, "invalid_name");
             organization = req.Organization?.Trim() is { Length: > 0 } o ? o : "Management";
             if (organization.Length > 100) return Fail(400, "invalid_name");
+            email = AdminService.NormalizeEmail(req.Email);
+            if (string.IsNullOrEmpty(email)) return Fail(400, "invalid_email");
             var code = cfg["Auth:SetupCode"];
             if (!string.IsNullOrEmpty(code) && !CryptographicOperations.FixedTimeEquals(Hash(req.SetupCode ?? ""), Hash(code)))
                 return Fail(403, "invalid_setup_code");
@@ -99,6 +102,7 @@ public class PasskeyService(AppDbContext db, Session session, PlanService plans,
             {
                 name = req.Name?.Trim() ?? "";
                 if (name.Length is 0 or > 100) return Fail(400, "invalid_name");
+                if (string.IsNullOrEmpty(invite.Email)) return Fail(400, "invalid_email"); // an invitation from before e-mail was mandatory
                 userId = Guid.NewGuid();
             }
         }
@@ -110,7 +114,7 @@ public class PasskeyService(AppDbContext db, Session session, PlanService plans,
             AuthenticatorSelection = Selection,
             AttestationPreference = AttestationConveyancePreference.None,
         });
-        SaveState(ctx, new Pending(options.ToJson(), name, userId, inviteId, organization, recovery));
+        SaveState(ctx, new Pending(options.ToJson(), name, userId, inviteId, organization, recovery, email));
         return Results.Content(options.ToJson(), "application/json");
     }
 
@@ -164,7 +168,7 @@ public class PasskeyService(AppDbContext db, Session session, PlanService plans,
             // The first account creates the first tenant, which becomes the management tenant.
             var tenant = await db.Tenants.SingleOrDefaultAsync(t => t.IsManagement); // an upgrade may already have created it for existing data
             if (tenant is null) db.Tenants.Add(tenant = new Tenant { Name = state.Organization ?? "Management", IsManagement = true, TierKey = Tiers.Custom });
-            user = new User { Id = state.UserId, TenantId = tenant.Id, Name = state.Name, Role = Role.Admin };
+            user = new User { Id = state.UserId, TenantId = tenant.Id, Name = state.Name, Role = Role.Admin, Email = state.Email };
             db.Users.Add(user);
         }
         else

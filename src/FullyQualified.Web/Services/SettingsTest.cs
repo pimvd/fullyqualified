@@ -135,13 +135,13 @@ public class SettingsTestService(AppDbContext db, PlanService plans, AlertServic
         {
             var started = DateTimeOffset.UtcNow;
             await alerts.SendAsync(tenantId, "FullyQualified: test alarm", "This is a test alarm from the settings test.", ct);
-            foreach (var e in await db.AlertLog.Where(a => a.At >= started).OrderBy(a => a.At).ToListAsync(ct))
+            foreach (var e in await db.AlertLog.Where(a => a.At >= started && a.Channel != EmailTestEndpoints.LogChannel).OrderBy(a => a.At).ToListAsync(ct))
                 items.Add(new(g, L["Diag_Channel_" + e.Channel].Value, e.Success ? Finding.Ok : Finding.Fail, e.Success ? L["Diag_Delivered"].Value : L["Diag_NotDelivered", e.Error ?? ""].Value));
         }
         else if (sendAlarm) items.Add(new(g, L["Diag_TestAlarm"].Value, Finding.Info, L["Diag_NotSent"].Value));
 
         var week = DateTimeOffset.UtcNow.AddDays(-7);
-        var recent = await db.AlertLog.Where(a => a.At >= week && a.Subject != "FullyQualified: test alarm").Select(a => a.Success).ToListAsync(ct);
+        var recent = await db.AlertLog.Where(a => a.At >= week && a.Subject != "FullyQualified: test alarm" && a.Channel != EmailTestEndpoints.LogChannel).Select(a => a.Success).ToListAsync(ct);
         if (recent.Count(s => !s) is > 0 and var failed)
             items.Add(new(g, L["Diag_RecentAlarms"].Value, Finding.Warning, L["Diag_RecentFailed", failed, recent.Count].Value));
         return items;

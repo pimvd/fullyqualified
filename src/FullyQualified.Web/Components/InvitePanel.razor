@@ -7,7 +7,7 @@
     <h2>@L["Invites_Title"]</h2>
     <p>@L["Invites_Intro"]</p>
     <p class="inline">
-        <input id="adm-email" type="email" maxlength="254" placeholder="@L["Invites_Email"]" autocomplete="off" />
+        <input id="adm-email" type="email" required maxlength="254" placeholder="@L["Invites_Email"]" autocomplete="off" />
         <select id="adm-role">
             @foreach (var r in Enum.GetValues<Role>())
             {

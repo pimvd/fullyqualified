@@ -10,7 +10,10 @@
         @foreach (var u in users)
         {
             <tr>
-                <td>@u.Name @if (u.Id == Me) { <span class="muted">(@L["Users_You"])</span> }</td>
+                <td class="nowrap">
+                    <input class="name-edit" data-user-name="@u.Id" value="@u.Name" maxlength="100" aria-label="@L["Col_Name"]" />
+                    @if (u.Id == Me) { <span class="muted">(@L["Users_You"])</span> }
+                </td>
                 <td>@u.Email</td>
                 <td>
                     <select data-user-role="@u.Id">
@@ -24,9 +27,9 @@
                 <td class="nowrap">@u.CreatedAt.ToString("yyyy-MM-dd")</td>
                 <td class="nowrap">@(u.LastLoginAt?.ToString("yyyy-MM-dd HH:mm") ?? L["Passkeys_Never"].Value)</td>
                 <td class="nowrap">
-                    <button type="button" class="secondary" data-user-reset="@u.Id">@L["Recovery_Button"]</button>
                     @if (u.Id != Me)
                     {
+                        <button type="button" class="secondary" data-user-reset="@u.Id">@L["Recovery_Button"]</button>
                         <button type="button" class="danger" data-user-remove="@u.Id">@L["Passkeys_Remove"]</button>
                     }
                 </td>

@@ -179,21 +179,63 @@ public class PlanDbTests : IClassFixture<PgFactory>
     }
 
     [DbFact]
-    public async Task Discovery_adds_hosts_only_while_the_endpoint_limit_has_room()
+    public async Task Discovery_files_hosts_for_review_and_adding_stops_at_the_endpoint_limit()
     {
         var org = await NewOrg(Tiers.Free, domains: 1, endpoints: 2);
         await Edit(org.Id, t => t.OverrideMaxEndpoints = 5);                       // room for three more
-        using var scope = Scope();
-        var runner = scope.ServiceProvider.GetRequiredService<CheckRunner>();
-        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        var origin = await db.Assets.FirstAsync(a => a.TenantId == org.Id && a.Kind == AssetKind.Domain);
-        var found = Enumerable.Range(0, 8).Select(i => $"found{i}.{org.Id:N}.test.com").ToList();
-        await runner.ExecuteAsync(origin, new FakeCheck(new CheckOutcome(CheckStatus.Ok, "Sum_CtOk|8|8", [], null, found)), default);
+        Guid originId;
+        using (var scope = Scope())
+        {
+            var runner = scope.ServiceProvider.GetRequiredService<CheckRunner>();
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var origin = await db.Assets.FirstAsync(a => a.TenantId == org.Id && a.Kind == AssetKind.Domain);
+            originId = origin.Id;
+            var found = Enumerable.Range(0, 8).Select(i => new DiscoveredHost($"found{i}.{org.Id:N}.test.com", "crt.sh", "R11", DateTimeOffset.UtcNow.AddDays(30))).ToList();
+            await runner.ExecuteAsync(origin, new FakeCheck(new CheckOutcome(CheckStatus.Ok, "Sum_CtOk|8|8", [], null, found)), default);
 
+            // Finding is not adding: nothing is monitored yet, everything waits for a decision.
+            Assert.Equal(0, await db.Assets.CountAsync(a => a.TenantId == org.Id && a.Discovered));
+            var waiting = await db.ReviewHosts.Where(h => h.TenantId == org.Id).ToListAsync();
+            Assert.Equal(8, waiting.Count);
+            Assert.All(waiting, h => { Assert.Equal(ReviewState.Pending, h.State); Assert.Equal(origin.Id, h.ParentAssetId); Assert.Equal("R11", h.Issuer); Assert.Equal("crt.sh", h.Service); });
+
+            // Searching again changes nothing about a decision that was made.
+            waiting[0].State = ReviewState.Ignored; waiting[0].Reason = "not ours";
+            await db.SaveChangesAsync();
+            await runner.ExecuteAsync(origin, new FakeCheck(new CheckOutcome(CheckStatus.Ok, "Sum_CtOk|8|8", [], null, found)), default);
+            Assert.Equal(ReviewState.Ignored, (await db.ReviewHosts.SingleAsync(h => h.Name == waiting[0].Name)).State);
+            Assert.Equal(8, await db.ReviewHosts.CountAsync(h => h.TenantId == org.Id));
+        }
+
+        // Adding all of them: only as many as the plan has room for.
+        var admin = org.Admin;
+        var client = factory.As(admin);
+        var page = await (await client.GetAsync("/review")).Content.ReadAsStringAsync();
+        var token = System.Text.RegularExpressions.Regex.Match(page, "name=\"__RequestVerificationToken\" value=\"([^\"]+)\"").Groups[1].Value;
+        List<Guid> pending;
+        using (var scope = Scope())
+            pending = await scope.ServiceProvider.GetRequiredService<AppDbContext>().ReviewHosts.Where(h => h.TenantId == org.Id && h.State == ReviewState.Pending).Select(h => h.Id).ToListAsync();
+        Assert.Equal(7, pending.Count);
+        var form = new List<KeyValuePair<string, string>> { new("__RequestVerificationToken", token) };
+        form.AddRange(pending.Select(id => new KeyValuePair<string, string>("ids", id.ToString())));
+        var response = await client.PostAsync("/review/add", new FormUrlEncodedContent(form));
+        Assert.Equal(System.Net.HttpStatusCode.Redirect, response.StatusCode);
+        Assert.Contains("done=add:3:4", response.Headers.Location!.OriginalString);
+
+        using var check = Scope();
+        var verify = check.ServiceProvider.GetRequiredService<AppDbContext>();
         var plan = await PlanOf(org.Id);
         Assert.Equal(5, plan.Usage.Endpoints);
-        Assert.Equal(3, await db.Assets.CountAsync(a => a.TenantId == org.Id && a.Discovered));
-        Assert.All(await db.Assets.Where(a => a.Discovered).ToListAsync(), a => Assert.NotEqual(Guid.Empty, a.TenantId));
+        Assert.Equal(3, await verify.Assets.CountAsync(a => a.TenantId == org.Id && a.Discovered));
+        Assert.All(await verify.Assets.Where(a => a.TenantId == org.Id && a.Discovered).ToListAsync(), a =>
+        {
+            Assert.Equal("crt.sh", a.DiscoveredVia);
+            Assert.Equal(originId, a.DiscoveredFromId);
+            Assert.Equal("R11", a.DiscoveredIssuer);
+            Assert.NotEqual(Guid.Empty, a.TenantId);
+        });
+        Assert.Equal(3, await verify.ReviewHosts.CountAsync(h => h.TenantId == org.Id && h.State == ReviewState.Added));
+        Assert.Equal(4, await verify.ReviewHosts.CountAsync(h => h.TenantId == org.Id && h.State == ReviewState.Pending)); // the rest wait for room
     }
 
     sealed class FakeCheck(CheckOutcome outcome) : ICheck
@@ -208,17 +250,17 @@ public class PlanDbTests : IClassFixture<PgFactory>
     {
         var org = await NewOrg(Tiers.Free);                                         // two users, limit two
         var ann = factory.As(org.Admin);
-        var full = await ann.PostAsJsonAsync("/admin/invites", new { role = "Viewer" });
+        var full = await ann.PostAsJsonAsync("/admin/invites", new { email = "seat1@plan.test", role = "Viewer" });
         Assert.Equal(HttpStatusCode.Conflict, full.StatusCode);
         Assert.Contains("user_limit", await full.Content.ReadAsStringAsync());
 
         await Edit(org.Id, t => t.OverrideMaxUsers = 3);
-        Assert.Equal(HttpStatusCode.OK, (await ann.PostAsJsonAsync("/admin/invites", new { role = "Viewer" })).StatusCode);
-        Assert.Equal(HttpStatusCode.Conflict, (await ann.PostAsJsonAsync("/admin/invites", new { role = "Viewer" })).StatusCode); // the first one holds the last seat
+        Assert.Equal(HttpStatusCode.OK, (await ann.PostAsJsonAsync("/admin/invites", new { email = "seat2@plan.test", role = "Viewer" })).StatusCode);
+        Assert.Equal(HttpStatusCode.Conflict, (await ann.PostAsJsonAsync("/admin/invites", new { email = "seat3@plan.test", role = "Viewer" })).StatusCode); // the first one holds the last seat
         Assert.Equal(1, (await PlanOf(org.Id)).Usage.PendingInvites);
 
         // The owner is held to the same limit when inviting into the tenant.
-        Assert.Equal(HttpStatusCode.Conflict, (await factory.As(await Owner()).PostAsJsonAsync("/admin/invites", new { role = "Viewer", tenantId = org.Id })).StatusCode);
+        Assert.Equal(HttpStatusCode.Conflict, (await factory.As(await Owner()).PostAsJsonAsync("/admin/invites", new { email = "seat4@plan.test", role = "Viewer", tenantId = org.Id })).StatusCode);
     }
 
     [DbFact]

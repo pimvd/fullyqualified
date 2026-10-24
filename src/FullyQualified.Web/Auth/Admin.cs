@@ -7,6 +7,7 @@ namespace FullyQualified.Web;
 
 public record InviteRequest(string? Email, string? Role, Guid? TenantId);
 public record RoleRequest(string? Role);
+public record NameRequest(string? Name);
 public record TenantRequest(string? Name, string? AdminEmail, string? Tier);
 
 /// <summary>Invitations, recovery links and people management. Tenant admins act within their tenant; admins of the management tenant act on any tenant.</summary>
@@ -46,7 +47,7 @@ public class AdminService(AppDbContext db, Session session, PlanService plans, A
     {
         if (!Enum.TryParse<Role>(req.Role, out var role)) return Fail(400, "invalid_role");
         var email = NormalizeEmail(req.Email);
-        if (email == "") return Fail(400, "invalid_email");
+        if (string.IsNullOrEmpty(email)) return Fail(400, "invalid_email");
         var own = Roles.TenantId(ctx.User)!.Value;
         var target = req.TenantId ?? own;
         if (target != own)
@@ -102,6 +103,19 @@ public class AdminService(AppDbContext db, Session session, PlanService plans, A
         return Results.NoContent();
     }
 
+    public async Task<IResult> Rename(HttpContext ctx, Guid id, NameRequest req)
+    {
+        var name = req.Name?.Trim() ?? "";
+        if (name.Length is 0 or > 100) return Fail(400, "invalid_name");
+        var user = await Manageable(ctx, id);
+        if (user is null) return Fail(404, "not_found");
+        db.PlatformWrite = true;
+        user.Name = name;
+        await db.SaveChangesAsync();
+        session.Forget(id);
+        return Results.NoContent();
+    }
+
     public async Task<IResult> RemoveUser(HttpContext ctx, Guid id)
     {
         if (Roles.UserId(ctx.User) == id) return Fail(409, "cannot_remove_self");
@@ -121,6 +135,8 @@ public class AdminService(AppDbContext db, Session session, PlanService plans, A
     /// <summary>For a person who lost their passkey: a single-use link, valid for a day, that sets up a new one and revokes the old ones.</summary>
     public async Task<IResult> ResetPasskey(HttpContext ctx, Guid id)
     {
+        // Admins cannot reset their own passkey; another admin has to do it.
+        if (Roles.UserId(ctx.User) == id) return Fail(409, "cannot_reset_self");
         var user = await Manageable(ctx, id);
         if (user is null) return Fail(404, "not_found");
         db.PlatformWrite = true;
@@ -143,7 +159,7 @@ public class AdminService(AppDbContext db, Session session, PlanService plans, A
         var name = req.Name?.Trim() ?? "";
         if (name.Length is 0 or > 100) return Fail(400, "invalid_name");
         var email = NormalizeEmail(req.AdminEmail);
-        if (email == "") return Fail(400, "invalid_email");
+        if (string.IsNullOrEmpty(email)) return Fail(400, "invalid_email");
         if (await db.Tenants.AnyAsync(t => t.Name == name)) return Fail(409, "tenant_exists");
         if (email is not null && await db.AcrossTenants<User>().AnyAsync(u => u.Email == email)) return Fail(409, "email_exists");
 
@@ -171,6 +187,7 @@ public static class AdminEndpoints
         g.MapPost("/invites", (HttpContext c, AdminService s, InviteRequest r) => s.CreateInvite(c, r));
         g.MapDelete("/invites/{id:guid}", (HttpContext c, AdminService s, Guid id) => s.RevokeInvite(c, id));
         g.MapPut("/users/{id:guid}/role", (HttpContext c, AdminService s, Guid id, RoleRequest r) => s.ChangeRole(c, id, r));
+        g.MapPut("/users/{id:guid}/name", (HttpContext c, AdminService s, Guid id, NameRequest r) => s.Rename(c, id, r));
         g.MapDelete("/users/{id:guid}", (HttpContext c, AdminService s, Guid id) => s.RemoveUser(c, id));
         g.MapPost("/users/{id:guid}/reset-passkey", (HttpContext c, AdminService s, Guid id) => s.ResetPasskey(c, id));
 

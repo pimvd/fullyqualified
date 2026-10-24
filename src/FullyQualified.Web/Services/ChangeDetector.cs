@@ -10,10 +10,15 @@ public static class ChangeDetector
         if (previous is null) return changes;
         foreach (var key in previous.Keys.Union(current.Keys).Where(k => !k.StartsWith('_')).OrderBy(k => k))
         {
+            // Values that are always present (a, aaaa, dkim.<selector>) are baselined the first time they are seen,
+            // so adding the check, or a selector, does not log a change for something that was merely not looked at before.
+            if (!previous.ContainsKey(key) && IsBaselinedOnFirstSight(key)) continue;
             previous.TryGetValue(key, out var before);
             current.TryGetValue(key, out var after);
             if ((before ?? "") != (after ?? "")) changes.Add((key, before ?? "", after ?? ""));
         }
         return changes;
     }
+
+    static bool IsBaselinedOnFirstSight(string key) => key is "a" or "aaaa" || key.StartsWith("dkim.", StringComparison.Ordinal);
 }

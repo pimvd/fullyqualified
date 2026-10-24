@@ -292,7 +292,7 @@ public class TenancyTests : IClassFixture<PgFactory>
             Assert.Equal(HttpStatusCode.Forbidden, (await c.GetAsync("/tenants")).StatusCode);
             Assert.Equal(HttpStatusCode.Forbidden, (await c.GetAsync($"/tenants/{w.Globex}")).StatusCode);
         }
-        Assert.Equal(HttpStatusCode.Forbidden, (await factory.As(w.AcmeAdmin).PostAsJsonAsync("/admin/invites", new { role = "Admin", tenantId = w.Globex })).StatusCode);
+        Assert.Equal(HttpStatusCode.Forbidden, (await factory.As(w.AcmeAdmin).PostAsJsonAsync("/admin/invites", new { email = "x@globex.test", role = "Admin", tenantId = w.Globex })).StatusCode);
 
         var mia = factory.As(w.MgmtAdmin);
         var page = await (await mia.GetAsync("/tenants")).Content.ReadAsStringAsync();
@@ -311,16 +311,16 @@ public class TenancyTests : IClassFixture<PgFactory>
         var created = await mia.PostAsJsonAsync("/platform/tenants", new { name = "Initech", adminEmail = "boss@initech.test" });
         Assert.Equal(HttpStatusCode.OK, created.StatusCode);
         Assert.Contains("/invite/", await created.Content.ReadAsStringAsync());
-        Assert.Equal(HttpStatusCode.Conflict, (await mia.PostAsJsonAsync("/platform/tenants", new { name = "Initech" })).StatusCode);
+        Assert.Equal(HttpStatusCode.Conflict, (await mia.PostAsJsonAsync("/platform/tenants", new { name = "Initech", adminEmail = "dup@initech.test" })).StatusCode);
         Assert.Equal(HttpStatusCode.Conflict, (await mia.PostAsJsonAsync("/platform/tenants", new { name = "Other", adminEmail = "ann@acme.test" })).StatusCode);
 
         // Globex is on Free with two users, so it is full; the owner is held to the limit like anyone, until the plan is raised.
-        Assert.Equal(HttpStatusCode.Conflict, (await mia.PostAsJsonAsync("/admin/invites", new { role = "Viewer", tenantId = w.Globex })).StatusCode);
+        Assert.Equal(HttpStatusCode.Conflict, (await mia.PostAsJsonAsync("/admin/invites", new { email = "y@globex.test", role = "Viewer", tenantId = w.Globex })).StatusCode);
         using var scope = Scope(factory.Services, null);
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         (await db.Tenants.SingleAsync(t => t.Id == w.Globex)).TierKey = Tiers.Starter;
         await db.SaveChangesAsync();
-        var invite = await mia.PostAsJsonAsync("/admin/invites", new { role = "Viewer", tenantId = w.Globex });
+        var invite = await mia.PostAsJsonAsync("/admin/invites", new { email = "y@globex.test", role = "Viewer", tenantId = w.Globex });
         Assert.Equal(HttpStatusCode.OK, invite.StatusCode);
         Assert.Contains(await db.Invites.ToListAsync(), i => i.TenantId == w.Globex && i.Role == Role.Viewer && i.RecoveryForUser is null);
         var initech = await db.Tenants.SingleAsync(t => t.Name == "Initech");
@@ -329,6 +329,36 @@ public class TenancyTests : IClassFixture<PgFactory>
     }
 
     // ---- passkey recovery ----
+
+    [DbFact]
+    public async Task Invites_and_new_tenants_require_a_valid_email()
+    {
+        var w = await W();
+        var ann = factory.As(w.AcmeAdmin);
+        Assert.Equal(HttpStatusCode.BadRequest, (await ann.PostAsJsonAsync("/admin/invites", new { role = "Viewer" })).StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, (await ann.PostAsJsonAsync("/admin/invites", new { email = "not-an-address", role = "Viewer" })).StatusCode);
+        var mia = factory.As(w.MgmtAdmin);
+        Assert.Equal(HttpStatusCode.BadRequest, (await mia.PostAsJsonAsync("/platform/tenants", new { name = "NoMail" })).StatusCode);
+    }
+
+    [DbFact]
+    public async Task An_admin_cannot_reset_their_own_passkey()
+    {
+        var w = await W();
+        var response = await factory.As(w.AcmeAdmin).PostAsync($"/admin/users/{w.AcmeAdmin}/reset-passkey", null);
+        Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+    }
+
+    [DbFact]
+    public async Task An_admin_can_rename_themselves_and_others_in_their_tenant_but_not_across_tenants()
+    {
+        var w = await W();
+        var ann = factory.As(w.AcmeAdmin);
+        Assert.Equal(HttpStatusCode.NoContent, (await ann.PutAsJsonAsync($"/admin/users/{w.AcmeAdmin}/name", new { name = "  Ann B  " })).StatusCode);
+        Assert.Equal(HttpStatusCode.NoContent, (await ann.PutAsJsonAsync($"/admin/users/{w.AcmeViewer}/name", new { name = "Vic" })).StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, (await ann.PutAsJsonAsync($"/admin/users/{w.AcmeAdmin}/name", new { name = " " })).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, (await ann.PutAsJsonAsync($"/admin/users/{w.GlobexViewer}/name", new { name = "x" })).StatusCode);
+    }
 
     [DbFact]
     public async Task An_admin_can_issue_a_recovery_link_for_a_user_in_their_tenant()

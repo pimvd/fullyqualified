@@ -13,7 +13,7 @@
         <p>@L["Tenants_NewIntro"]</p>
         <p class="inline">
             <input id="adm-tenant-name" maxlength="100" placeholder="@L["Tenants_Name"]" autocomplete="off" />
-            <input id="adm-email" type="email" maxlength="254" placeholder="@L["Tenants_AdminEmail"]" autocomplete="off" />
+            <input id="adm-email" type="email" required maxlength="254" placeholder="@L["Tenants_AdminEmail"]" autocomplete="off" />
             <select id="adm-tier" aria-label="@L["Plan_Tier"]">
                 @foreach (var t in tiers) { <option value="@t.Key" selected="@(t.Key == Tiers.Free)">@t.Name</option> }
             </select>
