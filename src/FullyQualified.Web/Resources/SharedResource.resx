@@ -78,7 +78,6 @@
   <data name="Issue_DmarcQuarantine" xml:space="preserve"><value>DMARC policy is 'quarantine' (reject is the goal)</value></data>
   <data name="Issue_DmarcSubdomainNotReject" xml:space="preserve"><value>DMARC subdomain policy (sp) is not 'reject'</value></data>
   <data name="Issue_NoCaa" xml:space="preserve"><value>No CAA record</value></data>
-  <data name="Issue_NoNs" xml:space="preserve"><value>No NS records found</value></data>
   <data name="Issue_DanglingCname" xml:space="preserve"><value>Dangling CNAME (subdomain takeover risk)</value></data>
   <data name="Rep_Title" xml:space="preserve"><value>NIS2 compliance report</value></data>
   <data name="Rep_Summary" xml:space="preserve"><value>Summary</value></data>
@@ -593,12 +592,6 @@ Publish a CAA record for every CA you use, for example 0 issue "letsencrypt.org"
 Add an iodef record with an address that should be told about refused requests.
 Check that your DNS provider supports CAA records (most do) and that you have not left a CA out, or its renewals will fail.
 Check the result with the command below, then scan again.</value></data>
-  <data name="Fix_NoNs_What" xml:space="preserve"><value>No name server records were found for {0}. The name does not resolve, so nothing that depends on it (web, email, certificates) can work.</value></data>
-  <data name="Fix_NoNs_Steps" xml:space="preserve"><value>Check the spelling of the name.
-Check that the domain is registered and has not expired: run whois and look at the status and expiry date.
-Check at the registrar that the domain points to the right name servers, and that those servers have a zone for {0}.
-Run dig NS {0} +trace to see where the chain breaks.
-If the domain is retired, delete or pause the asset.</value></data>
   <data name="Fix_DanglingCname_What" xml:space="preserve"><value>{0} is a CNAME that points to {1}, and that name does not exist. Whoever registers or claims {1} (a deleted cloud app, storage bucket or hosted service name) can serve content on {0}: a subdomain takeover.</value></data>
   <data name="Fix_DanglingCname_Steps" xml:space="preserve"><value>Find out what {0} was for. If it is no longer used, delete the CNAME record at your DNS provider right away. That removes the risk.
 If it is still needed, restore {1}: recreate the app, bucket or custom domain at the provider under the same name, or point the CNAME to the new target.
