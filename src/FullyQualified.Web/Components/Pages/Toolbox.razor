@@ -1,0 +1,169 @@
+@page "/toolbox"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize]
+@inject IStringLocalizer<SharedResource> L
+
+<PageTitle>@L["Tool_Title"]</PageTitle>
+<HeadContent><link rel="stylesheet" href="toolbox.css" /></HeadContent>
+<div id="toolbox" class="toolbox"
+     data-l-ready="@L["Tool_Ready"]"
+     data-l-progress="@L["Tool_Progress"]"
+     data-l-cancelled="@L["Tool_Cancelled"]"
+     data-l-cleared="@L["Tool_Cleared"]"
+     data-l-done="@L["Tool_Done"]"
+     data-l-partial="@L["Tool_Partial"]"
+     data-l-failed="@L["Tool_Failed"]"
+     data-l-signin="@L["Tool_SignIn"]"
+     data-l-forbidden="@L["Tool_Forbidden"]"
+     data-l-rate="@L["Tool_Rate"]"
+     data-l-invalid="@L["Tool_Invalid"]"
+     data-l-textlimit="@L["Tool_TextLimit"]"
+     data-l-filelimit="@L["Tool_FileLimit"]"
+     data-l-certificaterequired="@L["Tool_CertificateRequired"]"
+     data-l-privatekey="@L["Tool_PrivateKey"]"
+     data-l-noresults="@L["Tool_NoResults"]"
+     data-l-statusinfo="@L["Tool_StatusInfo"]"
+     data-l-statusok="@L["Tool_StatusOk"]"
+     data-l-statuswarning="@L["Tool_StatusWarning"]"
+     data-l-statuserror="@L["Tool_StatusError"]"
+     data-l-statusunknown="@L["Tool_StatusUnknown"]">
+<h1>@L["Tool_Title"]</h1><p class="toolbox-intro">@L["Tool_Intro"]</p>
+<p id="toolbox-privacy" class="notice">@L["Tool_Privacy"]</p>
+<form id="toolbox-form" class="card toolbox-form" method="post" action="/api/toolbox" autocomplete="off" data-enhance="false" aria-describedby="toolbox-privacy">
+<AntiforgeryToken />
+<div class="toolbox-field"><label for="toolbox-tool">@L["Tool_Choose"]</label><select id="toolbox-tool" name="Tool">
+<option value="tls">@L["Tool_Tls"]</option>
+<option value="starttls">@L["Tool_Starttls"]</option>
+<option value="mx">@L["Tool_Mx"]</option>
+<option value="certificate">@L["Tool_Certificate"]</option>
+<option value="dns">@L["Tool_Dns"]</option>
+<option value="spf">@L["Tool_Spf"]</option>
+<option value="dkim">@L["Tool_Dkim"]</option>
+<option value="dmarc">@L["Tool_Dmarc"]</option>
+<option value="dmarc-builder">@L["Tool_Builder"]</option>
+<option value="headers">@L["Tool_Headers"]</option>
+<option value="mta-sts">@L["Tool_MtaSts"]</option>
+</select></div>
+<fieldset class="toolbox-fields" data-tools="tls starttls"><legend>@L["Tool_Connection"]</legend>
+<div class="toolbox-field"><label for="toolbox-host">@L["Tool_Host"]</label>
+<input id="toolbox-host" name="Host" type="text" maxlength="253" required spellcheck="false" autocapitalize="none" aria-describedby="toolbox-host-help" />
+<small id="toolbox-host-help" class="muted">@L["Tool_HostHelp"]</small>
+</div>
+<div class="toolbox-field"><label for="toolbox-port">@L["Tool_Port"]</label>
+<input id="toolbox-port" name="Port" type="number" min="1" max="65535" value="443" required />
+</div>
+<div class="toolbox-field"><label for="toolbox-server-name">@L["Tool_ServerName"]</label>
+<input id="toolbox-server-name" name="ServerName" type="text" maxlength="253" spellcheck="false" autocapitalize="none" aria-describedby="toolbox-server-name-help" />
+<small id="toolbox-server-name-help" class="muted">@L["Tool_ServerNameHelp"]</small>
+</div>
+</fieldset>
+<fieldset class="toolbox-fields" data-tools="starttls" hidden disabled><legend>@L["Tool_Starttls"]</legend>
+<div class="toolbox-field"><label for="toolbox-mode">@L["Tool_Mode"]</label><select id="toolbox-mode" name="Mode">
+<option value="smtp">@L["Tool_Smtp"]</option>
+<option value="imap">@L["Tool_Imap"]</option>
+<option value="pop3">@L["Tool_Pop3"]</option>
+<option value="smtps">@L["Tool_Smtps"]</option>
+<option value="imaps">@L["Tool_Imaps"]</option>
+<option value="pop3s">@L["Tool_Pop3s"]</option>
+</select></div>
+</fieldset>
+<fieldset class="toolbox-fields" data-tools="mx dns spf dkim dmarc mta-sts" hidden disabled><legend>@L["Tool_Target"]</legend>
+<div class="toolbox-field"><label for="toolbox-domain">@L["Tool_Domain"]</label>
+<input id="toolbox-domain" name="Domain" type="text" maxlength="253" required spellcheck="false" autocapitalize="none" />
+</div>
+</fieldset>
+<fieldset class="toolbox-fields" data-tools="dns" hidden disabled><legend>@L["Tool_Dns"]</legend>
+<div class="toolbox-field"><label for="toolbox-record-type">@L["Tool_RecordType"]</label><select id="toolbox-record-type" name="RecordType">
+<option value="A">A</option>
+<option value="AAAA">AAAA</option>
+<option value="CNAME">CNAME</option>
+<option value="MX">MX</option>
+<option value="NS">NS</option>
+<option value="TXT">TXT</option>
+<option value="SOA">SOA</option>
+<option value="CAA">CAA</option>
+<option value="DS">DS</option>
+<option value="DNSKEY">DNSKEY</option>
+<option value="SRV">SRV</option>
+<option value="PTR">PTR</option>
+</select></div>
+</fieldset>
+<fieldset class="toolbox-fields" data-tools="spf" hidden disabled><legend>@L["Tool_Spf"]</legend>
+<p class="toolbox-help">@L["Tool_SpfHelp"]</p>
+<div class="toolbox-field"><label for="toolbox-senderip">@L["Tool_SenderIp"]</label>
+<input id="toolbox-senderip" name="SenderIp" type="text" maxlength="45" spellcheck="false" autocapitalize="none" />
+</div>
+<div class="toolbox-field"><label for="toolbox-envelopefrom">@L["Tool_EnvelopeFrom"]</label>
+<input id="toolbox-envelopefrom" name="EnvelopeFrom" type="text" maxlength="320" spellcheck="false" autocapitalize="none" />
+</div>
+<div class="toolbox-field"><label for="toolbox-helo">@L["Tool_Helo"]</label>
+<input id="toolbox-helo" name="Helo" type="text" maxlength="253" spellcheck="false" autocapitalize="none" />
+</div>
+</fieldset>
+<fieldset class="toolbox-fields" data-tools="dkim" hidden disabled><legend>@L["Tool_Dkim"]</legend>
+<div class="toolbox-field"><label for="toolbox-selector">@L["Tool_Selector"]</label>
+<input id="toolbox-selector" name="Selector" type="text" maxlength="253" required spellcheck="false" autocapitalize="none" />
+</div>
+</fieldset>
+<fieldset class="toolbox-fields" data-tools="certificate" hidden disabled><legend>@L["Tool_Certificate"]</legend>
+<p id="toolbox-certificate-help" class="toolbox-help">@L["Tool_CertificateHelp"]</p>
+<div class="toolbox-field toolbox-full"><label for="toolbox-certificate-text">@L["Tool_CertificateText"]</label>
+<textarea id="toolbox-certificate-text" name="Text" rows="9" maxlength="65536" spellcheck="false" autocapitalize="none" aria-describedby="toolbox-certificate-help"></textarea></div>
+<div class="toolbox-field toolbox-full"><label for="toolbox-file">@L["Tool_CertificateFile"]</label>
+<input id="toolbox-file" type="file" accept=".pem,.crt,.cer,.der,application/x-x509-ca-cert,application/pkix-cert" aria-describedby="toolbox-certificate-help" /></div>
+</fieldset>
+<fieldset class="toolbox-fields" data-tools="headers" hidden disabled><legend>@L["Tool_Headers"]</legend>
+<p id="toolbox-headers-help" class="toolbox-help">@L["Tool_HeaderHelp"]</p>
+<div class="toolbox-field toolbox-full"><label for="toolbox-header-text">@L["Tool_HeaderText"]</label>
+<textarea id="toolbox-header-text" name="Text" rows="12" maxlength="65536" required spellcheck="false" autocapitalize="none" aria-describedby="toolbox-headers-help"></textarea></div>
+</fieldset>
+<fieldset class="toolbox-fields" data-tools="dmarc-builder" hidden disabled><legend>@L["Tool_Builder"]</legend>
+<p class="toolbox-help">@L["Tool_BuilderHelp"]</p>
+<div class="toolbox-field"><label for="toolbox-policy">@L["Tool_Policy"]</label><select id="toolbox-policy" name="Policy">
+<option value="none">@L["Tool_None"]</option>
+<option value="quarantine">@L["Tool_Quarantine"]</option>
+<option value="reject">@L["Tool_Reject"]</option>
+</select></div>
+<div class="toolbox-field"><label for="toolbox-subdomainpolicy">@L["Tool_SubdomainPolicy"]</label><select id="toolbox-subdomainpolicy" name="SubdomainPolicy">
+<option value="">@L["Tool_Inherit"]</option>
+<option value="none">@L["Tool_None"]</option>
+<option value="quarantine">@L["Tool_Quarantine"]</option>
+<option value="reject">@L["Tool_Reject"]</option>
+</select></div>
+<div class="toolbox-field"><label for="toolbox-alignmentspf">@L["Tool_AlignmentSpf"]</label><select id="toolbox-alignmentspf" name="AlignmentSpf">
+<option value="r">@L["Tool_Relaxed"]</option>
+<option value="s">@L["Tool_Strict"]</option>
+</select></div>
+<div class="toolbox-field"><label for="toolbox-alignmentdkim">@L["Tool_AlignmentDkim"]</label><select id="toolbox-alignmentdkim" name="AlignmentDkim">
+<option value="r">@L["Tool_Relaxed"]</option>
+<option value="s">@L["Tool_Strict"]</option>
+</select></div>
+<div class="toolbox-field"><label for="toolbox-reporturi">@L["Tool_ReportUri"]</label>
+<input id="toolbox-reporturi" name="ReportUri" type="text" maxlength="4096" spellcheck="false" autocapitalize="none" />
+</div>
+<div class="toolbox-field"><label for="toolbox-percentage">@L["Tool_Percentage"]</label>
+<input id="toolbox-percentage" name="Percentage" type="number" min="0" max="100" value="100" required />
+</div>
+</fieldset>
+<div class="toolbox-actions">
+<button id="toolbox-run" type="submit" disabled>@L["Tool_Run"]</button>
+<button id="toolbox-cancel" type="button" class="secondary" hidden>@L["Tool_Cancel"]</button>
+<button id="toolbox-reset" type="reset" class="secondary">@L["Tool_Reset"]</button>
+</div>
+<noscript><p class="error">@L["Tool_JavaScript"]</p></noscript>
+</form>
+<div class="toolbox-feedback"><progress id="toolbox-progress" aria-label="@L["Tool_Progress"]" hidden></progress>
+<p id="toolbox-status" role="status" aria-live="polite" aria-atomic="true">@L["Tool_Ready"]</p></div>
+<section id="toolbox-results" aria-labelledby="toolbox-results-title" tabindex="-1" hidden>
+<h2 id="toolbox-results-title">@L["Tool_Results"]</h2><div id="toolbox-findings"></div>
+</section>
+@if (Roles.IsAdmin(Ctx?.User))
+{
+<section class="card toolbox-email"><h2><a href="/email-test">@L["Tool_EmailLink"]</a></h2><p>@L["Tool_EmailHelp"]</p></section>
+}
+</div>
+<script src="toolbox.js" defer></script>
+
+@code {
+    [CascadingParameter] HttpContext? Ctx { get; set; }
+}

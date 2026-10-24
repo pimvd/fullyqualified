@@ -4,6 +4,7 @@ using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +22,7 @@ public class RoleFactory : WebApplicationFactory<Program>
         builder.UseSetting("Scanning:Enabled", "false");
         builder.ConfigureServices(s =>
         {
+            s.AddDataProtection().UseEphemeralDataProtectionProvider();
             s.AddAuthentication().AddScheme<AuthenticationSchemeOptions, HeaderRoleHandler>("Test", _ => { });
             s.PostConfigure<AuthenticationOptions>(o => o.DefaultScheme = o.DefaultAuthenticateScheme = o.DefaultChallengeScheme = o.DefaultForbidScheme = "Test");
         });
@@ -38,7 +40,7 @@ public class RoleFactory : WebApplicationFactory<Program>
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
         {
             if (!Request.Headers.TryGetValue("X-Role", out var role)) return Task.FromResult(AuthenticateResult.NoResult());
-            var id = new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString()), new Claim(ClaimTypes.Role, role.ToString())], "Test");
+            var id = new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, role.ToString() switch { "Admin" => "00000000-0000-0000-0000-000000000001", "Member" => "00000000-0000-0000-0000-000000000002", _ => "00000000-0000-0000-0000-000000000003" }), new Claim(ClaimTypes.Role, role.ToString())], "Test");
             return Task.FromResult(AuthenticateResult.Success(new AuthenticationTicket(new ClaimsPrincipal(id), "Test")));
         }
     }

@@ -719,4 +719,278 @@ You do not need this search to monitor a domain: it only helps to find hostnames
   <data name="EmailTest_Rate" xml:space="preserve"><value>Your organization can send five test emails per minute. Please wait before trying again.</value></data>
   <data name="EmailTest_Channel" xml:space="preserve"><value>Email test</value></data>
   <data name="EmailTest_Accepted" xml:space="preserve"><value>SMTP accepted</value></data>
+  <data name="Tool_AlignmentDkim" xml:space="preserve"><value>DKIM alignment</value></data>
+  <data name="Tool_AlignmentSpf" xml:space="preserve"><value>SPF alignment</value></data>
+  <data name="Tool_Builder" xml:space="preserve"><value>DMARC record builder</value></data>
+  <data name="Tool_BuilderHelp" xml:space="preserve"><value>Creates an example TXT record and explanations. Review it before manually changing DNS. This tool never publishes records or receives reports.</value></data>
+  <data name="Tool_Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Tool_Cancelled" xml:space="preserve"><value>Diagnostic cancelled.</value></data>
+  <data name="Tool_Certificate" xml:space="preserve"><value>Certificate file / PEM</value></data>
+  <data name="Tool_CertificateFile" xml:space="preserve"><value>Certificate file (PEM / DER)</value></data>
+  <data name="Tool_CertificateHelp" xml:space="preserve"><value>Paste certificates or choose one file, up to 256 KiB. Pasted text is limited to 64 KiB. Never submit a private key. Certificates are inspected by this installation without third-party uploads.</value></data>
+  <data name="Tool_CertificateRequired" xml:space="preserve"><value>Paste PEM certificates or choose one certificate file, using only one input method.</value></data>
+  <data name="Tool_CertificateText" xml:space="preserve"><value>PEM certificate or chain</value></data>
+  <data name="Tool_Choose" xml:space="preserve"><value>Choose a tool</value></data>
+  <data name="Tool_Cleared" xml:space="preserve"><value>Inputs and results cleared.</value></data>
+  <data name="Tool_Dkim" xml:space="preserve"><value>DKIM selector inspection</value></data>
+  <data name="Tool_Dmarc" xml:space="preserve"><value>DMARC inspection</value></data>
+  <data name="Tool_Dns" xml:space="preserve"><value>DNS resolver comparison</value></data>
+  <data name="Tool_Domain" xml:space="preserve"><value>Domain</value></data>
+  <data name="Tool_Done" xml:space="preserve"><value>Diagnostic finished. Review the findings below.</value></data>
+  <data name="Tool_EmailHelp" xml:space="preserve"><value>Administrators can use the existing sending test. Sending email uses external mail queues and receiver records; review the retention notice before sending.</value></data>
+  <data name="Tool_EmailLink" xml:space="preserve"><value>Send an authorized DMARC test email</value></data>
+  <data name="Tool_EnvelopeFrom" xml:space="preserve"><value>Envelope sender (optional)</value></data>
+  <data name="Tool_Error_antiforgery" xml:space="preserve"><value>The session token is missing or expired. Reload the page and try again.</value></data>
+  <data name="Tool_Error_blocked" xml:space="preserve"><value>This installation does not allow checks of private or local network addresses.</value></data>
+  <data name="Tool_Error_dns_failed" xml:space="preserve"><value>DNS lookup failed. Check the name or try again later.</value></data>
+  <data name="Tool_Error_failed" xml:space="preserve"><value>The check could not be completed. No result was saved.</value></data>
+  <data name="Tool_Error_http_failed" xml:space="preserve"><value>The policy could not be retrieved over HTTPS.</value></data>
+  <data name="Tool_Error_invalid_host" xml:space="preserve"><value>Enter a valid hostname or IP address, without a URL or path.</value></data>
+  <data name="Tool_Error_invalid_input" xml:space="preserve"><value>Check the input and try again.</value></data>
+  <data name="Tool_Error_invalid_port" xml:space="preserve"><value>Enter a port between 1 and 65535.</value></data>
+  <data name="Tool_Error_rate" xml:space="preserve"><value>Too many checks are running or the request limit has been reached. Try again shortly.</value></data>
+  <data name="Tool_Error_too_large" xml:space="preserve"><value>The input exceeds the allowed size.</value></data>
+  <data name="Tool_Failed" xml:space="preserve"><value>The diagnostic could not be completed. Try again.</value></data>
+  <data name="Tool_FileLimit" xml:space="preserve"><value>The certificate file exceeds the 256 KiB limit.</value></data>
+  <data name="Tool_Forbidden" xml:space="preserve"><value>You do not have access to run this diagnostic.</value></data>
+  <data name="Tool_HeaderHelp" xml:space="preserve"><value>Paste headers only, up to 64 KiB. Authentication results in pasted headers are unverified assertions; this tool cannot prove message delivery or validate a DKIM signature.</value></data>
+  <data name="Tool_HeaderText" xml:space="preserve"><value>Message headers</value></data>
+  <data name="Tool_Headers" xml:space="preserve"><value>Mail header analyzer</value></data>
+  <data name="Tool_Helo" xml:space="preserve"><value>HELO name (optional)</value></data>
+  <data name="Tool_Host" xml:space="preserve"><value>Hostname or IP address</value></data>
+  <data name="Tool_HostHelp" xml:space="preserve"><value>Enter a hostname or IPv4/IPv6 address without a URL scheme or path.</value></data>
+  <data name="Tool_Imap" xml:space="preserve"><value>IMAP STARTTLS (143)</value></data>
+  <data name="Tool_Imaps" xml:space="preserve"><value>IMAP implicit TLS (993)</value></data>
+  <data name="Tool_Incomplete" xml:space="preserve"><value>Incomplete check</value></data>
+  <data name="Tool_Inherit" xml:space="preserve"><value>Inherit domain policy</value></data>
+  <data name="Tool_Intro" xml:space="preserve"><value>Inspect a target without adding it to monitoring. All signed-in roles can run these read-only checks.</value></data>
+  <data name="Tool_Invalid" xml:space="preserve"><value>Check the highlighted inputs before running the diagnostic.</value></data>
+  <data name="Tool_JavaScript" xml:space="preserve"><value>Enable JavaScript to run diagnostics and keep their inputs transient.</value></data>
+  <data name="Tool_MailRetention" xml:space="preserve"><value>This one-time test is not saved in FullyQualified. Sending mail uses the configured relay queue and may produce relay logs and a copy in the recipient mailbox. SMTP acceptance does not establish a DMARC result.</value></data>
+  <data name="Tool_Mode" xml:space="preserve"><value>Mail protocol</value></data>
+  <data name="Tool_MtaSts" xml:space="preserve"><value>MTA-STS / TLS-RPT</value></data>
+  <data name="Tool_Mx" xml:space="preserve"><value>Mail domain TLS (MX)</value></data>
+  <data name="Tool_NoResults" xml:space="preserve"><value>The diagnostic returned no findings.</value></data>
+  <data name="Tool_None" xml:space="preserve"><value>Monitor (none)</value></data>
+  <data name="Tool_Partial" xml:space="preserve"><value>Diagnostic incomplete. Review the partial findings and limitations below.</value></data>
+  <data name="Tool_Percentage" xml:space="preserve"><value>Policy percentage</value></data>
+  <data name="Tool_Policy" xml:space="preserve"><value>Domain policy</value></data>
+  <data name="Tool_Pop3" xml:space="preserve"><value>POP3 STLS (110)</value></data>
+  <data name="Tool_Pop3s" xml:space="preserve"><value>POP3 implicit TLS (995)</value></data>
+  <data name="Tool_Port" xml:space="preserve"><value>Port</value></data>
+  <data name="Tool_Privacy" xml:space="preserve"><value>Inputs and results stay on this page only. Refreshing, leaving, or resetting clears them. No diagnostic history is saved.</value></data>
+  <data name="Tool_PrivateKey" xml:space="preserve"><value>Private-key material must not be submitted. Use certificates only.</value></data>
+  <data name="Tool_Progress" xml:space="preserve"><value>Running diagnostic… Network tools can take up to one minute.</value></data>
+  <data name="Tool_Quarantine" xml:space="preserve"><value>Quarantine</value></data>
+  <data name="Tool_Rate" xml:space="preserve"><value>Too many diagnostics are running or the request limit was reached. Please try again shortly.</value></data>
+  <data name="Tool_Ready" xml:space="preserve"><value>Choose a tool and enter its inputs to begin.</value></data>
+  <data name="Tool_RecordType" xml:space="preserve"><value>DNS record type</value></data>
+  <data name="Tool_Reject" xml:space="preserve"><value>Reject</value></data>
+  <data name="Tool_Relaxed" xml:space="preserve"><value>Relaxed</value></data>
+  <data name="Tool_ReportUri" xml:space="preserve"><value>Aggregate report URI (optional)</value></data>
+  <data name="Tool_Reset" xml:space="preserve"><value>Clear inputs and results</value></data>
+  <data name="Tool_Results" xml:space="preserve"><value>Diagnostic findings</value></data>
+  <data name="Tool_Run" xml:space="preserve"><value>Run diagnostic</value></data>
+  <data name="Tool_Selector" xml:space="preserve"><value>DKIM selector</value></data>
+  <data name="Tool_SenderIp" xml:space="preserve"><value>Sender IP address (optional)</value></data>
+  <data name="Tool_ServerName" xml:space="preserve"><value>TLS server name (optional)</value></data>
+  <data name="Tool_ServerNameHelp" xml:space="preserve"><value>Use a separate expected identity for SNI and certificate name validation. Leave blank to use the target hostname.</value></data>
+  <data name="Tool_SignIn" xml:space="preserve"><value>Your session has expired. Sign in again to run diagnostics.</value></data>
+  <data name="Tool_Smtp" xml:space="preserve"><value>SMTP STARTTLS (25 / 587)</value></data>
+  <data name="Tool_Smtps" xml:space="preserve"><value>SMTP implicit TLS (465)</value></data>
+  <data name="Tool_Spf" xml:space="preserve"><value>SPF analysis</value></data>
+  <data name="Tool_SpfHelp" xml:space="preserve"><value>Without a sender IP, results describe static policy expansion rather than an actual message evaluation.</value></data>
+  <data name="Tool_Starttls" xml:space="preserve"><value>Mail TLS / STARTTLS</value></data>
+  <data name="Tool_Status" xml:space="preserve"><value>Status</value></data>
+  <data name="Tool_StatusError" xml:space="preserve"><value>Error</value></data>
+  <data name="Tool_StatusInfo" xml:space="preserve"><value>Information</value></data>
+  <data name="Tool_StatusOk" xml:space="preserve"><value>OK</value></data>
+  <data name="Tool_StatusUnknown" xml:space="preserve"><value>Unknown</value></data>
+  <data name="Tool_StatusWarning" xml:space="preserve"><value>Warning</value></data>
+  <data name="Tool_Strict" xml:space="preserve"><value>Strict</value></data>
+  <data name="Tool_SubdomainPolicy" xml:space="preserve"><value>Subdomain policy</value></data>
+  <data name="Tool_TextLimit" xml:space="preserve"><value>Pasted text exceeds the 64 KiB limit.</value></data>
+  <data name="Tool_Timeout" xml:space="preserve"><value>The time limit was reached. No conclusion can be drawn from checks that did not finish.</value></data>
+  <data name="Tool_Title" xml:space="preserve"><value>Diagnostic toolbox</value></data>
+  <data name="Tool_Tls" xml:space="preserve"><value>TLS endpoint</value></data>
+  <data name="Tool_Accepted" xml:space="preserve"><value>Accepted</value></data>
+  <data name="Tool_CertificateChainElement" xml:space="preserve"><value>Locally built chain certificate</value></data>
+  <data name="Tool_CertificateChainErrors" xml:space="preserve"><value>Chain validation errors</value></data>
+  <data name="Tool_CertificateChainNoRevocation" xml:space="preserve"><value>Built using the scanner's trust store and available intermediates. Certificate downloads and revocation checks are disabled.</value></data>
+  <data name="Tool_CertificateChainStatus" xml:space="preserve"><value>Chain status</value></data>
+  <data name="Tool_CertificateChainValidation" xml:space="preserve"><value>Local chain validation</value></data>
+  <data name="Tool_CertificateDetails" xml:space="preserve"><value>Certificate details</value></data>
+  <data name="Tool_CertificateDnsNames" xml:space="preserve"><value>DNS subject alternative names</value></data>
+  <data name="Tool_CertificateExpired" xml:space="preserve"><value>Expired</value></data>
+  <data name="Tool_CertificateFingerprint" xml:space="preserve"><value>SHA-256 fingerprint</value></data>
+  <data name="Tool_CertificateInspection" xml:space="preserve"><value>Certificate inspection</value></data>
+  <data name="Tool_CertificateIpNames" xml:space="preserve"><value>IP subject alternative names</value></data>
+  <data name="Tool_CertificateIssuer" xml:space="preserve"><value>Issuer</value></data>
+  <data name="Tool_CertificateLocalChain" xml:space="preserve"><value>OS-built certificate chain</value></data>
+  <data name="Tool_CertificateLocalOnly" xml:space="preserve"><value>Local inspection only; no live server identity was verified.</value></data>
+  <data name="Tool_CertificateNotAfter" xml:space="preserve"><value>Valid until (UTC)</value></data>
+  <data name="Tool_CertificateNotBefore" xml:space="preserve"><value>Valid from (UTC)</value></data>
+  <data name="Tool_CertificateNotYetValid" xml:space="preserve"><value>Not yet valid</value></data>
+  <data name="Tool_CertificatePublicKey" xml:space="preserve"><value>Public-key algorithm OID and bit length</value></data>
+  <data name="Tool_CertificateScope" xml:space="preserve"><value>Inspection scope</value></data>
+  <data name="Tool_CertificateSignature" xml:space="preserve"><value>Signature algorithm OID</value></data>
+  <data name="Tool_CertificateSubject" xml:space="preserve"><value>Subject</value></data>
+  <data name="Tool_MxOmitted" xml:space="preserve"><value>MX hosts omitted by limit</value></data>
+  <data name="Tool_MxResults" xml:space="preserve"><value>Mail exchangers</value></data>
+  <data name="Tool_MxStatus" xml:space="preserve"><value>MX status</value></data>
+  <data name="Tool_No" xml:space="preserve"><value>No</value></data>
+  <data name="Tool_NoMx" xml:space="preserve"><value>No MX record; no SMTP endpoint was inferred.</value></data>
+  <data name="Tool_NullMx" xml:space="preserve"><value>Null MX: the domain declares that it does not accept email.</value></data>
+  <data name="Tool_Rejected" xml:space="preserve"><value>Rejected</value></data>
+  <data name="Tool_StartTlsMalformed" xml:space="preserve"><value>The upgrade response was incomplete, malformed, or exceeded parser limits.</value></data>
+  <data name="Tool_StartTlsRefused" xml:space="preserve"><value>The server did not advertise or positively accept the required TLS upgrade.</value></data>
+  <data name="Tool_StartTlsUpgrade" xml:space="preserve"><value>STARTTLS upgrade</value></data>
+  <data name="Tool_TargetBlocked" xml:space="preserve"><value>Blocked by the installation's target-address policy.</value></data>
+  <data name="Tool_Tls13CipherControl" xml:space="preserve"><value>Independent TLS 1.3 cipher control</value></data>
+  <data name="Tool_Tls13CipherLimitation" xml:space="preserve"><value>Independent TLS 1.3 cipher-suite probes are not portable through this runtime and are not attempted.</value></data>
+  <data name="Tool_TlsAddress" xml:space="preserve"><value>Connected target address</value></data>
+  <data name="Tool_TlsAddressesOmitted" xml:space="preserve"><value>Addresses omitted by limit</value></data>
+  <data name="Tool_TlsCipher" xml:space="preserve"><value>Negotiated cipher suite</value></data>
+  <data name="Tool_TlsCipherCandidate" xml:space="preserve"><value>Offered TLS 1.2 cipher suite</value></data>
+  <data name="Tool_TlsCipherCandidates" xml:space="preserve"><value>Bounded TLS 1.2 cipher candidate list</value></data>
+  <data name="Tool_TlsCipherNotHonored" xml:space="preserve"><value>The negotiated cipher differed from the sole offered candidate, so this probe cannot establish support.</value></data>
+  <data name="Tool_TlsCipherPlatformLimitation" xml:space="preserve"><value>Single-suite probes are enabled only on Linux; this platform is reported as locally untestable.</value></data>
+  <data name="Tool_TlsCipherProbes" xml:space="preserve"><value>Cipher-suite probes</value></data>
+  <data name="Tool_TlsCipherScope" xml:space="preserve"><value>Cipher probe coverage</value></data>
+  <data name="Tool_TlsCipherScopeExplanation" xml:space="preserve"><value>Each listed TLS 1.2 suite is offered alone. This bounded list is not an exhaustive inventory of all historical suites.</value></data>
+  <data name="Tool_TlsEndpoint" xml:space="preserve"><value>TLS endpoint</value></data>
+  <data name="Tool_TlsHost" xml:space="preserve"><value>Target hostname</value></data>
+  <data name="Tool_TlsIdentity" xml:space="preserve"><value>SNI and expected server identity</value></data>
+  <data name="Tool_TlsInconclusive" xml:space="preserve"><value>Inconclusive</value></data>
+  <data name="Tool_TlsLimits" xml:space="preserve"><value>Scan limits</value></data>
+  <data name="Tool_TlsLocalPolicyLimitation" xml:space="preserve"><value>The scanner runtime or cryptographic platform cannot perform this probe. System crypto policy was not changed.</value></data>
+  <data name="Tool_TlsLocallyUntestable" xml:space="preserve"><value>Untestable locally</value></data>
+  <data name="Tool_TlsOutcome" xml:space="preserve"><value>Connection outcome</value></data>
+  <data name="Tool_TlsPeerChain" xml:space="preserve"><value>Peer certificate evidence</value></data>
+  <data name="Tool_TlsPort" xml:space="preserve"><value>Target port</value></data>
+  <data name="Tool_TlsProbeAmbiguous" xml:space="preserve"><value>The handshake failed; this may reflect local cryptographic restrictions or remote rejection. Remote support cannot be concluded.</value></data>
+  <data name="Tool_TlsProbeOutcome" xml:space="preserve"><value>Probe outcome</value></data>
+  <data name="Tool_TlsProtocol" xml:space="preserve"><value>Negotiated TLS protocol</value></data>
+  <data name="Tool_TlsProtocolProbe" xml:space="preserve"><value>Offered TLS protocol</value></data>
+  <data name="Tool_TlsProtocolProbes" xml:space="preserve"><value>Protocol probes</value></data>
+  <data name="Tool_TlsTimeout" xml:space="preserve"><value>Connection time limit reached</value></data>
+  <data name="Tool_TlsUnreachable" xml:space="preserve"><value>Endpoint unreachable</value></data>
+  <data name="Tool_TlsValidation" xml:space="preserve"><value>Server identity and certificate validation errors</value></data>
+  <data name="Tool_TlsWeakCipher" xml:space="preserve"><value>Accepted weak cipher suite</value></data>
+  <data name="Tool_TlsWeakCipherExplanation" xml:space="preserve"><value>This candidate uses legacy RSA key exchange or 3DES; modern forward-secret AEAD suites are preferred.</value></data>
+  <data name="Tool_TlsWireChain" xml:space="preserve"><value>Wire-supplied chain visibility</value></data>
+  <data name="Tool_TlsWireChainLimitation" xml:space="preserve"><value>SslStream exposes the peer leaf and an OS-built chain, not the complete chain as transmitted. Locally built certificates may come from local stores.</value></data>
+  <data name="Tool_TlsWireChainUnavailable" xml:space="preserve"><value>Complete wire-supplied chain unavailable through this runtime.</value></data>
+  <data name="Tool_TlsWireLeaf" xml:space="preserve"><value>Peer leaf certificate</value></data>
+  <data name="Tool_Unknown" xml:space="preserve"><value>Unknown</value></data>
+  <data name="Tool_Yes" xml:space="preserve"><value>Yes</value></data>
+  <data name="Tool_AlignmentNone" xml:space="preserve"><value>Not aligned</value></data>
+  <data name="Tool_AlignmentRelaxed" xml:space="preserve"><value>Relaxed alignment</value></data>
+  <data name="Tool_AlignmentStrict" xml:space="preserve"><value>Strict alignment</value></data>
+  <data name="Tool_Connection" xml:space="preserve"><value>Connection</value></data>
+  <data name="Tool_DkimDiscoveryOnly" xml:space="preserve"><value>Key discovery does not verify a message signature. The original signed message is required for verification.</value></data>
+  <data name="Tool_DkimKeyBits" xml:space="preserve"><value>Public key bits</value></data>
+  <data name="Tool_DkimKeyType" xml:space="preserve"><value>Public key type</value></data>
+  <data name="Tool_DkimRevoked" xml:space="preserve"><value>The selector key is revoked (empty p tag).</value></data>
+  <data name="Tool_DkimState" xml:space="preserve"><value>DKIM record state</value></data>
+  <data name="Tool_DkimVerification" xml:space="preserve"><value>Verification scope</value></data>
+  <data name="Tool_DmarcAlignmentExplanation" xml:space="preserve"><value>Strict alignment requires identical domains; relaxed alignment compares organizational domains using the Public Suffix List.</value></data>
+  <data name="Tool_DmarcBuilder" xml:space="preserve"><value>DMARC record builder</value></data>
+  <data name="Tool_DmarcBuilderExplanation" xml:space="preserve"><value>Builder scope</value></data>
+  <data name="Tool_DmarcBuilderTextOnly" xml:space="preserve"><value>Example TXT text only. Nothing is published or changed. Verify external report authorization before deployment.</value></data>
+  <data name="Tool_DmarcDkimAlignment" xml:space="preserve"><value>DKIM alignment mode</value></data>
+  <data name="Tool_DmarcEffectivePolicy" xml:space="preserve"><value>Effective DMARC policy</value></data>
+  <data name="Tool_DmarcPercentage" xml:space="preserve"><value>Policy percentage</value></data>
+  <data name="Tool_DmarcPercentageExplanation" xml:space="preserve"><value>The selected percentage requests how much failing mail receives the policy.</value></data>
+  <data name="Tool_DmarcPolicyExplanation" xml:space="preserve"><value>none requests monitoring; quarantine requests suspicious handling; reject requests rejection of mail failing DMARC.</value></data>
+  <data name="Tool_DmarcSource" xml:space="preserve"><value>Policy discovery domain</value></data>
+  <data name="Tool_DmarcSpfAlignment" xml:space="preserve"><value>SPF alignment mode</value></data>
+  <data name="Tool_DnsAddressLimit" xml:space="preserve"><value>Some nameserver addresses were omitted because of the configured limit.</value></data>
+  <data name="Tool_DnsAnswer" xml:space="preserve"><value>DNS answer (including TTL)</value></data>
+  <data name="Tool_DnsComparison" xml:space="preserve"><value>Comparison with configured resolver</value></data>
+  <data name="Tool_DnsConfigured" xml:space="preserve"><value>Configured recursive resolver</value></data>
+  <data name="Tool_DnsDifferent" xml:space="preserve"><value>Record data differs from the configured resolver.</value></data>
+  <data name="Tool_DnsEmpty" xml:space="preserve"><value>Successful response with no answer records (NODATA).</value></data>
+  <data name="Tool_DnsError" xml:space="preserve"><value>DNS could not be completed; the result is unknown.</value></data>
+  <data name="Tool_DnsIncomplete" xml:space="preserve"><value>Truncated DNS response; observations are incomplete.</value></data>
+  <data name="Tool_DnsMilliseconds" xml:space="preserve"><value>Query time (milliseconds)</value></data>
+  <data name="Tool_DnsNsLimit" xml:space="preserve"><value>Some authoritative nameservers were omitted because of the ten-host limit.</value></data>
+  <data name="Tool_DnsResolver" xml:space="preserve"><value>Resolver or authoritative nameserver</value></data>
+  <data name="Tool_DnsResponse" xml:space="preserve"><value>DNS response code</value></data>
+  <data name="Tool_DnsSame" xml:space="preserve"><value>Record data agrees; answer order and TTL differences are ignored.</value></data>
+  <data name="Tool_HeaderAlignmentOnly" xml:space="preserve"><value>Identity comparison only; this does not verify authentication or the configured DMARC alignment mode.</value></data>
+  <data name="Tool_HeaderAuthentication" xml:space="preserve"><value>Authentication-Results assertion</value></data>
+  <data name="Tool_HeaderDkim" xml:space="preserve"><value>DKIM-Signature header</value></data>
+  <data name="Tool_HeaderDkimAlignment" xml:space="preserve"><value>DKIM identity alignment</value></data>
+  <data name="Tool_HeaderFrom" xml:space="preserve"><value>From identity</value></data>
+  <data name="Tool_HeaderIdentityUnknown" xml:space="preserve"><value>A single valid From identity could not be determined.</value></data>
+  <data name="Tool_HeaderReceived" xml:space="preserve"><value>Received route hop (header order, newest first)</value></data>
+  <data name="Tool_HeaderReportedDkim" xml:space="preserve"><value>Reported DKIM result (unverified)</value></data>
+  <data name="Tool_HeaderReportedDmarc" xml:space="preserve"><value>Reported DMARC result (unverified)</value></data>
+  <data name="Tool_HeaderReportedSpf" xml:space="preserve"><value>Reported SPF result (unverified)</value></data>
+  <data name="Tool_HeaderReturnPath" xml:space="preserve"><value>Return-Path</value></data>
+  <data name="Tool_HeaderSelector" xml:space="preserve"><value>DKIM selector</value></data>
+  <data name="Tool_HeaderSigningDomain" xml:space="preserve"><value>DKIM signing domain</value></data>
+  <data name="Tool_HeaderSpf" xml:space="preserve"><value>Received-SPF assertion</value></data>
+  <data name="Tool_HeaderSpfAlignment" xml:space="preserve"><value>SPF identity alignment</value></data>
+  <data name="Tool_HeaderSyntax" xml:space="preserve"><value>Header syntax</value></data>
+  <data name="Tool_HeaderTrust" xml:space="preserve"><value>Authentication trust boundary</value></data>
+  <data name="Tool_HeaderUnverified" xml:space="preserve"><value>Pasted headers are unverified assertions. No trusted receiving boundary, message signature verification or delivery proof is available.</value></data>
+  <data name="Tool_InvalidRecord" xml:space="preserve"><value>Invalid or ambiguous record syntax</value></data>
+  <data name="Tool_Limit" xml:space="preserve"><value>Diagnostic limit</value></data>
+  <data name="Tool_MissingRecord" xml:space="preserve"><value>No matching record was published.</value></data>
+  <data name="Tool_MtaDiscovery" xml:space="preserve"><value>MTA-STS discovery TXT</value></data>
+  <data name="Tool_MtaMxCoverage" xml:space="preserve"><value>MX policy coverage</value></data>
+  <data name="Tool_MtaMxCovered" xml:space="preserve"><value>The MX host matches a policy pattern.</value></data>
+  <data name="Tool_MtaMxUncovered" xml:space="preserve"><value>The MX host does not match a policy pattern.</value></data>
+  <data name="Tool_MtaPolicy" xml:space="preserve"><value>HTTPS MTA-STS policy</value></data>
+  <data name="Tool_MtaSyntax" xml:space="preserve"><value>MTA-STS policy syntax</value></data>
+  <data name="Tool_PolicyUnavailable" xml:space="preserve"><value>The guarded HTTPS policy request could not complete. No valid policy is established.</value></data>
+  <data name="Tool_Record" xml:space="preserve"><value>Published record</value></data>
+  <data name="Tool_ReportAuthorization" xml:space="preserve"><value>External reporting authorization</value></data>
+  <data name="Tool_ReportAuthorized" xml:space="preserve"><value>External destination has a DMARC authorization record.</value></data>
+  <data name="Tool_ReportDestination" xml:space="preserve"><value>Report destination</value></data>
+  <data name="Tool_ReportUnauthorized" xml:space="preserve"><value>No valid external reporting authorization was found.</value></data>
+  <data name="Tool_SpfActualLookups" xml:space="preserve"><value>DNS-causing terms evaluated</value></data>
+  <data name="Tool_SpfConcrete" xml:space="preserve"><value>Concrete SPF sender evaluation</value></data>
+  <data name="Tool_SpfCycle" xml:space="preserve"><value>A cycle was found in include or redirect paths.</value></data>
+  <data name="Tool_SpfEvaluation" xml:space="preserve"><value>SPF sender result</value></data>
+  <data name="Tool_SpfEvaluationExplanation" xml:space="preserve"><value>Evaluation applies only to this IP and envelope/HELO identity. It does not establish DMARC, message authenticity or delivery.</value></data>
+  <data name="Tool_SpfFinding" xml:space="preserve"><value>SPF observation</value></data>
+  <data name="Tool_SpfIdentity" xml:space="preserve"><value>Evaluated SPF domain</value></data>
+  <data name="Tool_SpfLookupLimit" xml:space="preserve"><value>SPF exceeds the ten DNS-causing-term budget.</value></data>
+  <data name="Tool_SpfMacroUnknown" xml:space="preserve"><value>Macro-dependent domain expansion is not evaluated; the affected path is unknown.</value></data>
+  <data name="Tool_SpfMissing" xml:space="preserve"><value>No SPF policy was found in a required path.</value></data>
+  <data name="Tool_SpfMultiple" xml:space="preserve"><value>More than one SPF policy record was found.</value></data>
+  <data name="Tool_SpfMxLimit" xml:space="preserve"><value>The SPF MX expansion exceeds its ten-record/address work limit.</value></data>
+  <data name="Tool_SpfNoTerminal" xml:space="preserve"><value>There is no terminal all mechanism or redirect; unmatched senders receive neutral.</value></data>
+  <data name="Tool_SpfPermissive" xml:space="preserve"><value>The +all mechanism authorizes every sender.</value></data>
+  <data name="Tool_SpfPtrDiscouraged" xml:space="preserve"><value>The ptr mechanism is discouraged and requires reverse/forward validation.</value></data>
+  <data name="Tool_SpfPtrUnknown" xml:space="preserve"><value>Concrete ptr evaluation is unsupported; the result is unknown.</value></data>
+  <data name="Tool_SpfRecord" xml:space="preserve"><value>SPF policy and domain</value></data>
+  <data name="Tool_SpfScope" xml:space="preserve"><value>Analysis scope</value></data>
+  <data name="Tool_SpfSenderIp" xml:space="preserve"><value>Sender IP address</value></data>
+  <data name="Tool_SpfStatic" xml:space="preserve"><value>Static SPF expansion</value></data>
+  <data name="Tool_SpfStaticBudget" xml:space="preserve"><value>Conservative expansion counts lookup-causing terms across paths; this is separate from a concrete sender evaluation.</value></data>
+  <data name="Tool_SpfStaticLookups" xml:space="preserve"><value>Static expanded DNS-causing terms</value></data>
+  <data name="Tool_SpfStaticOnly" xml:space="preserve"><value>Static analysis is not proof that a message passes SPF. Supply a sender IP and optional envelope sender/HELO for a concrete evaluation.</value></data>
+  <data name="Tool_SpfSyntax" xml:space="preserve"><value>Invalid SPF policy syntax</value></data>
+  <data name="Tool_SpfVoidLimit" xml:space="preserve"><value>More than two void DNS answers were encountered; evaluation is incomplete.</value></data>
+  <data name="Tool_SpfVoidLookups" xml:space="preserve"><value>Void DNS answers encountered</value></data>
+  <data name="Tool_SpfWorkLimit" xml:space="preserve"><value>SPF expansion exceeded its bounded work or recursion limit.</value></data>
+  <data name="Tool_Target" xml:space="preserve"><value>Target</value></data>
+  <data name="Tool_TlsRpt" xml:space="preserve"><value>TLS-RPT discovery TXT</value></data>
+  <data name="Tool_TlsRptSyntax" xml:space="preserve"><value>TLS-RPT syntax</value></data>
+  <data name="Tool_ValidRecord" xml:space="preserve"><value>Record syntax is valid.</value></data>
+  <data name="Tool_Error_dns_incomplete" xml:space="preserve"><value>The DNS response was incomplete; the check cannot draw a conclusion.</value></data>
+  <data name="Tool_Error_invalid_certificate" xml:space="preserve"><value>Provide PEM certificate blocks or a DER certificate.</value></data>
+  <data name="Tool_Error_invalid_ip" xml:space="preserve"><value>Enter a valid sender IP address.</value></data>
+  <data name="Tool_Error_invalid_mode" xml:space="preserve"><value>Choose a supported mail TLS protocol.</value></data>
+  <data name="Tool_Error_invalid_policy" xml:space="preserve"><value>Check the DMARC policy and reporting addresses.</value></data>
+  <data name="Tool_Error_invalid_selector" xml:space="preserve"><value>Enter one valid DKIM selector.</value></data>
+  <data name="Tool_Error_invalid_sender" xml:space="preserve"><value>Enter a valid envelope sender or HELO hostname for a null sender.</value></data>
+  <data name="Tool_Error_invalid_type" xml:space="preserve"><value>Choose a supported DNS record type.</value></data>
+  <data name="Tool_Error_private_key" xml:space="preserve"><value>Private keys are not accepted. Provide public certificates only.</value></data>
+  <data name="Tool_RunIncomplete" xml:space="preserve"><value>The diagnostic was cancelled or reached its deadline; earlier observations are retained.</value></data>
+  <data name="Tool_TlsRunStopped" xml:space="preserve"><value>The run was cancelled or its time limit was reached. Collected observations are partial.</value></data>
 </root>

@@ -22,6 +22,7 @@ builder.Services.AddHttpClient("ct", c =>
 
 builder.Services.AddSingleton<HostGuard>();
 builder.Services.AddSingleton<DigService>();
+builder.Services.AddToolbox();
 builder.Services.AddSingleton<ICheck, TlsCheck>();
 builder.Services.AddSingleton<ICheck, DnsCheck>();
 builder.Services.AddSingleton<ICheck, CtLogCheck>();
@@ -51,7 +52,7 @@ builder.Services.AddHostedService<JobRunner>();
 
 // Accounts sign in with passkeys only. Keys live in the database so cookies survive restarts and redeploys.
 builder.Services.AddDataProtection().SetApplicationName("FullyQualified").PersistKeysToDbContext<AppDbContext>();
-static bool IsApi(HttpRequest r) => r.Path.StartsWithSegments("/auth") || r.Path.StartsWithSegments("/admin");
+static bool IsApi(HttpRequest r) => r.Path.StartsWithSegments("/auth") || r.Path.StartsWithSegments("/admin") || r.Path.StartsWithSegments("/api/toolbox");
 
 var auth = builder.Services.AddAuthentication(Session.Scheme);
 auth.AddCookie(o =>
@@ -103,6 +104,16 @@ if (args is ["recover", var who, ..])
 }
 
 // Files first, then routing: the catch-all "page not found" route would otherwise match /app.css before the file is served.
+app.Use(async (ctx, next) =>
+{
+    if (ToolboxEndpoints.IsPrivatePage(ctx.Request.Path))
+    {
+        ctx.Response.Headers.CacheControl = "no-store";
+        ctx.Response.Headers.Pragma = "no-cache";
+        ctx.Response.Headers["Referrer-Policy"] = "no-referrer";
+    }
+    await next(ctx);
+});
 app.UseStaticFiles();
 app.UseRouting();
 
@@ -170,6 +181,7 @@ app.MapReview();
 app.MapAdmin();
 app.MapAlerts();
 app.MapEmailTests();
+app.MapToolbox();
 app.MapPlans();
 app.MapDiagnostics();
 app.MapSso();

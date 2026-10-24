@@ -1,0 +1,46 @@
+.toolbox { max-width: 1080px; }
+.toolbox [hidden] { display: none !important; }
+.toolbox-intro { max-width: 78ch; }
+.toolbox-form { overflow: visible; margin-top: 1.5rem; }
+.toolbox-field { display: flex; flex-direction: column; gap: .35rem; min-width: 0; }
+.toolbox-form > .toolbox-field { max-width: 33rem; margin-bottom: 1rem; }
+.toolbox-field label { font-weight: 600; }
+.toolbox-field input, .toolbox-field select, .toolbox-field textarea { width: 100%; min-width: 0; }
+.toolbox-field small { font-size: .84rem; }
+.toolbox-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem 1.4rem; border: 0; border-top: 1px solid var(--line); padding: 1rem 0; margin: .5rem 0; min-width: 0; }
+.toolbox-fields legend { padding: 0 .5rem 0 0; font-weight: 600; color: var(--muted); }
+.toolbox-help, .toolbox-full { grid-column: 1 / -1; }
+.toolbox-help { margin: 0; color: var(--muted); font-size: .9rem; }
+.toolbox-field textarea { font: .88rem/1.5 ui-monospace, SFMono-Regular, Consolas, monospace; }
+.toolbox-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .65rem; padding-top: .7rem; }
+.toolbox-actions .secondary { padding: .55rem 1rem; }
+.toolbox-feedback { display: flex; gap: .8rem; align-items: center; margin-bottom: 1.3rem; }
+.toolbox-feedback p { margin: 0; }
+.toolbox-feedback progress { width: 5rem; flex-shrink: 0; accent-color: var(--accent); }
+#toolbox-results > h2 { font-size: 1.2rem; }
+.toolbox-finding h3 { margin: 0 0 .8rem; font-size: 1rem; overflow-wrap: anywhere; }
+.toolbox-observations { display: grid; grid-template-columns: minmax(8rem, 29%) minmax(0, 1fr); gap: 0; font-size: .9rem; }
+.toolbox-observations dt, .toolbox-observations dd { padding: .65rem 0; border-top: 1px solid var(--line); overflow-wrap: anywhere; word-break: normal; }
+.toolbox-observations dt { padding-right: 1rem; }
+.toolbox-observations dd { min-width: 0; }
+.toolbox-value { display: block; white-space: pre-wrap; overflow-wrap: anywhere; font: .86rem/1.5 ui-monospace, SFMono-Regular, Consolas, monospace; }
+.toolbox-badge { display: inline-block; border: 1px solid currentColor; border-radius: 5px; padding: .05rem .4rem; margin-bottom: .4rem; font-size: .75rem; font-weight: 600; }
+.toolbox-info, .toolbox-unknown { color: var(--muted); }
+.toolbox-ok { color: var(--ok); }
+.toolbox-warning { color: color-mix(in srgb, var(--warn) 85%, var(--fg)); }
+.toolbox-error { color: var(--bad); }
+.toolbox-explanation { margin: .45rem 0 0; color: var(--muted); white-space: pre-wrap; overflow-wrap: anywhere; }
+.toolbox-email { margin-top: 1.5rem; }
+.toolbox-email p { margin-bottom: 0; color: var(--muted); font-size: .9rem; }
+.toolbox :is(input, select, textarea, button, a):focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+@media (max-width: 600px) {
+  .toolbox-fields { grid-template-columns: minmax(0, 1fr); }
+  .toolbox-observations { display: block; }
+  .toolbox-observations dt { padding-bottom: .2rem; font-weight: 600; }
+  .toolbox-observations dd { border-top: 0; padding-top: .2rem; }
+  .toolbox-actions { align-items: stretch; }
+  .toolbox-actions button { flex: 1 1 12rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .toolbox-feedback progress { animation: none; }
+}

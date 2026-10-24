@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Reporting\Fonts\*.ttf" />
+    <EmbeddedResource Include="Data/public_suffix_list.dat" />
   </ItemGroup>
 
 </Project>

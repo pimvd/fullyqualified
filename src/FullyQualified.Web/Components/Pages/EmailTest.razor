@@ -7,9 +7,10 @@
 
 <PageTitle>@L["EmailTest_Title"]</PageTitle>
 <h1>@L["EmailTest_Title"]</h1>
-<p><a href="/alerts">@L["Nav_Alerts"]</a></p>
+<p><a href="/toolbox">@L["Tool_Title"]</a> · <a href="/alerts">@L["Nav_Alerts"]</a></p>
 <section class="card narrow wide">
     <p>@L["EmailTest_Intro"]</p>
+    <p>@L["Tool_MailRetention"]</p>
     <p class="muted" id="email-test-help">@L["EmailTest_Help"]</p>
     @if (!Alerts.CanMail)
     {
@@ -19,7 +20,8 @@
           data-success="@L["EmailTest_Success"]" data-failed="@L["Err_Failed"]"
           data-invalid_from="@L["EmailTest_InvalidFrom"]" data-invalid_to="@L["EmailTest_InvalidTo"]" data-from_not_owned="@L["EmailTest_FromNotOwned"]"
           data-invalid_subject="@L["EmailTest_InvalidSubject"]" data-invalid_message="@L["EmailTest_InvalidMessage"]"
-          data-no_smtp="@L["Alerts_NoSmtp"]" data-smtp_failed="@L["EmailTest_Failed"]" data-rate="@L["EmailTest_Rate"]">
+          data-no_smtp="@L["Alerts_NoSmtp"]" data-smtp_failed="@L["EmailTest_Failed"]" data-rate="@L["EmailTest_Rate"]" data-antiforgery="@L["Tool_Error_antiforgery"]">
+        <AntiforgeryToken />
         <label for="email-test-from">@L["EmailTest_From"]</label>
         <input id="email-test-from" name="from" type="email" maxlength="254" value="@Config["Alerts:Email:From"]" required />
         <label for="email-test-to">@L["EmailTest_To"]</label>

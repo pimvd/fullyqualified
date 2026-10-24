@@ -141,6 +141,19 @@ public class EmailTestIntegrationTests(PgFactory factory) : OrgTestBase<PgFactor
 {
     static object Request(string from = "sender@example.org") => new { from, to = "recipient@example.net", subject = "DMARC delivery check", message = "Inspect the original message headers." };
 
+    static async Task<HttpResponseMessage> Send(HttpClient client, object request)
+    {
+        if (!client.DefaultRequestHeaders.Contains("RequestVerificationToken"))
+        {
+            var page = await client.GetStringAsync("/email-test");
+            var document = new AngleSharp.Html.Parser.HtmlParser().ParseDocument(page);
+            var token = document.QuerySelector("input[name=__RequestVerificationToken]")?.GetAttribute("value");
+            Assert.False(string.IsNullOrWhiteSpace(token));
+            client.DefaultRequestHeaders.Add("RequestVerificationToken", token);
+        }
+        return await client.PostAsJsonAsync("/admin/email-test", request);
+    }
+
     void ConfigureSmtp(TestSmtpServer? smtp)
     {
         var config = Factory.Services.GetRequiredService<Microsoft.Extensions.Configuration.IConfiguration>();
@@ -160,7 +173,7 @@ public class EmailTestIntegrationTests(PgFactory factory) : OrgTestBase<PgFactor
     }
 
     [DbFact]
-    public async Task Admin_can_send_a_real_message_and_the_attempt_is_logged_for_their_tenant()
+    public async Task Admin_can_send_a_real_message_without_saving_history()
     {
         var org = await NewOrg();
         await AddDomain(org.Id, "example.org");
@@ -175,7 +188,7 @@ public class EmailTestIntegrationTests(PgFactory factory) : OrgTestBase<PgFactor
         Assert.NotNull(document.QuerySelector("textarea[name=message][required]"));
         Assert.Null(document.QuerySelector("button[type=submit][disabled]"));
 
-        var response = await admin.PostAsJsonAsync("/admin/email-test", Request());
+        var response = await Send(admin, Request());
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.True((await Json(response)).GetProperty("accepted").GetBoolean());
         var wire = await smtp.Received.Task.WaitAsync(TimeSpan.FromSeconds(5));
@@ -186,56 +199,25 @@ public class EmailTestIntegrationTests(PgFactory factory) : OrgTestBase<PgFactor
 
         using var scope = Scope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        var log = await db.AcrossTenants<AlertLogEntry>().SingleAsync(x => x.TenantId == org.Id);
-        Assert.True(log.Success);
-        Assert.Equal("email-test", log.Channel);
-        Assert.Equal("DMARC delivery check", log.Subject);
-        var tenantScope = scope.ServiceProvider.GetRequiredService<TenantScope>();
-        tenantScope.All = false;
-        tenantScope.Id = org.Id;
-        var report = await scope.ServiceProvider.GetRequiredService<LogQueries>().LoadAsync(new LogFilter());
-        Assert.Equal(0, report.AlertsSent);
-        Assert.Contains(report.Alerts, a => a.Id == log.Id);
-        Assert.Contains("SMTP accepted", await admin.GetStringAsync("/log"));
+        Assert.False(await db.AcrossTenants<AlertLogEntry>().AnyAsync(x => x.TenantId == org.Id));
+
     }
 
     [DbFact]
-    public async Task Relay_rejection_is_logged_without_exposing_the_smtp_reply()
+    public async Task Relay_rejection_does_not_save_history_or_expose_the_smtp_reply()
     {
         var org = await NewOrg();
         await AddDomain(org.Id, "example.org");
         using var smtp = new TestSmtpServer { Reject = true };
         ConfigureSmtp(smtp);
-        var response = await Factory.As(org.Admin).PostAsJsonAsync("/admin/email-test", Request());
+        var response = await Send(Factory.As(org.Admin), Request());
         Assert.Equal(HttpStatusCode.BadGateway, response.StatusCode);
         Assert.Equal("smtp_failed", (await Json(response)).GetProperty("error").GetString());
         Assert.DoesNotContain("secret-server-detail", await response.Content.ReadAsStringAsync());
         using var scope = Scope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        var log = await db.AcrossTenants<AlertLogEntry>().SingleAsync(x => x.TenantId == org.Id);
-        Assert.False(log.Success);
-        Assert.DoesNotContain("secret-server-detail", log.Error);
+        Assert.False(await db.AcrossTenants<AlertLogEntry>().AnyAsync(x => x.TenantId == org.Id));
 
-        db.AlertSettings.Add(new AlertSettings { TenantId = org.Id, EmailTo = "ops@example.org" });
-        await db.SaveChangesAsync();
-        var diagnostics = await Factory.As(org.Admin).PostAsJsonAsync("/admin/diagnostics", new { sendAlarm = false });
-        Assert.Equal(HttpStatusCode.OK, diagnostics.StatusCode);
-        var items = (await Json(diagnostics)).GetProperty("items").EnumerateArray();
-        Assert.DoesNotContain(items, i => i.GetProperty("title").GetString() == "Recent alarms");
-
-        var tenantScope = scope.ServiceProvider.GetRequiredService<TenantScope>();
-        tenantScope.All = false;
-        tenantScope.Id = org.Id;
-        var report = await scope.ServiceProvider.GetRequiredService<LogQueries>().LoadAsync(new LogFilter());
-        Assert.Equal(0, report.AlertsFailed);
-        Assert.Contains(report.Alerts, a => a.Id == log.Id);
-
-        db.AlertLog.Add(new AlertLogEntry { TenantId = org.Id, Channel = "email", Subject = "Production alarm", Success = false });
-        await db.SaveChangesAsync();
-        diagnostics = await Factory.As(org.Admin).PostAsJsonAsync("/admin/diagnostics", new { sendAlarm = false });
-        Assert.Contains((await Json(diagnostics)).GetProperty("items").EnumerateArray(), i => i.GetProperty("title").GetString() == "Recent alarms");
-        report = await scope.ServiceProvider.GetRequiredService<LogQueries>().LoadAsync(new LogFilter());
-        Assert.Equal(1, report.AlertsFailed);
     }
 
     [DbFact]
@@ -244,10 +226,10 @@ public class EmailTestIntegrationTests(PgFactory factory) : OrgTestBase<PgFactor
         var org = await NewOrg();
         ConfigureSmtp(null);
         var admin = Factory.As(org.Admin);
-        var invalid = await admin.PostAsJsonAsync("/admin/email-test", Request("bad\r\nBcc: other@example.org"));
+        var invalid = await Send(admin, Request("bad\r\nBcc: other@example.org"));
         Assert.Equal(HttpStatusCode.BadRequest, invalid.StatusCode);
         Assert.Equal("invalid_from", (await Json(invalid)).GetProperty("error").GetString());
-        var missingSmtp = await admin.PostAsJsonAsync("/admin/email-test", Request());
+        var missingSmtp = await Send(admin, Request());
         Assert.Equal(HttpStatusCode.Conflict, missingSmtp.StatusCode);
         Assert.Equal("no_smtp", (await Json(missingSmtp)).GetProperty("error").GetString());
         var page = await admin.GetStringAsync("/email-test");
@@ -268,28 +250,28 @@ public class EmailTestIntegrationTests(PgFactory factory) : OrgTestBase<PgFactor
         var admin = Factory.As(org.Admin);
 
         // Not monitored at all: refused before anything is sent.
-        var unowned = await admin.PostAsJsonAsync("/admin/email-test", Request("sender@not-ours.example"));
+        var unowned = await Send(admin, Request("sender@not-ours.example"));
         Assert.Equal(HttpStatusCode.Forbidden, unowned.StatusCode);
         Assert.Equal("from_not_owned", (await Json(unowned)).GetProperty("error").GetString());
 
         // A lookalike host (lookss like a suffix but is a different domain) must not pass.
-        var lookalike = await admin.PostAsJsonAsync("/admin/email-test", Request("sender@notexample.org"));
+        var lookalike = await Send(admin, Request("sender@notexample.org"));
         Assert.Equal("from_not_owned", (await Json(lookalike)).GetProperty("error").GetString());
 
         // A subdomain of a monitored domain is allowed.
-        var subdomain = await admin.PostAsJsonAsync("/admin/email-test", Request("sender@mail.example.org"));
+        var subdomain = await Send(admin, Request("sender@mail.example.org"));
         Assert.Equal(HttpStatusCode.OK, subdomain.StatusCode);
         await smtp.Received.Task.WaitAsync(TimeSpan.FromSeconds(5));
 
         // Another tenant's monitored domain does not grant access either.
         var other = await NewOrg();
         await AddDomain(other.Id, "other-example.org");
-        var crossTenant = await admin.PostAsJsonAsync("/admin/email-test", Request("sender@other-example.org"));
+        var crossTenant = await Send(admin, Request("sender@other-example.org"));
         Assert.Equal("from_not_owned", (await Json(crossTenant)).GetProperty("error").GetString());
 
         using var scope = Scope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        Assert.Equal(1, await db.AcrossTenants<AlertLogEntry>().CountAsync(x => x.TenantId == org.Id)); // only the accepted send was logged
+        Assert.False(await db.AcrossTenants<AlertLogEntry>().AnyAsync(x => x.TenantId == org.Id));
     }
 
     [DbFact]
@@ -299,8 +281,8 @@ public class EmailTestIntegrationTests(PgFactory factory) : OrgTestBase<PgFactor
         var other = await NewOrg();
         var admin = Factory.As(org.Admin);
         for (var i = 0; i < 5; i++)
-            Assert.Equal(HttpStatusCode.BadRequest, (await admin.PostAsJsonAsync("/admin/email-test", Request("bad"))).StatusCode);
-        Assert.Equal(HttpStatusCode.TooManyRequests, (await admin.PostAsJsonAsync("/admin/email-test", Request("bad"))).StatusCode);
-        Assert.Equal(HttpStatusCode.BadRequest, (await Factory.As(other.Admin).PostAsJsonAsync("/admin/email-test", Request("bad"))).StatusCode);
+            Assert.Equal(HttpStatusCode.BadRequest, (await Send(admin, Request("bad"))).StatusCode);
+        Assert.Equal(HttpStatusCode.TooManyRequests, (await Send(admin, Request("bad"))).StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, (await Send(Factory.As(other.Admin), Request("bad"))).StatusCode);
     }
 }

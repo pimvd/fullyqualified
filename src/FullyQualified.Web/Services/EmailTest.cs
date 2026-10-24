@@ -2,6 +2,7 @@ using System.Net.Mail;
 using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Antiforgery;
 
 namespace FullyQualified.Web;
 
@@ -52,33 +53,30 @@ public static class EmailTestEndpoints
 
     static IResult Fail(int status, string error) => Results.Json(new { error }, statusCode: status);
 
-    static async Task<IResult> Send(HttpContext ctx, EmailTestRequest request, AlertService alerts, AppDbContext db)
+    static async Task<IResult> Send(HttpContext ctx, EmailTestRequest request, AlertService alerts, AppDbContext db, IAntiforgery antiforgery)
     {
-        if (Roles.TenantId(ctx.User) is not { } tenant) return Results.Forbid();
+        if (Roles.TenantId(ctx.User) is not { }) return Results.Forbid();
+        try { await antiforgery.ValidateRequestAsync(ctx); }
+        catch (AntiforgeryValidationException) { return Fail(400, "antiforgery"); }
         if (Validate(request) is { } error) return Fail(400, error);
         if (!alerts.CanMail) return Fail(409, "no_smtp");
         // The sender must be a domain this tenant monitors: this is a self-test, not a way to send as anyone else's address.
         var fromHost = new MailAddress(request.From!.Trim()).Host;
         if (!await OwnsDomain(db, fromHost, ctx.RequestAborted)) return Fail(403, "from_not_owned");
 
-        // Save before sending: a database outage must not result in an unrecorded email.
-        var entry = new AlertLogEntry { TenantId = tenant, Channel = LogChannel, Subject = request.Subject!.Trim(), Success = false, Error = "Email test: delivery not confirmed" };
-        db.AlertLog.Add(entry);
-        await db.SaveChangesAsync(ctx.RequestAborted);
+        // Toolbox sending is transient: no input, delivery attempt or result is persisted.
         using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ctx.RequestAborted);
         timeout.CancelAfter(TimeSpan.FromSeconds(30));
         try
         {
-            await alerts.MailAsync(request.From!.Trim(), request.To!.Trim(), entry.Subject, request.Message!, timeout.Token);
-            entry.Success = true;
-            entry.Error = null;
+            await alerts.MailAsync(request.From!.Trim(), request.To!.Trim(), request.Subject!.Trim(), request.Message!, timeout.Token);
+            return Results.Ok(new { accepted = true });
         }
-        catch (Exception ex) when (!ctx.RequestAborted.IsCancellationRequested)
+        catch (OperationCanceledException) when (ctx.RequestAborted.IsCancellationRequested) { return Results.StatusCode(499); }
+        catch (Exception)
         {
-            // SMTP replies can contain addresses and server details. Keep them out of the browser and audit log.
-            entry.Error = ex is SmtpException smtp ? $"Email test: {smtp.StatusCode}" : $"Email test: {ex.GetType().Name}";
+            // SMTP replies can contain addresses and server details; never return or log them.
+            return Fail(502, "smtp_failed");
         }
-        await db.SaveChangesAsync(ctx.RequestAborted);
-        return entry.Success ? Results.Ok(new { accepted = true }) : Fail(502, "smtp_failed");
     }
 }

@@ -1,6 +1,6 @@
 # Authenticated, transient diagnostic toolbox
 
-Status: proposed for user approval. This document does not approve an architectural change.
+Status: approved by the user in conversation on 2026-10-24. This document does not approve an architectural change.
 
 ## Intent and agreed requirements
 

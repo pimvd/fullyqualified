@@ -62,6 +62,32 @@ This relay is also the default route for alarm emails and invitations. You can u
 
 When running the application outside Docker, configure its existing `Alerts__Email__*` environment variables with a reachable SMTP server. The Compose hostname `postfix` is available only to containers on the mail network; the relay is deliberately not exposed on the host.
 
+## Diagnostic toolbox
+
+Sign in and open **Toolbox** (`/toolbox`). The same tools are available in hosted and self-hosted installations, including to viewers. Read-only checks accept hosts that are not in monitoring:
+
+- **TLS endpoint:** hostname/IP, port and optional separate SNI/expected server name; certificates, chain validation, expiry, protocol and cipher probes, and IPv4/IPv6 comparisons.
+- **Mail TLS:** SMTP, IMAP and POP3 STARTTLS upgrades or implicit TLS; MX discovery and SMTP TLS checks for a mail domain.
+- **Certificate inspector:** paste PEM certificates/chain or select a PEM/DER file. Private keys are rejected.
+- **DNS comparison:** records from configured recursive resolvers and discovered authoritative nameservers, with TTLs, response codes and differences.
+- **SPF:** expansion of includes/redirects and lookup-budget findings, plus optional sender-IP/envelope-sender/HELO evaluation. Macro-dependent policies and PTR mechanisms are reported as inconclusive rather than guessed.
+- **DKIM:** selector lookup, key syntax/type/size and revocation status.
+- **DMARC:** published policy, alignment, organizational-domain fallback and external reporting authorization; a separate builder generates TXT text for manual publication.
+- **Mail headers:** paste headers to inspect routing, signing identities and reported authentication results. Pasted results are unverified assertions, not proof that authentication passed.
+- **MTA-STS and TLS-RPT:** DNS records, HTTPS policy, MX coverage and reporting destinations.
+
+Checks run once and return directly to the page. FullyQualified does not save their inputs or results in the database, application logs, files, browser storage or result caches. Refresh, reset or navigation clears the page. Checks do not add monitoring assets, schedule scans, update baselines or send alarms. Normal monitoring history is separate and unchanged.
+
+The existing **DMARC test email** is also linked from the toolbox. It remains admin-only, requires a sender domain monitored by the current organization and retains its sending limits. New attempts are no longer saved in the application alarm log. Sending still uses the configured relay's queue and can create relay logs and a recipient mailbox copy; SMTP acceptance is not proof of a DMARC outcome. Existing historical test log entries are left intact.
+
+Network reachability depends on where the application runs. Set `Scanning__AllowPrivateAddresses=false` on a shared/public hosted deployment to block private/local destinations, including discovered MX/NS servers and policy fetches. A trusted self-hosted deployment can permit internal targets with the same application. No tool writes DNS records or modifies the checked server.
+
+TLS probing depends on the scanner's operating system and crypto policy. Locally disabled protocols or suites are shown as unavailable/inconclusive rather than confirmed remote rejection. Cipher testing uses a bounded candidate set, not an exhaustive SSL audit. It does not enable obsolete algorithms in the operating system. Certificate chain findings describe the chain built by the local validator; intermediates are not automatically downloaded.
+
+Default limits are thirty requests per minute per signed-in user, four concurrent runs per user, sixteen per process, five seconds per network connection and sixty seconds per run. Address comparison checks up to eight IPs and mail-domain checks up to ten MX hosts. Pasted input is limited to 64 KiB, certificate files and MTA-STS policies to 256 KiB. Limits return explicit errors or incomplete observations, never a successful result for work that was not completed.
+
+Server settings use the `Toolbox` section (environment variables use `__`): `RequestsPerMinute`, `ConcurrentPerUser`, `Concurrent`, `ConnectionSeconds`, `RunSeconds`, `MaxAddresses`, `MaxMxHosts`, and `MaxPolicyBytes`. A build-time snapshot of the upstream Mozilla Public Suffix List supplies organizational-domain matching; source/license/update instructions are next to the data under `src/FullyQualified.Web/Data/`.
+
 ## Configuration
 
 Environment variables (use `__` for `:`):

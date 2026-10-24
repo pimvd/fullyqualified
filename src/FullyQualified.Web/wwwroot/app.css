@@ -196,3 +196,7 @@ details.mute-pop .pop input[type=text]{min-width:15rem}
 
 button.refresh{background:transparent;color:var(--accent);border:1px solid var(--line);width:2rem;height:2rem;padding:0;border-radius:50%;font-size:1.05rem;line-height:1;cursor:pointer}
 button.refresh:hover{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent)}
+
+/* Keep authenticated navigation readable when the toolbox adds another destination. */
+header.top nav{flex-wrap:wrap;min-width:0}
+@media(max-width:600px){header.top nav{flex-basis:100%;order:2}}
