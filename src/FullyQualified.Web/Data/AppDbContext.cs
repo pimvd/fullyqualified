@@ -51,6 +51,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, TenantScope sc
     public DbSet<ExternalLogin> ExternalLogins => Set<ExternalLogin>();
     /// <summary>Keeps the cookie and challenge keys across restarts. Infrastructure, so it has no tenant id.</summary>
     public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
+    /// <summary>One row per process that runs a job runner. Platform state, so it has no tenant id.</summary>
+    public DbSet<WorkerHeartbeatRow> WorkerHeartbeats => Set<WorkerHeartbeatRow>();
 
     public override int SaveChanges(bool acceptAllChangesOnSuccess)
     {
@@ -151,6 +153,11 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, TenantScope sc
             e.HasKey(x => x.Key);
             e.Property(x => x.Key).HasMaxLength(20);
             e.Property(x => x.Name).HasMaxLength(40);
+        });
+        b.Entity<WorkerHeartbeatRow>(e =>
+        {
+            e.ToTable("worker_heartbeats");
+            e.HasKey(x => x.WorkerId);
         });
         b.Entity<Tenant>().HasOne<Tier>().WithMany().HasForeignKey(x => x.TierKey).OnDelete(DeleteBehavior.Restrict);
         b.Entity<Tenant>().Property(x => x.TierKey).HasMaxLength(20);
