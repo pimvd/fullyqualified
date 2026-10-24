@@ -7,51 +7,26 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Localization;
 
-var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddDbContext<AppDbContext>(o => o.UseNpgsql(builder.Configuration.GetConnectionString("Default")
-    ?? "Host=localhost;Database=fullyqualified;Username=postgres;Password=postgres"));
-builder.Services.AddRazorComponents();
-builder.Services.AddLocalization(o => o.ResourcesPath = "Resources");
-builder.Services.AddHttpClient();
-builder.Services.AddHttpClient("ct", c =>
+// The worker role is a plain host: no web server, no endpoints, no port (ADR 0010). It is chosen before any web setup exists,
+// so the role is read from the environment and the command line only.
+var role = Hosting.RoleOf(new ConfigurationBuilder().AddEnvironmentVariables().AddCommandLine(args).Build());
+if (role == HostingRole.Worker)
 {
-    c.Timeout = TimeSpan.FromSeconds(60);
-    c.DefaultRequestHeaders.UserAgent.ParseAdd("FullyQualified/0.1 (+https://github.com/pimvd/fullyqualified)");
-});
+    using var worker = Hosting.CreateWorkerBuilder(args).Build();
+    // Migrations belong to the web role. The loop retries until the schema exists, so the worker needs no start order.
+    if (worker.Services.GetRequiredService<IConfiguration>().GetValue("Database:AutoMigrate", false))
+        using (var scope = worker.Services.CreateScope()) scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.Migrate();
+    await worker.RunAsync();
+    return 0;
+}
 
-builder.Services.AddSingleton<HostGuard>();
-builder.Services.AddSingleton<DigService>();
-builder.Services.AddToolbox();
-builder.Services.AddSingleton<ICheck, TlsCheck>();
-builder.Services.AddSingleton<ICheck, DnsCheck>();
-builder.Services.AddSingleton<ICheck, CtLogCheck>();
-builder.Services.AddScoped<JobQueue>();
-builder.Services.AddScoped<CheckRunner>();
-builder.Services.AddScoped<AlertService>();
-builder.Services.AddScoped<ReportBuilder>();
-builder.Services.AddScoped<PasskeyService>();
-builder.Services.AddScoped<AdminService>();
-builder.Services.AddScoped<Session>();
-builder.Services.AddScoped<TenantScope>();
-builder.Services.AddScoped<DbGate>();
-builder.Services.AddScoped<TenantStats>();
-builder.Services.AddScoped<PlanService>();
-builder.Services.AddScoped<RetentionService>();
-builder.Services.AddScoped<PlanAdminService>();
-builder.Services.AddScoped<SettingsTestService>();
-builder.Services.AddSingleton<ServerProbes>();
-builder.Services.AddSingleton<ScanThrottle>();
-builder.Services.AddScoped<PublicScanService>();
-builder.Services.AddScoped<LogQueries>();
-builder.Services.AddScoped<AlertSettingsService>();
-builder.Services.AddScoped<SsoService>();
-builder.Services.AddMemoryCache();
-builder.Services.AddEmailTests();
-builder.Services.AddHostedService<JobRunner>();
+var builder = WebApplication.CreateBuilder(args);
+role = Hosting.RoleOf(builder.Configuration); // also honors settings that only the web builder knows, such as test overrides
+if (role == HostingRole.Worker) throw new InvalidOperationException("Hosting:Role=worker must come from the environment or the command line.");
 
-// Accounts sign in with passkeys only. Keys live in the database so cookies survive restarts and redeploys.
-builder.Services.AddDataProtection().SetApplicationName("FullyQualified").PersistKeysToDbContext<AppDbContext>();
+builder.Services.AddFullyQualified(builder.Configuration, role);
+
+// Accounts sign in with passkeys only.
 static bool IsApi(HttpRequest r) => r.Path.StartsWithSegments("/auth") || r.Path.StartsWithSegments("/admin") || r.Path.StartsWithSegments("/api/toolbox");
 
 var auth = builder.Services.AddAuthentication(Session.Scheme);
