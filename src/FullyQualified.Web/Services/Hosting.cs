@@ -25,11 +25,13 @@ public static class Hosting
         return builder;
     }
 
+    public static string ConnectionString(IConfiguration cfg) => cfg.GetConnectionString("Default")
+        ?? "Host=localhost;Database=fullyqualified;Username=postgres;Password=postgres";
+
     /// <summary>The same container for every role: the services scans, alarms and the web UI share, plus the job runner where the role has one.</summary>
     public static IServiceCollection AddFullyQualified(this IServiceCollection services, IConfiguration cfg, HostingRole role)
     {
-        services.AddDbContext<AppDbContext>(o => o.UseNpgsql(cfg.GetConnectionString("Default")
-            ?? "Host=localhost;Database=fullyqualified;Username=postgres;Password=postgres"));
+        services.AddDbContext<AppDbContext>(o => o.UseNpgsql(ConnectionString(cfg)));
         services.AddLocalization(o => o.ResourcesPath = "Resources");
         services.AddHttpClient();
         services.AddHttpClient("ct", c =>
