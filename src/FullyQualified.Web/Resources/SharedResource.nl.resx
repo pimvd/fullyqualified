@@ -35,7 +35,6 @@
   <data name="Col_Domain" xml:space="preserve"><value>Domein</value></data>
   <data name="Kind_Domain" xml:space="preserve"><value>Domein</value></data>
   <data name="Kind_Endpoint" xml:space="preserve"><value>Endpoint</value></data>
-  <data name="Kind_CloudResource" xml:space="preserve"><value>Cloudresource</value></data>
   <data name="Status_Ok" xml:space="preserve"><value>OK</value></data>
   <data name="Status_Warning" xml:space="preserve"><value>Waarschuwing</value></data>
   <data name="Status_Error" xml:space="preserve"><value>Fout</value></data>

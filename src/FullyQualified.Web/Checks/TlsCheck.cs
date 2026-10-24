@@ -9,7 +9,7 @@ namespace FullyQualified.Web;
 public sealed class TlsCheck(HostGuard guard) : ICheck
 {
     public string Type => "tls";
-    public bool AppliesTo(Asset asset) => asset.Kind != AssetKind.CloudResource;
+    public bool AppliesTo(Asset asset) => true;
 
     public async Task<CheckOutcome> RunAsync(Asset asset, CancellationToken ct)
     {

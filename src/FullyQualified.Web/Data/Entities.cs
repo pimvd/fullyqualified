@@ -34,7 +34,7 @@ public interface ITenantOwned
     Guid TenantId { get; set; }
 }
 
-public enum AssetKind { Domain, Endpoint, CloudResource }
+public enum AssetKind { Domain, Endpoint }
 
 /// <summary>Ordered by severity so the numeric value can be used to find the worst status.</summary>
 public enum CheckStatus { Ok = 0, Warning = 1, Error = 2, Critical = 3 }
