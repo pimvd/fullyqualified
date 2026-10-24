@@ -17,8 +17,8 @@ public class ReviewTests(PgFactory factory) : OrgTestBase<PgFactory>(factory), I
         var other = await NewOrg();
         using var scope = Scope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        var domain = new Asset { TenantId = org.Id, Name = $"corp.{org.Id:N}.test", Kind = AssetKind.Domain };
-        var foreign = new Asset { TenantId = other.Id, Name = $"corp.{other.Id:N}.test", Kind = AssetKind.Domain };
+        var domain = new Asset { TenantId = org.Id, Name = $"corp.{org.Id:N}.test" };
+        var foreign = new Asset { TenantId = other.Id, Name = $"corp.{other.Id:N}.test" };
         db.Assets.AddRange(domain, foreign);
         ReviewHost Host(string name, Asset parent) => new() { TenantId = parent.TenantId, ParentAssetId = parent.Id, Name = $"{name}.{parent.Name}", Service = "crt.sh", Issuer = "R11", CertExpires = DateTimeOffset.UtcNow.AddDays(40) };
         var a = Host("api", domain); var b = Host("old", domain); var c = Host("mail", domain); var theirs = Host("api", foreign);
@@ -74,7 +74,7 @@ public class ReviewTests(PgFactory factory) : OrgTestBase<PgFactory>(factory), I
         var effective = Effective.Of(failed, []);
         Assert.Null(effective.Status);
         Assert.True(effective.Optional);
-        var asset = new Asset { Name = "a.example", Kind = AssetKind.Domain };
+        var asset = new Asset { Name = "a.example" };
         failed.AssetId = asset.Id;
         var board = StatusBoard.Build([asset], [failed], [], [], DateTimeOffset.UtcNow)[asset.Id];
         Assert.False(board.NeedsAttention);
@@ -123,7 +123,6 @@ public class ReviewTests(PgFactory factory) : OrgTestBase<PgFactory>(factory), I
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         var asset = await db.Assets.SingleAsync(a => a.Name == s.C.Name);
         Assert.True(asset.Discovered);
-        Assert.Equal(AssetKind.Endpoint, asset.Kind);
         Assert.Equal(s.Domain.Id, asset.DiscoveredFromId);
         Assert.Equal("crt.sh", asset.DiscoveredVia);
         Assert.Equal(ReviewState.Added, (await db.ReviewHosts.SingleAsync(h => h.Id == s.C.Id)).State);
@@ -218,6 +217,33 @@ public class ReviewTests(PgFactory factory) : OrgTestBase<PgFactory>(factory), I
         Assert.Equal(HttpStatusCode.OK, download.StatusCode);
         using var real = new XLWorkbook(new MemoryStream(await download.Content.ReadAsByteArrayAsync()));
         Assert.Contains(real.Worksheets, w => w.Name == "Discovery review");
+    }
+
+    [DbFact]
+    public async Task The_domain_controls_list_the_assets_with_zone_values_and_the_asset_count_is_every_asset()
+    {
+        var org = await NewOrg();
+        using (var scope = Scope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var apex = new Asset { TenantId = org.Id, Name = $"zone.{org.Id:N}.test" };
+            var host = new Asset { TenantId = org.Id, Name = $"www.zone.{org.Id:N}.test" };
+            var port = new Asset { TenantId = org.Id, Name = $"zone.{org.Id:N}.test:8443" };
+            db.Assets.AddRange(apex, host, port);
+            CheckResult Dns(Asset a, Dictionary<string, string> values) => new() { TenantId = org.Id, AssetId = a.Id, CheckType = "dns", Status = CheckStatus.Ok, Summary = "Sum_DnsOk", ValuesJson = System.Text.Json.JsonSerializer.Serialize(values) };
+            db.Results.AddRange(
+                Dns(apex, new() { ["spf"] = "v=spf1 -all", ["ns"] = "ns1.example", ["dnssec"] = "yes" }),
+                Dns(host, new() { ["spf"] = "v=spf1 -all", ["a"] = "192.0.2.1" }));
+            await db.SaveChangesAsync();
+        }
+
+        using var read = Factory.Services.CreateScope();
+        read.ServiceProvider.GetRequiredService<TenantScope>().Id = org.Id;
+        var model = await read.ServiceProvider.GetRequiredService<ReportBuilder>().BuildAsync();
+        var row = Assert.Single(model.Domains);                                          // the host and the endpoint have no zone values
+        Assert.Equal($"zone.{org.Id:N}.test", row.Domain);
+        Assert.True(row.Spf); Assert.True(row.Dnssec); Assert.False(row.Caa);
+        Assert.Equal(3, model.Assets);
     }
 
     sealed class FakeCt(List<DiscoveredHost> found) : ICheck

@@ -33,14 +33,14 @@ public class DashboardTests : IClassFixture<PgFactory>
         var dee = new User { TenantId = tenant.Id, Name = "Dee", Role = Role.Admin, Email = "dee@dash.test" };
         db.Users.Add(dee);
 
-        var manual = new Asset { TenantId = tenant.Id, Name = "dash.example", Kind = AssetKind.Domain };
+        var manual = new Asset { TenantId = tenant.Id, Name = "dash.example" };
         var found = new Asset
         {
-            TenantId = tenant.Id, Name = "api.dash.example", Kind = AssetKind.Endpoint, Discovered = true, DiscoveredVia = "Cert Spotter",
+            TenantId = tenant.Id, Name = "api.dash.example", Discovered = true, DiscoveredVia = "Cert Spotter",
             DiscoveredFromId = manual.Id, DiscoveredIssuer = "Issuer Seven", DiscoveredCertExpires = DateTimeOffset.UtcNow.AddDays(40),
         };
-        var legacy = new Asset { TenantId = tenant.Id, Name = "old.dash.example", Kind = AssetKind.Endpoint, Discovered = true };
-        var fine = new Asset { TenantId = tenant.Id, Name = "fine.dash.example", Kind = AssetKind.Endpoint, Discovered = true, DiscoveredVia = "crt.sh", DiscoveredFromId = manual.Id };
+        var legacy = new Asset { TenantId = tenant.Id, Name = "old.dash.example", Discovered = true };
+        var fine = new Asset { TenantId = tenant.Id, Name = "fine.dash.example", Discovered = true, DiscoveredVia = "crt.sh", DiscoveredFromId = manual.Id };
         db.Assets.AddRange(manual, found, legacy, fine);
 
         CheckResult R(Asset a, string type, CheckStatus s, string summary, string values = "{}") =>

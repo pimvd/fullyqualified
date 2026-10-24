@@ -151,7 +151,7 @@
         var total = await query.CountAsync();
         hosts = await query.OrderBy(h => h.State).ThenBy(h => h.Name).Take(MaxRows).ToListAsync();
         more = Math.Max(0, total - hosts.Count);
-        parents = await Db.Assets.Where(a => a.Kind == AssetKind.Domain).ToDictionaryAsync(a => a.Id, a => a.Name);
+        parents = await Db.Assets.ToDictionaryAsync(a => a.Id, a => a.Name);
         var names = hosts.Select(h => h.Name).ToList();
         assetByName = await Db.Assets.Where(a => names.Contains(a.Name)).ToDictionaryAsync(a => a.Name, a => a.Id);
     }

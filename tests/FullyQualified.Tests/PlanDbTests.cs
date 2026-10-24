@@ -188,7 +188,7 @@ public class PlanDbTests : IClassFixture<PgFactory>
         {
             var runner = scope.ServiceProvider.GetRequiredService<CheckRunner>();
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            var origin = await db.Assets.FirstAsync(a => a.TenantId == org.Id && a.Kind == AssetKind.Domain);
+            var origin = await db.Assets.FirstAsync(a => a.TenantId == org.Id && !a.Discovered);
             originId = origin.Id;
             var found = Enumerable.Range(0, 8).Select(i => new DiscoveredHost($"found{i}.{org.Id:N}.test.com", "crt.sh", "R11", DateTimeOffset.UtcNow.AddDays(30))).ToList();
             await runner.ExecuteAsync(origin, new FakeCheck(new CheckOutcome(CheckStatus.Ok, "Sum_CtOk|8|8", [], null, found)), default);
@@ -367,7 +367,7 @@ public class PlanDbTests : IClassFixture<PgFactory>
     {
         using var scope = Scope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        var asset = new Asset { TenantId = org.Id, Name = $"gone.{org.Id:N}.test.com", Kind = AssetKind.Domain };
+        var asset = new Asset { TenantId = org.Id, Name = $"gone.{org.Id:N}.test.com" };
         db.Assets.Add(asset);
         db.Results.Add(new CheckResult { TenantId = org.Id, AssetId = asset.Id, CheckType = "dns", Status = CheckStatus.Ok, Summary = "Sum_DnsOk" });
         db.Changes.Add(new Change { TenantId = org.Id, AssetId = asset.Id, CheckType = "dns", Key = "k" });

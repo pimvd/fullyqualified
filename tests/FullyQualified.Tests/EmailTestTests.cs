@@ -168,7 +168,7 @@ public class EmailTestIntegrationTests(PgFactory factory) : OrgTestBase<PgFactor
     {
         using var scope = Scope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        db.Assets.Add(new Asset { TenantId = tenant, Name = name, Kind = AssetKind.Domain });
+        db.Assets.Add(new Asset { TenantId = tenant, Name = name });
         await db.SaveChangesAsync();
     }
 

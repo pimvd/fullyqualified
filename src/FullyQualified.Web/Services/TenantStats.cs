@@ -18,7 +18,7 @@ public class TenantStats(AppDbContext db)
         var users = (await db.AcrossTenants<User>().GroupBy(u => u.TenantId)
             .Select(g => new { g.Key, Count = g.Count(), Last = g.Max(u => u.LastLoginAt) }).ToListAsync(ct)).ToDictionary(x => x.Key);
         var assets = (await db.AcrossTenants<Asset>().GroupBy(a => a.TenantId)
-            .Select(g => new { g.Key, Count = g.Count(), Domains = g.Count(a => a.Kind == AssetKind.Domain) }).ToListAsync(ct)).ToDictionary(x => x.Key);
+            .Select(g => new { g.Key, Count = g.Count(), Domains = g.Count(a => !a.Discovered && !a.Name.Contains(":")) }).ToListAsync(ct)).ToDictionary(x => x.Key);
         var certs = (await db.AcrossTenants<CertificateRecord>().Where(c => c.Source == "endpoint").GroupBy(c => c.TenantId)
             .Select(g => new { g.Key, Count = g.Count(), Expiring = g.Count(c => c.NotAfter <= now.AddDays(ExpiringDays)) }).ToListAsync(ct)).ToDictionary(x => x.Key);
         var changes = (await db.AcrossTenants<Change>().Where(c => c.DetectedAt >= now.AddDays(-7)).GroupBy(c => c.TenantId)

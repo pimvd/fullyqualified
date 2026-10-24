@@ -18,7 +18,6 @@
   <data name="Add_Invalid" xml:space="preserve"><value>Voer een geldige hostnaam in.</value></data>
   <data name="Add_Duplicate" xml:space="preserve"><value>Wordt al gemonitord.</value></data>
   <data name="Col_Name" xml:space="preserve"><value>Naam</value></data>
-  <data name="Col_Type" xml:space="preserve"><value>Type</value></data>
   <data name="Col_Status" xml:space="preserve"><value>Status</value></data>
   <data name="Col_Summary" xml:space="preserve"><value>Samenvatting</value></data>
   <data name="Col_Expires" xml:space="preserve"><value>Verloopt</value></data>
@@ -33,8 +32,6 @@
   <data name="Col_After" xml:space="preserve"><value>Na</value></data>
   <data name="Col_Detected" xml:space="preserve"><value>Gedetecteerd</value></data>
   <data name="Col_Domain" xml:space="preserve"><value>Domein</value></data>
-  <data name="Kind_Domain" xml:space="preserve"><value>Domein</value></data>
-  <data name="Kind_Endpoint" xml:space="preserve"><value>Endpoint</value></data>
   <data name="Status_Ok" xml:space="preserve"><value>OK</value></data>
   <data name="Status_Warning" xml:space="preserve"><value>Waarschuwing</value></data>
   <data name="Status_Error" xml:space="preserve"><value>Fout</value></data>
@@ -439,7 +436,6 @@ De link werkt één keer en verloopt na {2} uur. Een nieuwe passkey instellen ve
   <data name="Origin_discovered" xml:space="preserve"><value>Ontdekt</value></data>
   <data name="Filter_Search" xml:space="preserve"><value>Zoek op naam</value></data>
   <data name="Filter_AllOrigins" xml:space="preserve"><value>Alle herkomst</value></data>
-  <data name="Filter_AllTypes" xml:space="preserve"><value>Alle typen</value></data>
   <data name="Filter_AllStatuses" xml:space="preserve"><value>Alle statussen</value></data>
   <data name="Filter_Problems" xml:space="preserve"><value>Aandacht nodig (waarschuwing of erger)</value></data>
   <data name="Filter_Apply" xml:space="preserve"><value>Filteren</value></data>

@@ -68,7 +68,7 @@ public class EffectiveStatusTests
     public void Mutes_and_pauses_stop_counting_when_their_end_date_passes()
     {
         var now = DateTimeOffset.UtcNow;
-        var asset = new Asset { Name = "a.example", Kind = AssetKind.Domain };
+        var asset = new Asset { Name = "a.example" };
         var result = Dns(CheckStatus.Warning, "NoCaa");
         result.AssetId = asset.Id;
         CheckMute Mute(DateTimeOffset? until) => new() { AssetId = asset.Id, CheckType = "dns", Code = "NoCaa", Until = until };
@@ -100,8 +100,8 @@ public class PauseMuteTests(PgFactory factory) : OrgTestBase<PgFactory>(factory)
         var org = await NewOrg();
         using var scope = Scope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        var asset = new Asset { TenantId = org.Id, Name = $"mute.{org.Id:N}.test", Kind = AssetKind.Domain };
-        var other = new Asset { TenantId = org.Id, Name = $"ok.{org.Id:N}.test", Kind = AssetKind.Domain };
+        var asset = new Asset { TenantId = org.Id, Name = $"mute.{org.Id:N}.test" };
+        var other = new Asset { TenantId = org.Id, Name = $"ok.{org.Id:N}.test" };
         db.Assets.AddRange(asset, other);
         db.Results.AddRange(
             new CheckResult { TenantId = org.Id, AssetId = asset.Id, CheckType = "dns", Status = CheckStatus.Warning, Summary = "Sum_DnsIssues|1", ValuesJson = "{\"_issues\":\"NoCaa\"}" },
