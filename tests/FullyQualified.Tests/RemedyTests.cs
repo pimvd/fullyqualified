@@ -9,8 +9,8 @@ namespace FullyQualified.Tests;
 
 public class RemedyTests
 {
-    static readonly Asset Domain = new() { Name = "example.com", Kind = AssetKind.Domain };
-    static readonly Asset Endpoint = new() { Name = "shop.example.com:8443", Kind = AssetKind.Endpoint };
+    static readonly Asset Domain = new() { Name = "example.com" };
+    static readonly Asset Endpoint = new() { Name = "shop.example.com:8443" };
 
     static readonly ResourceManager Resources = new("FullyQualified.Web.Resources.SharedResource", typeof(SharedResource).Assembly);
     static readonly CultureInfo Dutch = new("nl");
@@ -177,9 +177,9 @@ public class FixPageTests : IClassFixture<PgFactory>
             var other = await NewOrg();
             using var scope = Scope();
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            var domain = new Asset { TenantId = org.Id, Name = $"fix.{org.Id:N}.test", Kind = AssetKind.Domain };
-            var endpoint = new Asset { TenantId = org.Id, Name = $"web.{org.Id:N}.test", Kind = AssetKind.Endpoint };
-            var foreign = new Asset { TenantId = other.Id, Name = $"foreign.{other.Id:N}.test", Kind = AssetKind.Domain };
+            var domain = new Asset { TenantId = org.Id, Name = $"fix.{org.Id:N}.test" };
+            var endpoint = new Asset { TenantId = org.Id, Name = $"web.{org.Id:N}.test" };
+            var foreign = new Asset { TenantId = other.Id, Name = $"foreign.{other.Id:N}.test" };
             db.Assets.AddRange(domain, endpoint, foreign);
             db.Results.AddRange(
                 new CheckResult { TenantId = org.Id, AssetId = domain.Id, CheckType = "dns", Status = CheckStatus.Warning, Summary = "Sum_DnsIssues|2", ValuesJson = "{\"_issues\":\"NoSpf,DkimMissing:s1\"}" },

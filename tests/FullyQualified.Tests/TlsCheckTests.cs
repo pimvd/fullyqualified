@@ -35,7 +35,7 @@ public class TlsCheckTests
         });
 
         var check = new TlsCheck(new HostGuard(new ConfigurationBuilder().Build()));
-        var outcome = await check.RunAsync(new Asset { Name = $"localhost:{port}", Kind = AssetKind.Endpoint }, default);
+        var outcome = await check.RunAsync(new Asset { Name = $"localhost:{port}" }, default);
         await serving;
         listener.Stop();
         return outcome;
@@ -65,7 +65,7 @@ public class TlsCheckTests
     public async Task Connection_failure_is_reported_as_error()
     {
         var check = new TlsCheck(new HostGuard(new ConfigurationBuilder().Build()));
-        var o = await check.RunAsync(new Asset { Name = "localhost:1", Kind = AssetKind.Endpoint }, default);
+        var o = await check.RunAsync(new Asset { Name = "localhost:1" }, default);
         Assert.Equal(CheckStatus.Error, o.Status);
     }
 }

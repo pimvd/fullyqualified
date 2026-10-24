@@ -89,11 +89,11 @@ public abstract class OrgTestBase<TFactory>(TFactory factory) where TFactory : P
     }
 
     /// <summary>Adds an asset; with an age it also gets a result of that age for every check that applies to it (or just the named one).</summary>
-    protected async Task<Asset> AddAsset(Guid tenant, string name, AssetKind kind = AssetKind.Domain, int? resultAgeMinutes = null, CheckStatus status = CheckStatus.Ok, string? check = null, DateTimeOffset? created = null)
+    protected async Task<Asset> AddAsset(Guid tenant, string name, int? resultAgeMinutes = null, CheckStatus status = CheckStatus.Ok, string? check = null, DateTimeOffset? created = null)
     {
         using var scope = Scope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        var a = new Asset { TenantId = tenant, Name = name, Kind = kind, CreatedAt = created ?? DateTimeOffset.UtcNow.AddDays(-1) };
+        var a = new Asset { TenantId = tenant, Name = name, CreatedAt = created ?? DateTimeOffset.UtcNow.AddDays(-1) };
         db.Assets.Add(a);
         if (resultAgeMinutes is { } age)
             foreach (var type in check is null ? scope.ServiceProvider.GetServices<ICheck>().Where(c => c.AppliesTo(a)).Select(c => c.Type) : [check])
@@ -132,7 +132,7 @@ public class ScheduleTests(PgFactory factory) : OrgTestBase<PgFactory>(factory),
         var slow = await NewOrg(Tiers.Free);                                               // daily
         var custom = await NewOrg(Tiers.Custom);                                           // the server default, six hours
         var overridden = await NewOrg(Tiers.Free, tweak: t => t.OverrideScanIntervalMinutes = 5);
-        foreach (var o in new[] { fast, slow, custom, overridden }) await AddAsset(o.Id, $"a.{o.Id:N}.test.com", AssetKind.Endpoint, resultAgeMinutes: 90);
+        foreach (var o in new[] { fast, slow, custom, overridden }) await AddAsset(o.Id, $"a.{o.Id:N}.test.com", resultAgeMinutes: 90);
 
         using var scope = Scope();
         await scope.ServiceProvider.GetRequiredService<JobQueue>().EnqueueDueAsync(default);
@@ -147,8 +147,8 @@ public class ScheduleTests(PgFactory factory) : OrgTestBase<PgFactory>(factory),
     public async Task A_failed_check_is_still_retried_after_fifteen_minutes_whatever_the_interval()
     {
         var org = await NewOrg(Tiers.Free);
-        await AddAsset(org.Id, $"err.{org.Id:N}.test.com", AssetKind.Endpoint, resultAgeMinutes: 20, status: CheckStatus.Error);
-        await AddAsset(org.Id, $"ok.{org.Id:N}.test.com", AssetKind.Endpoint, resultAgeMinutes: 20, status: CheckStatus.Ok);
+        await AddAsset(org.Id, $"err.{org.Id:N}.test.com", resultAgeMinutes: 20, status: CheckStatus.Error);
+        await AddAsset(org.Id, $"ok.{org.Id:N}.test.com", resultAgeMinutes: 20, status: CheckStatus.Ok);
         using var scope = Scope();
         await scope.ServiceProvider.GetRequiredService<JobQueue>().EnqueueDueAsync(default);
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -192,9 +192,9 @@ public class ScheduleTests(PgFactory factory) : OrgTestBase<PgFactory>(factory),
     {
         var org = await NewOrg(Tiers.Free, tweak: t => t.OverrideManualCooldownMinutes = 5);   // daily interval, so nothing is due; a five minute wait
         var other = await NewOrg(Tiers.Free);
-        var domain = await AddAsset(org.Id, $"fresh.{org.Id:N}.test.com", AssetKind.Domain, resultAgeMinutes: 1);
-        var endpoint = await AddAsset(org.Id, $"host.{org.Id:N}.test.com:443", AssetKind.Endpoint, resultAgeMinutes: 1);
-        await AddAsset(other.Id, $"theirs.{other.Id:N}.test.com", AssetKind.Domain, resultAgeMinutes: 1);
+        var domain = await AddAsset(org.Id, $"fresh.{org.Id:N}.test.com", resultAgeMinutes: 1);
+        var endpoint = await AddAsset(org.Id, $"host.{org.Id:N}.test.com:443", resultAgeMinutes: 1);
+        await AddAsset(other.Id, $"theirs.{other.Id:N}.test.com", resultAgeMinutes: 1);
         var expected = ChecksFor(domain) + ChecksFor(endpoint);
 
         using (var scope = Scope()) await scope.ServiceProvider.GetRequiredService<JobQueue>().EnqueueDueAsync(default);

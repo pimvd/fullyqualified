@@ -240,7 +240,7 @@ public class PublicScanTests
         try
         {
             var port = ((IPEndPoint)listener.LocalEndpoint).Port;
-            var outcome = await new TlsCheck(HostGuard.Strict()).RunAsync(new Asset { Name = $"127.0.0.1:{port}", Kind = AssetKind.Endpoint }, default);
+            var outcome = await new TlsCheck(HostGuard.Strict()).RunAsync(new Asset { Name = $"127.0.0.1:{port}" }, default);
             Assert.Equal("Sum_Blocked", outcome.Summary);
             Assert.False(listener.Pending(), "the scanner must not even have tried to connect");
         }

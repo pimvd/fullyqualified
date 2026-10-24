@@ -69,11 +69,6 @@
                 <option value="added" selected="@(Source == "added")">@L["Origin_added"]</option>
                 <option value="discovered" selected="@(Source == "discovered")">@L["Origin_discovered"]</option>
             </select>
-            <select name="type" aria-label="@L["Col_Type"]">
-                <option value="">@L["Filter_AllTypes"]</option>
-                <option value="domain" selected="@(Type == "domain")">@L["Kind_Domain"]</option>
-                <option value="endpoint" selected="@(Type == "endpoint")">@L["Kind_Endpoint"]</option>
-            </select>
             <select name="status" aria-label="@L["Col_Status"]">
                 <option value="">@L["Filter_AllStatuses"]</option>
                 <option value="problems" selected="@(StatusFilter == "problems")">@L["Filter_Problems"]</option>
@@ -107,7 +102,7 @@
                 </p>
             }
             <table class="assets">
-                <thead><tr>@if (canEdit) { <th class="pick"></th> }<th>@L["Col_Name"]</th><th>@L["Col_Type"]</th><th>@L["Col_Origin"]</th><th>@L["Col_Status"]</th><th>@L["Col_Why"]</th></tr></thead>
+                <thead><tr>@if (canEdit) { <th class="pick"></th> }<th>@L["Col_Name"]</th><th>@L["Col_Origin"]</th><th>@L["Col_Status"]</th><th>@L["Col_Why"]</th></tr></thead>
                 <tbody>
                 @foreach (var a in shown)
                 {
@@ -115,7 +110,6 @@
                     <tr>
                         @if (canEdit) { <td class="pick"><input type="checkbox" name="ids" value="@a.Id" aria-label="@a.Name" /></td> }
                         <td class="name"><a href="/assets/@a.Id">@a.Name</a> <button type="button" class="dig-link" data-dig-name="@a.Name" title="@L["Dig_Open"]">dig</button></td>
-                        <td class="nowrap">@L["Kind_" + a.Kind]</td>
                         <td class="nowrap origin-cell">
                             <span class="badge origin @(a.Discovered ? "discovered" : "added")" title="@Discovery.Explain(L, a, Parent(a))">@L[a.Discovered ? "Origin_discovered" : "Origin_added"]</span>
                             @if (a.Discovered)
@@ -156,9 +150,8 @@
     [SupplyParameterFromQuery(Name = "done")] string? Done { get; set; }
     [SupplyParameterFromQuery(Name = "q")] string? Q { get; set; }
     [SupplyParameterFromQuery(Name = "source")] string? Source { get; set; }
-    [SupplyParameterFromQuery(Name = "type")] string? Type { get; set; }
     [SupplyParameterFromQuery(Name = "status")] string? StatusFilter { get; set; }
-    bool filtering => !string.IsNullOrEmpty(Q) || !string.IsNullOrEmpty(Source) || !string.IsNullOrEmpty(Type) || !string.IsNullOrEmpty(StatusFilter);
+    bool filtering => !string.IsNullOrEmpty(Q) || !string.IsNullOrEmpty(Source) || !string.IsNullOrEmpty(StatusFilter);
     List<Asset> shown = [];
     List<Asset> assets = [];
     Dictionary<Guid, AssetStatus> board = [];
@@ -211,7 +204,7 @@
     /// <summary>The asset whose certificate search found this one. Older rows did not record it, so fall back to the manually added domain that the name belongs to.</summary>
     Asset? Parent(Asset a) => !a.Discovered ? null
         : assets.FirstOrDefault(p => p.Id == a.DiscoveredFromId)
-          ?? assets.Where(p => !p.Discovered && p.Kind == AssetKind.Domain && a.Name.EndsWith("." + p.Name, StringComparison.Ordinal)).OrderByDescending(p => p.Name.Length).FirstOrDefault();
+          ?? assets.Where(p => !p.Discovered && a.Name.EndsWith("." + p.Name, StringComparison.Ordinal)).OrderByDescending(p => p.Name.Length).FirstOrDefault();
 
     /// <summary>Most urgent first, then by name.</summary>
     List<Asset> Filter()
@@ -223,7 +216,6 @@
         return assets
             .Where(a => q.Length == 0 || a.Name.Contains(q, StringComparison.OrdinalIgnoreCase))
             .Where(a => Source switch { "added" => !a.Discovered, "discovered" => a.Discovered, _ => true })
-            .Where(a => Type switch { "domain" => a.Kind == AssetKind.Domain, "endpoint" => a.Kind == AssetKind.Endpoint, _ => true })
             .Where(a => StatusFilter switch
             {
                 "problems" => board[a.Id].NeedsAttention,
@@ -285,6 +277,7 @@
         var name = HostName.Normalize(Model!.Name);
         if (name is null) { error = "Add_Invalid"; return; }
         if (await Db.Assets.AnyAsync(a => a.Name == name)) { error = "Add_Duplicate"; return; }
+        // Kind only feeds the per-kind plan limits; it goes with them (#13).
         var kind = name.Contains(':') ? AssetKind.Endpoint : AssetKind.Domain;
         if (await Plans.ForAsync(tenantId!.Value) is { } current && current.Blocks(kind) is { } blocked) { error = blocked; plan = current; return; }
         var asset = new Asset { Name = name, Kind = kind };
