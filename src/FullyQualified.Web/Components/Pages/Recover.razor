@@ -1,0 +1,29 @@
+@page "/recover/{Token}"
+@using Microsoft.AspNetCore.Authorization
+@attribute [AllowAnonymous]
+@inject IStringLocalizer<SharedResource> L
+@inject PasskeyService Passkeys
+
+<PageTitle>@L["Recover_Title"]</PageTitle>
+<PasskeyRoot Invite="@Token">
+    <section class="card narrow">
+        <h1>@L["Recover_Title"]</h1>
+        @if (valid)
+        {
+            <p>@L["Recover_Intro"]</p>
+            <button type="button" data-passkey="register">@L["Recover_Button"]</button>
+        }
+        else
+        {
+            <p class="error">@L["Recover_Invalid"]</p>
+            <a href="/login">@L["Login_Title"]</a>
+        }
+    </section>
+</PasskeyRoot>
+
+@code {
+    [Parameter] public string Token { get; set; } = "";
+    bool valid;
+
+    protected override async Task OnInitializedAsync() => valid = await Passkeys.FindInvite(Token, recovery: true) is not null;
+}

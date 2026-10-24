@@ -1,0 +1,50 @@
+@page "/organization"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Policy = Roles.Admin)]
+@inject IStringLocalizer<SharedResource> L
+@inject PlanService Plans
+
+<PageTitle>@L["Nav_Organization"]</PageTitle>
+<h1>@L["Nav_Organization"]</h1>
+@if (plan is not null)
+{
+    <AdminRoot>
+        <section class="card">
+            <h2>@L["Plan_Title"]: @plan.Tier.Name</h2>
+            <p class="muted">@L["Plan_Intro"]</p>
+            <PlanSummary Plan="plan" />
+        </section>
+
+        <section class="card" id="diag">
+            <h2>@L["Diag_Title"]</h2>
+            <p class="muted">@L["Diag_Intro"]</p>
+            <label class="check-row"><input type="checkbox" id="diag-alarm" checked /> @L["Diag_SendAlarm"]</label>
+            <p class="actions"><button type="button" data-admin="diag">@L["Diag_Run"]</button></p>
+            <p id="diag-summary" role="status" hidden></p>
+            <div id="diag-results"></div>
+        </section>
+
+        @if (!plan.Tenant.IsManagement)
+        {
+            <section class="card danger-zone" data-confirm-name="@plan.Tenant.Name">
+                <h2>@L["Delete_Title"]</h2>
+                <p>@L["Delete_OwnText", plan.Tenant.Name]</p>
+                <p class="inline">
+                    <input id="del-confirm" autocomplete="off" placeholder="@plan.Tenant.Name" aria-label="@L["Delete_Confirm"]" />
+                    <button type="button" class="danger" data-admin="tenant-delete" data-url="/admin/tenant/delete" data-after="/login">@L["Delete_Button"]</button>
+                </p>
+                <p class="muted"><small>@L["Delete_Confirm"]</small></p>
+            </section>
+        }
+    </AdminRoot>
+}
+
+@code {
+    [CascadingParameter] HttpContext? Ctx { get; set; }
+    Plan? plan;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Roles.TenantId(Ctx?.User) is { } id) plan = await Plans.ForAsync(id);
+    }
+}

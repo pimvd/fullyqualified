@@ -1,0 +1,996 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Nav_Dashboard" xml:space="preserve"><value>Overzicht</value></data>
+  <data name="Nav_Certificates" xml:space="preserve"><value>Certificaten</value></data>
+  <data name="Nav_Changes" xml:space="preserve"><value>Wijzigingen</value></data>
+  <data name="Nav_Reports" xml:space="preserve"><value>Rapporten</value></data>
+  <data name="Tile_Assets" xml:space="preserve"><value>Assets</value></data>
+  <data name="Tile_Expiring" xml:space="preserve"><value>Certificaten die binnen 30 dagen verlopen</value></data>
+  <data name="Tile_Problems" xml:space="preserve"><value>Assets met problemen</value></data>
+  <data name="Tile_Changes" xml:space="preserve"><value>Wijzigingen in de afgelopen 7 dagen</value></data>
+  <data name="Add_Title" xml:space="preserve"><value>Voeg een domein of endpoint toe</value></data>
+  <data name="Add_Placeholder" xml:space="preserve"><value>voorbeeld.nl of host:8443</value></data>
+  <data name="Add_Button" xml:space="preserve"><value>Toevoegen</value></data>
+  <data name="Add_Invalid" xml:space="preserve"><value>Voer een geldige hostnaam in.</value></data>
+  <data name="Add_Duplicate" xml:space="preserve"><value>Wordt al gemonitord.</value></data>
+  <data name="Col_Name" xml:space="preserve"><value>Naam</value></data>
+  <data name="Col_Type" xml:space="preserve"><value>Type</value></data>
+  <data name="Col_Status" xml:space="preserve"><value>Status</value></data>
+  <data name="Col_Summary" xml:space="preserve"><value>Samenvatting</value></data>
+  <data name="Col_Expires" xml:space="preserve"><value>Verloopt</value></data>
+  <data name="Col_Days" xml:space="preserve"><value>Dagen over</value></data>
+  <data name="Col_Issuer" xml:space="preserve"><value>Uitgever</value></data>
+  <data name="Col_Source" xml:space="preserve"><value>Bron</value></data>
+  <data name="Col_Renewal" xml:space="preserve"><value>Verlenging</value></data>
+  <data name="Col_Asset" xml:space="preserve"><value>Asset</value></data>
+  <data name="Col_Check" xml:space="preserve"><value>Controle</value></data>
+  <data name="Col_Change" xml:space="preserve"><value>Wijziging</value></data>
+  <data name="Col_Before" xml:space="preserve"><value>Voor</value></data>
+  <data name="Col_After" xml:space="preserve"><value>Na</value></data>
+  <data name="Col_Detected" xml:space="preserve"><value>Gedetecteerd</value></data>
+  <data name="Col_Domain" xml:space="preserve"><value>Domein</value></data>
+  <data name="Kind_Domain" xml:space="preserve"><value>Domein</value></data>
+  <data name="Kind_Endpoint" xml:space="preserve"><value>Endpoint</value></data>
+  <data name="Kind_CloudResource" xml:space="preserve"><value>Cloudresource</value></data>
+  <data name="Status_Ok" xml:space="preserve"><value>OK</value></data>
+  <data name="Status_Warning" xml:space="preserve"><value>Waarschuwing</value></data>
+  <data name="Status_Error" xml:space="preserve"><value>Fout</value></data>
+  <data name="Status_Critical" xml:space="preserve"><value>Kritiek</value></data>
+  <data name="Status_Pending" xml:space="preserve"><value>In afwachting</value></data>
+  <data name="Empty_Assets" xml:space="preserve"><value>Nog niets gemonitord. Voeg hierboven je eerste domein toe.</value></data>
+  <data name="Empty_Generic" xml:space="preserve"><value>Nog niets te tonen.</value></data>
+  <data name="Detail_ScanNow" xml:space="preserve"><value>Nu scannen</value></data>
+  <data name="Detail_Delete" xml:space="preserve"><value>Verwijderen</value></data>
+  <data name="Detail_Confirm" xml:space="preserve"><value>Dit asset en de geschiedenis verwijderen?</value></data>
+  <data name="Detail_Checks" xml:space="preserve"><value>Laatste controles</value></data>
+  <data name="Detail_Certs" xml:space="preserve"><value>Certificaten</value></data>
+  <data name="Detail_Changes" xml:space="preserve"><value>Wijzigingen</value></data>
+  <data name="Detail_NotFound" xml:space="preserve"><value>Niet gevonden.</value></data>
+  <data name="Detail_Back" xml:space="preserve"><value>Terug</value></data>
+  <data name="Check_tls" xml:space="preserve"><value>TLS-certificaat</value></data>
+  <data name="Check_dns" xml:space="preserve"><value>DNS-records</value></data>
+  <data name="Check_ct" xml:space="preserve"><value>Certificate Transparency</value></data>
+  <data name="Renewal_Automated" xml:space="preserve"><value>Geautomatiseerd</value></data>
+  <data name="Renewal_Manual" xml:space="preserve"><value>Handmatig (waarschijnlijk)</value></data>
+  <data name="Source_endpoint" xml:space="preserve"><value>Endpoint-scan</value></data>
+  <data name="Source_ct" xml:space="preserve"><value>CT-log</value></data>
+  <data name="Certificates_Title" xml:space="preserve"><value>Certificaatinventaris</value></data>
+  <data name="Changes_Title" xml:space="preserve"><value>Wijzigingslog</value></data>
+  <data name="Reports_Title" xml:space="preserve"><value>NIS2-rapport</value></data>
+  <data name="Reports_Intro" xml:space="preserve"><value>Bewijs van beheer van certificaten en DNS voor je NIS2-documentatie: certificaatinventaris met verloopdatum en verlenging, DNS-controles per domein en het wijzigingslog van de afgelopen 90 dagen.</value></data>
+  <data name="Reports_Excel" xml:space="preserve"><value>Download Excel</value></data>
+  <data name="Reports_Pdf" xml:space="preserve"><value>Download PDF</value></data>
+  <data name="Sum_TlsOk" xml:space="preserve"><value>Verloopt over {0} dagen ({1}), uitgegeven door {2}</value></data>
+  <data name="Sum_TlsExpired" xml:space="preserve"><value>Certificaat verlopen op {0}</value></data>
+  <data name="Sum_TlsChain" xml:space="preserve"><value>Certificaat niet vertrouwd: {0}</value></data>
+  <data name="Sum_Error" xml:space="preserve"><value>Controle mislukt: {0}</value></data>
+  <data name="Sum_DnsOk" xml:space="preserve"><value>Alle DNS-controles op orde</value></data>
+  <data name="Sum_DnsIssues" xml:space="preserve"><value>{0} DNS-probleem/problemen</value></data>
+  <data name="Sum_CtOk" xml:space="preserve"><value>{0} actieve certificaten, {1} hostnamen ontdekt</value></data>
+  <data name="Sum_Blocked" xml:space="preserve"><value>Host niet toegestaan door het scanbeleid</value></data>
+  <data name="Issue_NoSpf" xml:space="preserve"><value>Geen SPF-record</value></data>
+  <data name="Issue_NoDmarc" xml:space="preserve"><value>Geen DMARC-record</value></data>
+  <data name="Issue_DmarcNone" xml:space="preserve"><value>DMARC-beleid is 'none'</value></data>
+  <data name="Issue_NoCaa" xml:space="preserve"><value>Geen CAA-record</value></data>
+  <data name="Issue_NoNs" xml:space="preserve"><value>Geen NS-records gevonden</value></data>
+  <data name="Issue_DanglingCname" xml:space="preserve"><value>Hangende CNAME (risico op subdomain takeover)</value></data>
+  <data name="Rep_Title" xml:space="preserve"><value>NIS2-compliancerapport</value></data>
+  <data name="Rep_Summary" xml:space="preserve"><value>Samenvatting</value></data>
+  <data name="Rep_GeneratedAt" xml:space="preserve"><value>Gegenereerd</value></data>
+  <data name="Rep_Assets" xml:space="preserve"><value>Assets</value></data>
+  <data name="Rep_Certs" xml:space="preserve"><value>Certificaten</value></data>
+  <data name="Rep_Expiring" xml:space="preserve"><value>Verlopen binnen 30 dagen</value></data>
+  <data name="Rep_Expired" xml:space="preserve"><value>Verlopen</value></data>
+  <data name="Rep_DnsControls" xml:space="preserve"><value>DNS-controles</value></data>
+  <data name="Ctl_Spf" xml:space="preserve"><value>SPF</value></data>
+  <data name="Ctl_Dmarc" xml:space="preserve"><value>DMARC</value></data>
+  <data name="Ctl_Caa" xml:space="preserve"><value>CAA</value></data>
+  <data name="Ctl_Dnssec" xml:space="preserve"><value>DNSSEC</value></data>
+  <data name="Rep_Yes" xml:space="preserve"><value>Ja</value></data>
+  <data name="Rep_No" xml:space="preserve"><value>Nee</value></data>
+  <data name="Rep_ChangesTitle" xml:space="preserve"><value>Wijzigingen (laatste 90 dagen)</value></data>
+  <data name="Nav_Account" xml:space="preserve"><value>Account</value></data>
+  <data name="Nav_SignOut" xml:space="preserve"><value>Uitloggen</value></data>
+  <data name="Login_Title" xml:space="preserve"><value>Inloggen</value></data>
+  <data name="Login_Intro" xml:space="preserve"><value>Log in met een passkey op dit apparaat, of met je telefoon of een beveiligingssleutel.</value></data>
+  <data name="Login_Button" xml:space="preserve"><value>Inloggen met een passkey</value></data>
+  <data name="Setup_Title" xml:space="preserve"><value>FullyQualified instellen</value></data>
+  <data name="Setup_Intro" xml:space="preserve"><value>Maak het eerste account aan. Je logt in met een passkey; er zijn geen wachtwoorden.</value></data>
+  <data name="Setup_Code" xml:space="preserve"><value>Installatiecode</value></data>
+  <data name="Setup_CodeHelp" xml:space="preserve"><value>Vereist omdat Auth:SetupCode op de server is ingesteld.</value></data>
+  <data name="Account_Name" xml:space="preserve"><value>Je naam</value></data>
+  <data name="Register_Button" xml:space="preserve"><value>Account aanmaken met een passkey</value></data>
+  <data name="Invite_Title" xml:space="preserve"><value>Uitnodiging accepteren</value></data>
+  <data name="Invite_Intro" xml:space="preserve"><value>Je bent uitgenodigd. Vul je naam in en maak een passkey aan.</value></data>
+  <data name="Invite_Invalid" xml:space="preserve"><value>Deze uitnodigingslink is ongeldig, verlopen of al gebruikt.</value></data>
+  <data name="Account_Title" xml:space="preserve"><value>Account</value></data>
+  <data name="Passkeys_Title" xml:space="preserve"><value>Passkeys</value></data>
+  <data name="Passkeys_Intro" xml:space="preserve"><value>Voeg een passkey toe voor elk apparaat dat je gebruikt. Er moet er minimaal één blijven.</value></data>
+  <data name="Passkeys_Label" xml:space="preserve"><value>Naam van de nieuwe passkey</value></data>
+  <data name="Passkeys_Add" xml:space="preserve"><value>Passkey toevoegen</value></data>
+  <data name="Passkeys_Remove" xml:space="preserve"><value>Verwijderen</value></data>
+  <data name="Passkeys_ConfirmRemove" xml:space="preserve"><value>Deze passkey verwijderen?</value></data>
+  <data name="Passkeys_Never" xml:space="preserve"><value>Nooit</value></data>
+  <data name="Col_Created" xml:space="preserve"><value>Aangemaakt</value></data>
+  <data name="Col_LastUsed" xml:space="preserve"><value>Laatst gebruikt</value></data>
+  <data name="Invites_Title" xml:space="preserve"><value>Iemand uitnodigen</value></data>
+  <data name="Invites_Intro" xml:space="preserve"><value>Nodig iemand uit met een link voor eenmalig gebruik, 7 dagen geldig. De rol bepaalt wat diegene mag: lezers kijken, medewerkers beheren ook assets, beheerders beheren ook mensen.</value></data>
+  <data name="Invites_Create" xml:space="preserve"><value>Uitnodigingslink maken</value></data>
+  <data name="Err_Unsupported" xml:space="preserve"><value>Deze browser ondersteunt geen passkeys.</value></data>
+  <data name="Err_Cancelled" xml:space="preserve"><value>De passkey-aanvraag is geannuleerd.</value></data>
+  <data name="Err_Failed" xml:space="preserve"><value>Er ging iets mis. Probeer het opnieuw.</value></data>
+  <data name="Err_InvalidSetupCode" xml:space="preserve"><value>De installatiecode klopt niet.</value></data>
+  <data name="Err_InvalidInvite" xml:space="preserve"><value>Deze uitnodiging is ongeldig, verlopen of al gebruikt.</value></data>
+  <data name="Err_LastPasskey" xml:space="preserve"><value>Je kunt je laatste passkey niet verwijderen.</value></data>
+  <data name="Err_UnknownPasskey" xml:space="preserve"><value>Deze passkey is hier niet bekend.</value></data>
+  <data name="Err_Expired" xml:space="preserve"><value>De aanvraag is verlopen. Probeer het opnieuw.</value></data>
+  <data name="Err_InvalidName" xml:space="preserve"><value>Vul een naam in van maximaal 100 tekens.</value></data>
+  <data name="Err_VerificationFailed" xml:space="preserve"><value>De passkey kon niet worden geverifieerd.</value></data>
+  <data name="Err_NotFound" xml:space="preserve"><value>Niet gevonden.</value></data>
+  <data name="Err_AlreadyRegistered" xml:space="preserve"><value>Dit apparaat heeft al een passkey voor dit account. Gebruik een ander apparaat of een beveiligingssleutel.</value></data>
+  <data name="Nav_Users" xml:space="preserve"><value>Gebruikers</value></data>
+  <data name="Users_Title" xml:space="preserve"><value>Gebruikers</value></data>
+  <data name="Users_You" xml:space="preserve"><value>jij</value></data>
+  <data name="Users_ConfirmRemove" xml:space="preserve"><value>Deze gebruiker en hun passkeys verwijderen?</value></data>
+  <data name="Col_Email" xml:space="preserve"><value>E-mail</value></data>
+  <data name="Col_Role" xml:space="preserve"><value>Rol</value></data>
+  <data name="Col_SignIn" xml:space="preserve"><value>Inloggen</value></data>
+  <data name="Method_Passkeys" xml:space="preserve"><value>Passkeys</value></data>
+  <data name="Role_Viewer" xml:space="preserve"><value>Lezer</value></data>
+  <data name="Role_Member" xml:space="preserve"><value>Medewerker</value></data>
+  <data name="Role_Admin" xml:space="preserve"><value>Beheerder</value></data>
+  <data name="Forbidden_Title" xml:space="preserve"><value>Geen toegang</value></data>
+  <data name="Forbidden_Text" xml:space="preserve"><value>Je rol staat dit niet toe.</value></data>
+  <data name="Invites_Email" xml:space="preserve"><value>E-mail (optioneel)</value></data>
+  <data name="Invites_Pending" xml:space="preserve"><value>Openstaande uitnodigingen</value></data>
+  <data name="Invites_Revoke" xml:space="preserve"><value>Intrekken</value></data>
+  <data name="Invites_ConfirmRevoke" xml:space="preserve"><value>Deze uitnodiging intrekken?</value></data>
+  <data name="Invites_Emailed" xml:space="preserve"><value>De uitnodiging is per e-mail verstuurd. Je kunt de link ook zelf privé delen.</value></data>
+  <data name="Invites_Copy" xml:space="preserve"><value>Deel deze link privé. Hij werkt één keer en verloopt na 7 dagen.</value></data>
+  <data name="Invites_MailOn" xml:space="preserve"><value>Met een e-mailadres wordt de link per e-mail verstuurd. Met dat adres kan die persoon ook inloggen via SSO.</value></data>
+  <data name="Invites_MailOff" xml:space="preserve"><value>Er is geen SMTP-server ingesteld (Alerts:Email), dus je deelt de link zelf.</value></data>
+  <data name="Login_Or" xml:space="preserve"><value>of</value></data>
+  <data name="Login_Sso" xml:space="preserve"><value>Inloggen met {0}</value></data>
+  <data name="Err_LastAdmin" xml:space="preserve"><value>Er moet altijd minimaal één beheerder zijn.</value></data>
+  <data name="Err_CannotResetSelf" xml:space="preserve"><value>Je kunt je eigen passkey niet resetten. Vraag het een andere beheerder.</value></data>
+  <data name="Err_CannotRemoveSelf" xml:space="preserve"><value>Je kunt jezelf niet verwijderen.</value></data>
+  <data name="Err_EmailExists" xml:space="preserve"><value>Dit e-mailadres hoort al bij een gebruiker.</value></data>
+  <data name="Err_InvalidEmail" xml:space="preserve"><value>Vul een geldig e-mailadres in.</value></data>
+  <data name="Err_InvalidRole" xml:space="preserve"><value>Kies een rol.</value></data>
+  <data name="Err_SsoFailed" xml:space="preserve"><value>Single sign-on is mislukt. Probeer het opnieuw.</value></data>
+  <data name="Err_SsoNoAccount" xml:space="preserve"><value>Je identity provider heeft je aangemeld, maar je hebt hier geen account. Vraag een beheerder om een uitnodiging.</value></data>
+  <data name="Err_SsoDomain" xml:space="preserve"><value>Je e-mailadres mag hier niet inloggen.</value></data>
+  <data name="Err_SsoNoEmail" xml:space="preserve"><value>Je identity provider heeft geen e-mailadres gedeeld.</value></data>
+  <data name="Mail_InviteSubject" xml:space="preserve"><value>Je bent uitgenodigd voor FullyQualified</value></data>
+  <data name="Mail_InviteBody" xml:space="preserve"><value>{0} heeft je uitgenodigd voor FullyQualified.
+
+Open deze link om je account met een passkey aan te maken, of log in via single sign-on als je organisatie dat gebruikt:
+{1}
+
+De link werkt één keer en verloopt na {2} dagen.</value></data>
+  <data name="Nav_Alerts" xml:space="preserve"><value>Alarmen</value></data>
+  <data name="Nav_Log" xml:space="preserve"><value>Log</value></data>
+  <data name="Nav_Tenants" xml:space="preserve"><value>Tenants</value></data>
+  <data name="Alerts_Title" xml:space="preserve"><value>Alarmen</value></data>
+  <data name="Alerts_Intro" xml:space="preserve"><value>Kies waar FullyQualified een alarm naartoe stuurt als een certificaat- of DNS-controle slechter wordt, herstelt of afwijkt. Deze instellingen gelden alleen voor jouw organisatie.</value></data>
+  <data name="Alerts_ServerDefaults" xml:space="preserve"><value>Hier zijn nog geen alarmen ingesteld, dus de standaardinstellingen van de server worden gebruikt. Opslaan vervangt ze voor jouw organisatie.</value></data>
+  <data name="Alerts_Enabled" xml:space="preserve"><value>Alarmen versturen</value></data>
+  <data name="Alerts_Channels" xml:space="preserve"><value>Kanalen</value></data>
+  <data name="Alerts_Slack" xml:space="preserve"><value>Slack incoming webhook</value></data>
+  <data name="Alerts_Webhook" xml:space="preserve"><value>Generieke webhook (PagerDuty, Opsgenie, ...)</value></data>
+  <data name="Alerts_Email" xml:space="preserve"><value>E-mailontvangers</value></data>
+  <data name="Alerts_NoSmtp" xml:space="preserve"><value>De server heeft geen SMTP-host (Alerts:Email:Host), dus e-mail kan nog niet worden verstuurd.</value></data>
+  <data name="Alerts_Configured" xml:space="preserve"><value>Ingesteld ({0}). Laat leeg om te behouden.</value></data>
+  <data name="Alerts_Remove" xml:space="preserve"><value>Verwijderen</value></data>
+  <data name="Alerts_When" xml:space="preserve"><value>Wanneer</value></data>
+  <data name="Alerts_Minimum" xml:space="preserve"><value>Alarm vanaf deze status</value></data>
+  <data name="Alerts_Recovery" xml:space="preserve"><value>Meld ook als een controle herstelt</value></data>
+  <data name="Alerts_Drift" xml:space="preserve"><value>Meld ook als een DNS-record of certificaat verandert</value></data>
+  <data name="Alerts_Save" xml:space="preserve"><value>Opslaan</value></data>
+  <data name="Alerts_Saved" xml:space="preserve"><value>Opgeslagen.</value></data>
+  <data name="Alerts_Test" xml:space="preserve"><value>Testalarm versturen</value></data>
+  <data name="Alerts_TestOk" xml:space="preserve"><value>afgeleverd</value></data>
+  <data name="Alerts_TestFailed" xml:space="preserve"><value>mislukt</value></data>
+  <data name="Alerts_TestNone" xml:space="preserve"><value>Er is geen kanaal geprobeerd.</value></data>
+  <data name="Err_InvalidStatus" xml:space="preserve"><value>Kies een status.</value></data>
+  <data name="Err_InvalidSlack" xml:space="preserve"><value>De Slack-webhook moet een volledige http(s)-URL zijn.</value></data>
+  <data name="Err_InvalidWebhook" xml:space="preserve"><value>De webhook moet een volledige http(s)-URL zijn.</value></data>
+  <data name="Err_BlockedHost" xml:space="preserve"><value>Dit adres wijst naar een privénetwerk, en dat staat deze server niet toe.</value></data>
+  <data name="Err_NoChannels" xml:space="preserve"><value>Stel eerst minimaal één kanaal in.</value></data>
+  <data name="Err_TenantExists" xml:space="preserve"><value>Er bestaat al een tenant met deze naam.</value></data>
+  <data name="Err_Forbidden" xml:space="preserve"><value>Je mag dit niet doen.</value></data>
+  <data name="Col_Date" xml:space="preserve"><value>Datum</value></data>
+  <data name="Col_Time" xml:space="preserve"><value>Tijd</value></data>
+  <data name="Col_Subject" xml:space="preserve"><value>Onderwerp</value></data>
+  <data name="Col_Registered" xml:space="preserve"><value>Aangemeld</value></data>
+  <data name="Col_LastLogin" xml:space="preserve"><value>Laatst ingelogd</value></data>
+  <data name="Col_LastScan" xml:space="preserve"><value>Laatste scan</value></data>
+  <data name="Col_Expiring" xml:space="preserve"><value>Verloopt ≤ 30 dagen</value></data>
+  <data name="Log_Title" xml:space="preserve"><value>Log</value></data>
+  <data name="Log_Range" xml:space="preserve"><value>Periode</value></data>
+  <data name="Log_LastDays" xml:space="preserve"><value>Laatste {0} dagen</value></data>
+  <data name="Log_Check" xml:space="preserve"><value>Controle</value></data>
+  <data name="Log_All" xml:space="preserve"><value>Alle</value></data>
+  <data name="Log_Apply" xml:space="preserve"><value>Toepassen</value></data>
+  <data name="Log_Results" xml:space="preserve"><value>Controleresultaten</value></data>
+  <data name="Log_OkShare" xml:space="preserve"><value>Resultaten die OK waren</value></data>
+  <data name="Log_AlertsSent" xml:space="preserve"><value>Alarmen afgeleverd</value></data>
+  <data name="Log_AlertsFailed" xml:space="preserve"><value>mislukt</value></data>
+  <data name="Log_Changes" xml:space="preserve"><value>Wijzigingen</value></data>
+  <data name="Log_PerDay" xml:space="preserve"><value>Resultaten per dag</value></data>
+  <data name="Log_ByCheck" xml:space="preserve"><value>Resultaten per controle</value></data>
+  <data name="Log_ChangesPerDay" xml:space="preserve"><value>Wijzigingen per dag</value></data>
+  <data name="Log_TableView" xml:space="preserve"><value>Toon als tabel</value></data>
+  <data name="Log_Empty" xml:space="preserve"><value>Niets gelogd in deze periode.</value></data>
+  <data name="Log_Entries" xml:space="preserve"><value>Regels</value></data>
+  <data name="Log_Newer" xml:space="preserve"><value>Nieuwer</value></data>
+  <data name="Log_Older" xml:space="preserve"><value>Ouder</value></data>
+  <data name="Log_Page" xml:space="preserve"><value>Pagina {0} van {1}</value></data>
+  <data name="Log_AlertLog" xml:space="preserve"><value>Verstuurde alarmen</value></data>
+  <data name="Log_NoAlerts" xml:space="preserve"><value>Er zijn nog geen alarmen verstuurd.</value></data>
+  <data name="Log_Channel" xml:space="preserve"><value>Kanaal</value></data>
+  <data name="Log_Delivered" xml:space="preserve"><value>Afgeleverd</value></data>
+  <data name="Log_Failed" xml:space="preserve"><value>Mislukt</value></data>
+  <data name="Tenants_Title" xml:space="preserve"><value>Tenants</value></data>
+  <data name="Tenants_New" xml:space="preserve"><value>Nieuwe tenant</value></data>
+  <data name="Tenants_NewIntro" xml:space="preserve"><value>Maak een tenant aan en nodig de eerste beheerder uit. Tenants zien elkaars gegevens niet; alleen de beheertenant ziet ze allemaal.</value></data>
+  <data name="Tenants_Name" xml:space="preserve"><value>Naam van de organisatie</value></data>
+  <data name="Tenants_AdminEmail" xml:space="preserve"><value>E-mail van de beheerder (optioneel)</value></data>
+  <data name="Tenants_Create" xml:space="preserve"><value>Tenant en uitnodiging maken</value></data>
+  <data name="Tenants_Management" xml:space="preserve"><value>Beheer</value></data>
+  <data name="Tenants_Count" xml:space="preserve"><value>Tenants</value></data>
+  <data name="Tenants_Users" xml:space="preserve"><value>Gebruikers</value></data>
+  <data name="Tenants_Since" xml:space="preserve"><value>Tenant sinds {0}</value></data>
+  <data name="Tenants_DomainsShort" xml:space="preserve"><value>domeinen</value></data>
+  <data name="Tenants_EndpointsShort" xml:space="preserve"><value>endpoints</value></data>
+  <data name="Tenants_AssetsLegend" xml:space="preserve"><value>Assets: totaal (domeinen / endpoints). Verloopt telt endpointcertificaten die binnen 30 dagen verlopen of al verlopen zijn.</value></data>
+  <data name="Setup_Organization" xml:space="preserve"><value>Naam van de organisatie</value></data>
+  <data name="Recovery_Button" xml:space="preserve"><value>Passkey resetten</value></data>
+  <data name="Recovery_Created" xml:space="preserve"><value>Deel deze link privé met de persoon. Hij werkt één keer, 24 uur lang; een nieuwe passkey instellen verwijdert de oude.</value></data>
+  <data name="Recovery_Kind" xml:space="preserve"><value>Passkey-herstel</value></data>
+  <data name="Recover_Title" xml:space="preserve"><value>Een nieuwe passkey instellen</value></data>
+  <data name="Recover_Intro" xml:space="preserve"><value>Je bent hier gekomen omdat je geen toegang meer hebt tot je passkey. Een nieuwe aanmaken verwijdert de oude passkeys van je account.</value></data>
+  <data name="Recover_Button" xml:space="preserve"><value>Nieuwe passkey aanmaken</value></data>
+  <data name="Recover_Invalid" xml:space="preserve"><value>Deze herstellink is ongeldig, verlopen of al gebruikt.</value></data>
+  <data name="Mail_RecoverySubject" xml:space="preserve"><value>Stel een nieuwe passkey in voor FullyQualified</value></data>
+  <data name="Mail_RecoveryBody" xml:space="preserve"><value>{0} heeft een link voor je gemaakt om een nieuwe passkey voor FullyQualified in te stellen:
+{1}
+
+De link werkt één keer en verloopt na {2} uur. Een nieuwe passkey instellen verwijdert je oude passkeys. Verwachtte je dit niet, negeer dit bericht dan.</value></data>
+  <data name="Nav_Limits" xml:space="preserve"><value>Limieten</value></data>
+  <data name="Nav_Organization" xml:space="preserve"><value>Organisatie</value></data>
+  <data name="Plan_Title" xml:space="preserve"><value>Pakket</value></data>
+  <data name="Plan_Intro" xml:space="preserve"><value>Wat jouw organisatie mag gebruiken, en hoeveel ze nu gebruikt. Vraag de platformbeheerder om een pakket te wijzigen.</value></data>
+  <data name="Plan_Resource" xml:space="preserve"><value>Onderdeel</value></data>
+  <data name="Plan_Used" xml:space="preserve"><value>In gebruik</value></data>
+  <data name="Plan_Limit" xml:space="preserve"><value>Limiet</value></data>
+  <data name="Plan_Domains" xml:space="preserve"><value>Domeinen</value></data>
+  <data name="Plan_Endpoints" xml:space="preserve"><value>Endpoints</value></data>
+  <data name="Plan_Users" xml:space="preserve"><value>Gebruikers</value></data>
+  <data name="Plan_Pending" xml:space="preserve"><value>uitgenodigd</value></data>
+  <data name="Plan_Reports" xml:space="preserve"><value>NIS2-rapport</value></data>
+  <data name="Plan_Retention" xml:space="preserve"><value>Bewaarde historie</value></data>
+  <data name="Plan_RetentionMonths" xml:space="preserve"><value>Historie (maanden)</value></data>
+  <data name="Plan_Unlimited" xml:space="preserve"><value>Onbeperkt</value></data>
+  <data name="Plan_Month" xml:space="preserve"><value>1 maand</value></data>
+  <data name="Plan_Months" xml:space="preserve"><value>{0} maanden</value></data>
+  <data name="Plan_AllHistory" xml:space="preserve"><value>Alles</value></data>
+  <data name="Plan_Overridden" xml:space="preserve"><value>afgesproken voor deze organisatie</value></data>
+  <data name="Plan_Tier" xml:space="preserve"><value>Pakket</value></data>
+  <data name="Plan_TierValue" xml:space="preserve"><value>Waarde pakket</value></data>
+  <data name="Plan_Override" xml:space="preserve"><value>Voor deze tenant</value></data>
+  <data name="Plan_Follow" xml:space="preserve"><value>volg pakket</value></data>
+  <data name="Plan_EditorIntro" xml:space="preserve"><value>Kies het pakket en overschrijf losse limieten voor deze tenant. Gebruik het pakket Custom voor afspraken per klant.</value></data>
+  <data name="Plan_OverrideHelp" xml:space="preserve"><value>Overschrijven: laat leeg om het pakket te volgen, typ een getal om een limiet te zetten of typ onbeperkt om hem op te heffen. Bij historie bewaart onbeperkt alles.</value></data>
+  <data name="Limits_Title" xml:space="preserve"><value>Pakketten en limieten</value></data>
+  <data name="Limits_Intro" xml:space="preserve"><value>De limieten van elk pakket. Ze gelden voor elke tenant op dat pakket, tenzij de tenant een eigen afwijking heeft. Wijzigingen gelden direct; historie wordt binnen enkele uren op de nieuwe periode gebracht.</value></data>
+  <data name="Limits_Tenants" xml:space="preserve"><value>Tenants</value></data>
+  <data name="Limits_CustomHelp" xml:space="preserve"><value>Voor afspraken per klant; stel de waarden per tenant in.</value></data>
+  <data name="Limits_Blank" xml:space="preserve"><value>Laat een getal leeg voor onbeperkt. Historie leeg bewaart alles. Domeinen tellen assets van het type domein, endpoints tellen hosts met een poort of gevonden in certificaatlogs.</value></data>
+  <data name="Limit_Domains" xml:space="preserve"><value>De domeinlimiet van dit pakket is bereikt. Verwijder een domein of vraag om een groter pakket.</value></data>
+  <data name="Limit_Endpoints" xml:space="preserve"><value>De endpointlimiet van dit pakket is bereikt. Verwijder een endpoint of vraag om een groter pakket.</value></data>
+  <data name="Err_UserLimit" xml:space="preserve"><value>De gebruikerslimiet van dit pakket is bereikt, openstaande uitnodigingen meegeteld.</value></data>
+  <data name="Err_SsoLimit" xml:space="preserve"><value>Je organisatie heeft haar gebruikerslimiet bereikt. Vraag het een beheerder.</value></data>
+  <data name="Err_InvalidTier" xml:space="preserve"><value>Kies een pakket.</value></data>
+  <data name="Err_InvalidLimit" xml:space="preserve"><value>Vul een geheel getal in, of laat het leeg.</value></data>
+  <data name="Err_ConfirmMismatch" xml:space="preserve"><value>De naam komt niet overeen, dus er is niets verwijderd.</value></data>
+  <data name="Err_ManagementTenant" xml:space="preserve"><value>De beheertenant kan niet worden verwijderd.</value></data>
+  <data name="Delete_Title" xml:space="preserve"><value>Deze organisatie verwijderen</value></data>
+  <data name="Delete_Button" xml:space="preserve"><value>Alles verwijderen</value></data>
+  <data name="Delete_OwnText" xml:space="preserve"><value>Dit verwijdert {0} definitief: alle domeinen, resultaten, historie, alarmen en elk gebruikersaccount erin. Iedereen wordt uitgelogd. Het kan niet ongedaan worden gemaakt.</value></data>
+  <data name="Delete_PlatformText" xml:space="preserve"><value>Dit verwijdert {0} definitief met alles wat de organisatie bezit, waaronder {1} gebruikersaccount(s) en {2} asset(s). Het kan niet ongedaan worden gemaakt.</value></data>
+  <data name="Delete_Confirm" xml:space="preserve"><value>Typ de exacte naam van de organisatie om te bevestigen.</value></data>
+  <data name="Reports_NotInPlan" xml:space="preserve"><value>Het NIS2-rapport hoort niet bij dit pakket. Vraag de platformbeheerder om een pakket waar het bij zit.</value></data>
+  <data name="Tenants_OverrideLegend" xml:space="preserve"><value>Een sterretje markeert een tenant met eigen afwijkingen.</value></data>
+  <data name="Scan_Title" xml:space="preserve"><value>Gratis certificaat- en DNS-check</value></data>
+  <data name="Scan_Disabled" xml:space="preserve"><value>De openbare checker staat voor deze installatie niet aan.</value></data>
+  <data name="Scan_Intro" xml:space="preserve"><value>Vul een openbare domeinnaam in om het TLS-certificaat en de DNS-records voor e-mail en beveiliging te zien. Er wordt niets opgeslagen.</value></data>
+  <data name="Scan_Domain" xml:space="preserve"><value>Domeinnaam</value></data>
+  <data name="Scan_Button" xml:space="preserve"><value>Controleren</value></data>
+  <data name="Scan_Protocol" xml:space="preserve"><value>Protocol</value></data>
+  <data name="Scan_Err_invalid" xml:space="preserve"><value>Vul een openbare domeinnaam in zoals example.com, zonder poort of pad. IP-adressen en lokale namen worden niet gecontroleerd.</value></data>
+  <data name="Scan_Err_rate_limited" xml:space="preserve"><value>Je hebt de laatste tijd veel domeinen gecontroleerd. Probeer het later opnieuw.</value></data>
+  <data name="Scan_Err_busy" xml:space="preserve"><value>De checker is druk. Probeer het over een minuut opnieuw.</value></data>
+  <data name="Scan_Err_disabled" xml:space="preserve"><value>De openbare checker is niet beschikbaar.</value></data>
+  <data name="Scan_Stored" xml:space="preserve"><value>Er wordt niets van deze controle opgeslagen. Alleen het certificaat op poort 443 en openbare DNS-records worden bekeken.</value></data>
+  <data name="Scan_Next" xml:space="preserve"><value>Blijf het volgen</value></data>
+  <data name="Scan_NextText" xml:space="preserve"><value>Dit is één momentopname. FullyQualified controleert elk domein volgens een schema, meldt het als een certificaat bijna verloopt of een record verandert, en maakt er een NIS2-rapport van.</value></data>
+  <data name="Plan_Interval" xml:space="preserve"><value>Controles elke</value></data>
+  <data name="Plan_IntervalMinutes" xml:space="preserve"><value>Controleren elke (minuten)</value></data>
+  <data name="Plan_ServerDefault" xml:space="preserve"><value>serverstandaard</value></data>
+  <data name="Plan_ServerDefaultValue" xml:space="preserve"><value>{0} (serverstandaard)</value></data>
+  <data name="Unit_Minute" xml:space="preserve"><value>min</value></data>
+  <data name="Unit_Hour" xml:space="preserve"><value>u</value></data>
+  <data name="Unit_Day" xml:space="preserve"><value>d</value></data>
+  <data name="Limits_IntervalHelp" xml:space="preserve"><value>Het interval is hoe lang een resultaat vers blijft voordat een asset opnieuw wordt gecontroleerd; controles lopen in een ritme van een minuut, dus het kortste is een minuut. Leeg gebruikt de serverstandaard (Scanning:IntervalHours). Een mislukte controle wordt altijd na 15 minuten opnieuw geprobeerd.</value></data>
+  <data name="CheckAll_Title" xml:space="preserve"><value>Alles nu controleren</value></data>
+  <data name="CheckAll_Text" xml:space="preserve"><value>Zet elke controle van elke asset meteen in de wachtrij in plaats van op de volgende ronde te wachten. Dit kan eens per {0} minuten.</value></data>
+  <data name="CheckAll_Button" xml:space="preserve"><value>Alles nu controleren</value></data>
+  <data name="CheckAll_Queued" xml:space="preserve"><value>{0} controles in de wachtrij. De resultaten verschijnen binnen een minuut; volg ze op de pagina Log.</value></data>
+  <data name="CheckAll_Cooldown" xml:space="preserve"><value>Dat heb je net gedaan. Probeer het over {0} minuut/minuten opnieuw.</value></data>
+  <data name="CheckAll_AlreadyQueued" xml:space="preserve"><value>Alles staat al in de wachtrij om gecontroleerd te worden.</value></data>
+  <data name="Diag_Title" xml:space="preserve"><value>Instellingen testen</value></data>
+  <data name="Diag_Intro" xml:space="preserve"><value>Controleert of FullyQualified klaarstaat om zijn werk voor jouw organisatie te doen: je pakket, of de controles draaien, of alarmen je bereiken en of je een verloren passkey kunt herstellen. Er wordt niets gewijzigd.</value></data>
+  <data name="Diag_SendAlarm" xml:space="preserve"><value>Stuur ook een testalarm via elk kanaal</value></data>
+  <data name="Diag_Run" xml:space="preserve"><value>Instellingen testen</value></data>
+  <data name="Diag_Group_plan" xml:space="preserve"><value>Pakket</value></data>
+  <data name="Diag_Group_scan" xml:space="preserve"><value>Controles</value></data>
+  <data name="Diag_Group_alarms" xml:space="preserve"><value>Alarmen</value></data>
+  <data name="Diag_Group_people" xml:space="preserve"><value>Mensen</value></data>
+  <data name="Diag_Group_server" xml:space="preserve"><value>Server</value></data>
+  <data name="Diag_Status_Ok" xml:space="preserve"><value>OK</value></data>
+  <data name="Diag_Status_Info" xml:space="preserve"><value>Info</value></data>
+  <data name="Diag_Status_Warning" xml:space="preserve"><value>Waarschuwing</value></data>
+  <data name="Diag_Status_Fail" xml:space="preserve"><value>Mislukt</value></data>
+  <data name="Diag_Summary" xml:space="preserve"><value>{0} OK, {1} waarschuwingen, {2} mislukt.</value></data>
+  <data name="Diag_PlanLimits" xml:space="preserve"><value>Pakket en limieten</value></data>
+  <data name="Diag_PlanIs" xml:space="preserve"><value>Je zit op het pakket {0}.</value></data>
+  <data name="Diag_RoomLeft" xml:space="preserve"><value>Er is overal nog ruimte.</value></data>
+  <data name="Diag_AtLimit" xml:space="preserve"><value>Limiet bereikt voor: {0}. Meer toevoegen wordt geweigerd tot je iets verwijdert of het pakket wordt verhoogd.</value></data>
+  <data name="Diag_Interval" xml:space="preserve"><value>Controle-interval</value></data>
+  <data name="Diag_IntervalIs" xml:space="preserve"><value>Elke asset wordt elke {0} gecontroleerd ({1}).</value></data>
+  <data name="Diag_FromServer" xml:space="preserve"><value>serverstandaard</value></data>
+  <data name="Diag_FromPlan" xml:space="preserve"><value>uit je pakket</value></data>
+  <data name="Diag_ScannerOn" xml:space="preserve"><value>Scanner</value></data>
+  <data name="Diag_ScannerOff" xml:space="preserve"><value>Scannen staat uit op deze server (Scanning:Enabled), dus er wordt niets volgens schema gecontroleerd. Vraag het degene die de server beheert.</value></data>
+  <data name="Diag_Fresh" xml:space="preserve"><value>Resultaten zijn recent</value></data>
+  <data name="Diag_NoAssets" xml:space="preserve"><value>Nog geen assets. Voeg een domein toe op het dashboard.</value></data>
+  <data name="Diag_FreshOk" xml:space="preserve"><value>Alle {0} assets hebben recente resultaten.</value></data>
+  <data name="Diag_Stale" xml:space="preserve"><value>{0} controles hebben geen recent resultaat (bijvoorbeeld {1}). De scanner staat misschien stil of de host is onbereikbaar; kijk op de pagina Log.</value></data>
+  <data name="Diag_AlarmSetup" xml:space="preserve"><value>Alarminstellingen</value></data>
+  <data name="Diag_NoChannel" xml:space="preserve"><value>Er is geen kanaal ingesteld. Niemand hoort het als een certificaat verloopt of een record verandert. Voeg Slack, Telegram, een webhook of een e-mailadres toe op de pagina Alarmen.</value></data>
+  <data name="Diag_AlarmsOff" xml:space="preserve"><value>Alarmen staan uit voor je organisatie.</value></data>
+  <data name="Diag_AlarmsOn" xml:space="preserve"><value>Alarmen staan aan, vanaf status {0}.</value></data>
+  <data name="Diag_EmailChannel" xml:space="preserve"><value>E-mailinstelling</value></data>
+  <data name="Diag_NoSmtp" xml:space="preserve"><value>E-mailontvangers zijn ingesteld, maar de server heeft geen SMTP-host, dus er kan geen e-mail worden verstuurd. Vraag het degene die de server beheert (Alerts:Email:Host).</value></data>
+  <data name="Diag_Channel_slack" xml:space="preserve"><value>Slack</value></data>
+  <data name="Diag_Channel_webhook" xml:space="preserve"><value>Webhook</value></data>
+  <data name="Diag_Channel_email" xml:space="preserve"><value>E-mail</value></data>
+  <data name="Diag_Delivered" xml:space="preserve"><value>Het testalarm is afgeleverd.</value></data>
+  <data name="Diag_NotDelivered" xml:space="preserve"><value>Het testalarm is niet afgeleverd: {0}</value></data>
+  <data name="Diag_TestAlarm" xml:space="preserve"><value>Testalarm</value></data>
+  <data name="Diag_NotSent" xml:space="preserve"><value>Er is geen testalarm verstuurd omdat alarmen uitstaan.</value></data>
+  <data name="Diag_RecentAlarms" xml:space="preserve"><value>Recente alarmen</value></data>
+  <data name="Diag_RecentFailed" xml:space="preserve"><value>{0} van {1} alarmen in de afgelopen 7 dagen zijn niet afgeleverd. Zie de pagina Log.</value></data>
+  <data name="Diag_Admins" xml:space="preserve"><value>Beheerders</value></data>
+  <data name="Diag_AdminsOk" xml:space="preserve"><value>Er zijn {0} beheerders, dus de een kan de ander helpen.</value></data>
+  <data name="Diag_OneAdmin" xml:space="preserve"><value>Er is maar één beheerder. Als die zijn passkey kwijtraakt, kan alleen de platformbeheerder of de serverbeheerder helpen. Nodig een tweede beheerder uit.</value></data>
+  <data name="Diag_Passkeys" xml:space="preserve"><value>Passkeys van beheerders</value></data>
+  <data name="Diag_PasskeysOk" xml:space="preserve"><value>Elke beheerder heeft meer dan één manier om in te loggen.</value></data>
+  <data name="Diag_PasskeysFew" xml:space="preserve"><value>{0} beheerder(s) hebben één passkey en geen single sign-on. Vraag ze een tweede apparaat toe te voegen op de pagina Account.</value></data>
+  <data name="Diag_Https" xml:space="preserve"><value>Beveiligde verbinding</value></data>
+  <data name="Diag_HttpsOk" xml:space="preserve"><value>Je gebruikt {0}, en dat accepteren passkeys.</value></data>
+  <data name="Diag_NotHttps" xml:space="preserve"><value>Deze pagina wordt via gewoon http uitgeleverd op {0}. Passkeys werken alleen via HTTPS (of op localhost), dus anderen kunnen niet inloggen.</value></data>
+  <data name="Diag_Origin" xml:space="preserve"><value>Passkey-adres</value></data>
+  <data name="Diag_OriginDiffers" xml:space="preserve"><value>Auth:Origin is {0} maar je gebruikt {1}. Passkeys zijn aan het ingestelde adres gekoppeld, dus inloggen mislukt.</value></data>
+  <data name="Diag_Proxy" xml:space="preserve"><value>Reverse proxy</value></data>
+  <data name="Diag_ProxyHeaders" xml:space="preserve"><value>Verzoeken komen via een proxy binnen, maar doorgestuurde headers staan niet aan (ASPNETCORE_FORWARDEDHEADERS_ENABLED). Bezoekers delen dan één adres, wat limieten per adres breekt.</value></data>
+  <data name="Diag_Migrations" xml:space="preserve"><value>Database</value></data>
+  <data name="Diag_MigrationsOk" xml:space="preserve"><value>De database is up-to-date.</value></data>
+  <data name="Diag_MigrationsPending" xml:space="preserve"><value>{0} databasemigraties zijn niet uitgevoerd. Herstart de app met Database:AutoMigrate aan, of voer ze handmatig uit.</value></data>
+  <data name="Diag_Keys" xml:space="preserve"><value>Sessiesleutels</value></data>
+  <data name="Diag_KeysOk" xml:space="preserve"><value>Inlogsleutels staan in de database, dus sessies overleven een herstart.</value></data>
+  <data name="Diag_KeysNone" xml:space="preserve"><value>Er zijn nog geen inlogsleutels opgeslagen; mensen worden bij een herstart uitgelogd totdat er een is aangemaakt.</value></data>
+  <data name="Diag_Smtp" xml:space="preserve"><value>Mailserver</value></data>
+  <data name="Diag_SmtpOk" xml:space="preserve"><value>De mailserver {0} accepteert verbindingen.</value></data>
+  <data name="Diag_SmtpDown" xml:space="preserve"><value>De mailserver {0} is niet bereikbaar: {1}</value></data>
+  <data name="Diag_NoSmtpHost" xml:space="preserve"><value>Er is geen mailserver ingesteld, dus er zijn geen e-mailalarmen of gemailde uitnodigingen (Alerts:Email:Host).</value></data>
+  <data name="Diag_Sso" xml:space="preserve"><value>Single sign-on</value></data>
+  <data name="Diag_SsoOk" xml:space="preserve"><value>De identity provider op {0} antwoordt.</value></data>
+  <data name="Diag_SsoDown" xml:space="preserve"><value>De identity provider op {0} is niet bereikbaar: {1}</value></data>
+  <data name="Diag_NoSso" xml:space="preserve"><value>Single sign-on is niet ingesteld; mensen loggen in met passkeys.</value></data>
+  <data name="Diag_SsoOpen" xml:space="preserve"><value>Open aanmelding</value></data>
+  <data name="Diag_SsoOpenText" xml:space="preserve"><value>Sso:AutoProvision staat aan zonder Sso:AllowedDomains, dus iedereen van wie de provider het e-mailadres heeft geverifieerd, kan een account aanmaken.</value></data>
+  <data name="Diag_Resolver" xml:space="preserve"><value>Namen opzoeken</value></data>
+  <data name="Diag_ResolverOk" xml:space="preserve"><value>De server kan namen opzoeken.</value></data>
+  <data name="Diag_ResolverDown" xml:space="preserve"><value>De server kan geen namen opzoeken: {0}</value></data>
+  <data name="Diag_Ct" xml:space="preserve"><value>Certificate Transparency</value></data>
+  <data name="Diag_CtOk" xml:space="preserve"><value>crt.sh is bereikbaar, dus certificaten kunnen worden gevonden.</value></data>
+  <data name="Diag_CtDown" xml:space="preserve"><value>crt.sh is niet bereikbaar ({0}), dus Cert Spotter wordt gebruikt.</value></data>
+  <data name="Diag_PrivateScans" xml:space="preserve"><value>Privénetwerken</value></data>
+  <data name="Diag_PrivateAllowed" xml:space="preserve"><value>Scans mogen privéadressen bereiken. Goed voor een bedrijfsnetwerk, niet voor een gedeelde installatie (Scanning:AllowPrivateAddresses).</value></data>
+  <data name="Diag_PrivateBlocked" xml:space="preserve"><value>Scans kunnen geen privéadressen bereiken.</value></data>
+  <data name="Diag_PublicCheck" xml:space="preserve"><value>Gratis openbare check</value></data>
+  <data name="Diag_PublicOn" xml:space="preserve"><value>De openbare check staat aan, hooguit {0} controles per uur per adres.</value></data>
+  <data name="Diag_PublicOff" xml:space="preserve"><value>De openbare check staat uit.</value></data>
+  <data name="Plan_Cooldown" xml:space="preserve"><value>Wachttijd bij "alles nu controleren"</value></data>
+  <data name="Plan_CooldownMinutes" xml:space="preserve"><value>Wachttijd nu-controleren (minuten)</value></data>
+  <data name="Plan_NoWait" xml:space="preserve"><value>geen wachttijd</value></data>
+  <data name="Limits_CooldownHelp" xml:space="preserve"><value>De wachttijd is hoe lang een tenant moet wachten voordat "alles nu controleren" opnieuw kan, zodat het niet het controle-interval omzeilt. 0 betekent geen wachttijd; leeg gebruikt de serverstandaard (Scanning:ManualCooldownMinutes).</value></data>
+  <data name="Issue_ResolverMismatch" xml:space="preserve"><value>Openbare resolvers geven verschillende {0}-records (mogelijk hijack, of een wijziging die nog doorwerkt)</value></data>
+  <data name="Issue_DkimMissing" xml:space="preserve"><value>DKIM-selector '{0}' niet gevonden</value></data>
+  <data name="Issue_DkimRevoked" xml:space="preserve"><value>DKIM-sleutel voor selector '{0}' is ingetrokken (lege sleutel)</value></data>
+  <data name="Issue_DkimInvalid" xml:space="preserve"><value>DKIM-record voor selector '{0}' is ongeldig</value></data>
+  <data name="Issue_DkimWeak" xml:space="preserve"><value>DKIM-sleutel voor selector '{0}' is slechts {1} bits</value></data>
+  <data name="Dkim_Title" xml:space="preserve"><value>DKIM-selectors</value></data>
+  <data name="Dkim_Help" xml:space="preserve"><value>Te controleren selectors, gescheiden door komma's. Je vindt de jouwe in de s=-tag van de DKIM-Signature-header van een verzonden e-mail.</value></data>
+  <data name="Dkim_Placeholder" xml:space="preserve"><value>selector1, selector2</value></data>
+  <data name="Dkim_Save" xml:space="preserve"><value>Opslaan en scannen</value></data>
+  <data name="Dkim_Invalid" xml:space="preserve"><value>Gebruik letters, cijfers, punten, streepjes of underscores, maximaal 10 selectors.</value></data>
+  <data name="Col_Origin" xml:space="preserve"><value>Herkomst</value></data>
+  <data name="Col_Why" xml:space="preserve"><value>Reden</value></data>
+  <data name="Origin_added" xml:space="preserve"><value>Handmatig toegevoegd</value></data>
+  <data name="Origin_discovered" xml:space="preserve"><value>Ontdekt</value></data>
+  <data name="Filter_Search" xml:space="preserve"><value>Zoek op naam</value></data>
+  <data name="Filter_AllOrigins" xml:space="preserve"><value>Alle herkomst</value></data>
+  <data name="Filter_AllTypes" xml:space="preserve"><value>Alle typen</value></data>
+  <data name="Filter_AllStatuses" xml:space="preserve"><value>Alle statussen</value></data>
+  <data name="Filter_Problems" xml:space="preserve"><value>Aandacht nodig (waarschuwing of erger)</value></data>
+  <data name="Filter_Apply" xml:space="preserve"><value>Filteren</value></data>
+  <data name="Filter_Reset" xml:space="preserve"><value>Herstel</value></data>
+  <data name="Filter_Count" xml:space="preserve"><value>{0} van {1} getoond</value></data>
+  <data name="Filter_None" xml:space="preserve"><value>Niets komt overeen met deze filters.</value></data>
+  <data name="Disc_Title" xml:space="preserve"><value>Hoe het is ontdekt</value></data>
+  <data name="Disc_Via" xml:space="preserve"><value>via {0}</value></data>
+  <data name="Disc_ViaCt" xml:space="preserve"><value>via CT-log</value></data>
+  <data name="Disc_From" xml:space="preserve"><value>vanuit {0}</value></data>
+  <data name="Disc_Manual" xml:space="preserve"><value>Handmatig toegevoegd.</value></data>
+  <data name="Disc_UnknownParent" xml:space="preserve"><value>een gemonitord domein</value></data>
+  <data name="Disc_Why" xml:space="preserve"><value>De naam staat op een openbaar gelogd certificaat (uitgegeven door {2}, geldig tot {3}) dat {1} teruggaf bij het doorzoeken van de Certificate Transparency-logs naar {0}. Je hebt het toegevoegd bij de beoordeling op {4} en het wordt gemonitord zoals elk ander endpoint. Verwijder je het, dan komt het op de lijst met genegeerde hostnamen en komt het niet terug.</value></data>
+  <data name="Disc_Legacy" xml:space="preserve"><value>De naam staat op een openbaar gelogd certificaat dat is gevonden bij het doorzoeken van de Certificate Transparency-logs naar {0}. Het is toegevoegd voordat de details werden vastgelegd. Verwijder je het, dan komt het op de lijst met genegeerde hostnamen en komt het niet terug.</value></data>
+  <data name="Alerts_Telegram" xml:space="preserve"><value>Telegram-bottoken</value></data>
+  <data name="Alerts_TelegramConfigured" xml:space="preserve"><value>Ingesteld: bot {0} (laat leeg om te behouden)</value></data>
+  <data name="Alerts_TelegramChat" xml:space="preserve"><value>Telegram-chat-ID</value></data>
+  <data name="Alerts_TelegramHelp" xml:space="preserve"><value>Maak een bot met @BotFather, voeg die toe aan je chat of kanaal en vul de token en het chat-ID in. Beide zijn nodig.</value></data>
+  <data name="Err_InvalidTelegramToken" xml:space="preserve"><value>Dat lijkt niet op een Telegram-bottoken (123456789:AAH…).</value></data>
+  <data name="Err_InvalidTelegramChat" xml:space="preserve"><value>Het chat-ID moet een getal zijn (negatief voor groepen) of @kanaalnaam.</value></data>
+  <data name="Err_TelegramIncomplete" xml:space="preserve"><value>Telegram heeft zowel een bottoken als een chat-ID nodig.</value></data>
+  <data name="Diag_Channel_telegram" xml:space="preserve"><value>Telegram</value></data>
+  <data name="TgHow_Title" xml:space="preserve"><value>Hoe maak ik een Telegram-bot?</value></data>
+  <data name="TgHow_1" xml:space="preserve"><value>Open in Telegram @BotFather (de officiële bot om bots te maken) en stuur</value></data>
+  <data name="TgHow_1b" xml:space="preserve"><value>Hij vraagt om een weergavenaam (bijvoorbeeld “FullyQualified alarmen”) en een gebruikersnaam die op “bot” eindigt (bijvoorbeeld fq_alarms_bot).</value></data>
+  <data name="TgHow_2" xml:space="preserve"><value>BotFather antwoordt met de bottoken. Plak die in het tokenveld hierboven. Hij ziet er zo uit:</value></data>
+  <data name="TgHow_3" xml:space="preserve"><value>Bepaal waar alarmen heen moeten. Voor jezelf: open je nieuwe bot en druk op Start. Voor een team: voeg de bot toe aan een groep. Voor een kanaal: voeg de bot toe als beheerder. Stuur daarna een willekeurig bericht.</value></data>
+  <data name="TgHow_4" xml:space="preserve"><value>Zoek het chat-ID: open dit adres in je browser, met je eigen token ingevuld:</value></data>
+  <data name="TgHow_4b" xml:space="preserve"><value>In het antwoord is het getal achter “id” bij “chat” het chat-ID. Voor groepen is het negatief. Voor een openbaar kanaal kun je ook @kanaalnaam invullen. Bijvoorbeeld:</value></data>
+  <data name="TgHow_5" xml:space="preserve"><value>Vul het chat-ID hierboven in, druk op Opslaan en daarna op Testalarm versturen. Het bericht hoort binnen enkele seconden aan te komen.</value></data>
+  <data name="TgHow_Token" xml:space="preserve"><value>token</value></data>
+  <data name="TgHow_Secret" xml:space="preserve"><value>Houd de token geheim: wie hem heeft, kan berichten sturen als je bot. Lekt hij, stuur dan /revoke naar @BotFather en vul hier de nieuwe token in.</value></data>
+  <data name="Bulk_SelectAll" xml:space="preserve"><value>Selecteer alles wat getoond wordt</value></data>
+  <data name="Bulk_Delete" xml:space="preserve"><value>Verwijder geselecteerde</value></data>
+  <data name="Bulk_Confirm" xml:space="preserve"><value>De geselecteerde assets en hun geschiedenis verwijderen?</value></data>
+  <data name="Bulk_Deleted" xml:space="preserve"><value>{0} asset(s) verwijderd.</value></data>
+  <data name="Bulk_None" xml:space="preserve"><value>Selecteer eerst minstens één asset.</value></data>
+  <data name="Bulk_Note" xml:space="preserve"><value>Een verwijderde hostnaam uit de certificaatlogs komt op de lijst met genegeerde hostnamen en komt niet terug.</value></data>
+  <data name="Sum_TlsChainMismatch" xml:space="preserve"><value>Certificaat niet vertrouwd: {0}. Gecontroleerd op {1}, maar het certificaat is geldig voor: {2}</value></data>
+  <data name="Dig_Open" xml:space="preserve"><value>DNS-lookup</value></data>
+  <data name="Dig_Title" xml:space="preserve"><value>DNS-lookup</value></data>
+  <data name="Dig_Sub" xml:space="preserve"><value>Een live dig: vraag de systeemresolver en openbare resolvers en vergelijk hun antwoorden.</value></data>
+  <data name="Dig_Placeholder" xml:space="preserve"><value>voorbeeld.nl of een IP-adres</value></data>
+  <data name="Dig_Name" xml:space="preserve"><value>Naam</value></data>
+  <data name="Dig_Type" xml:space="preserve"><value>Type</value></data>
+  <data name="Dig_Data" xml:space="preserve"><value>Gegevens</value></data>
+  <data name="Dig_Resolver" xml:space="preserve"><value>Resolver</value></data>
+  <data name="Dig_All" xml:space="preserve"><value>Alle resolvers (vergelijk)</value></data>
+  <data name="Dig_Go" xml:space="preserve"><value>Opzoeken</value></data>
+  <data name="Dig_Querying" xml:space="preserve"><value>Bezig met opvragen…</value></data>
+  <data name="Dig_Empty" xml:space="preserve"><value>Typ een naam om op te zoeken.</value></data>
+  <data name="Dig_NoRecords" xml:space="preserve"><value>Geen {0}-records gevonden (NODATA).</value></data>
+  <data name="Dig_NxDomain" xml:space="preserve"><value>{0} bestaat niet (NXDOMAIN).</value></data>
+  <data name="Dig_Agree" xml:space="preserve"><value>Alle resolvers geven hetzelfde antwoord.</value></data>
+  <data name="Dig_Disagree" xml:space="preserve"><value>De resolvers zijn het oneens. De afwijkende zijn gemarkeerd. Dat kan een hijack betekenen, of een wijziging die nog doorwerkt.</value></data>
+  <data name="Dig_Differs" xml:space="preserve"><value>wijkt af</value></data>
+  <data name="Dig_Copy" xml:space="preserve"><value>Kopieer</value></data>
+  <data name="Dig_Copied" xml:space="preserve"><value>Gekopieerd</value></data>
+  <data name="Dig_Command" xml:space="preserve"><value>Dezelfde vraag in een terminal:</value></data>
+  <data name="Dig_Close" xml:space="preserve"><value>Sluiten</value></data>
+  <data name="Dig_Hint" xml:space="preserve"><value>Druk overal op / om dit venster te openen</value></data>
+  <data name="Dig_Err_invalid_name" xml:space="preserve"><value>Dat is geen geldige hostnaam of IP-adres.</value></data>
+  <data name="Dig_Err_invalid_type" xml:space="preserve"><value>Niet-ondersteund recordtype.</value></data>
+  <data name="Dig_Err_rate" xml:space="preserve"><value>Te veel lookups. Wacht een minuut en probeer het opnieuw.</value></data>
+  <data name="Dig_Err_failed" xml:space="preserve"><value>De lookup is mislukt.</value></data>
+  <data name="Dig_ResolverFailed" xml:space="preserve"><value>Geen antwoord</value></data>
+  <data name="Dig_LookUp" xml:space="preserve"><value>Zoek {0} ({1}) op in DNS</value></data>
+  <data name="Status_Paused" xml:space="preserve"><value>Gepauzeerd</value></data>
+  <data name="Pause_Title" xml:space="preserve"><value>Monitoring pauzeren</value></data>
+  <data name="Pause_Help" xml:space="preserve"><value>Een gepauzeerd asset wordt niet gecontroleerd, geeft nooit alarm en telt niet als probleem. Hervat wanneer je wilt, of kies een datum waarop het vanzelf hervat.</value></data>
+  <data name="Pause_UntilLabel" xml:space="preserve"><value>Hervatten op (optioneel)</value></data>
+  <data name="Pause_Reason" xml:space="preserve"><value>Reden (optioneel)</value></data>
+  <data name="Pause_Button" xml:space="preserve"><value>Pauzeren</value></data>
+  <data name="Pause_Resume" xml:space="preserve"><value>Nu hervatten</value></data>
+  <data name="Pause_Until" xml:space="preserve"><value>tot {0}</value></data>
+  <data name="Pause_Indefinitely" xml:space="preserve"><value>tot hervat</value></data>
+  <data name="Pause_UntilLong" xml:space="preserve"><value>Gepauzeerd tot {0}; daarna wordt het vanzelf weer gecontroleerd.</value></data>
+  <data name="Pause_IndefinitelyLong" xml:space="preserve"><value>Gepauzeerd tot iemand het hervat.</value></data>
+  <data name="Pause_Effect" xml:space="preserve"><value>Zolang het gepauzeerd is, wordt niets gecontroleerd en gaan er geen alarmen uit. De laatste resultaten blijven bewaard.</value></data>
+  <data name="Mute_Button" xml:space="preserve"><value>Dempen</value></data>
+  <data name="Mute_Unmute" xml:space="preserve"><value>Dempen opheffen</value></data>
+  <data name="Mute_MakeOptional" xml:space="preserve"><value>Optioneel maken</value></data>
+  <data name="Mute_MakeRequired" xml:space="preserve"><value>Verplicht maken</value></data>
+  <data name="Mute_OptionalBadge" xml:space="preserve"><value>Optioneel</value></data>
+  <data name="Mute_Muted" xml:space="preserve"><value>gedempt</value></data>
+  <data name="Mute_UntilShort" xml:space="preserve"><value>gedempt tot {0}</value></data>
+  <data name="Mute_UntilHelp" xml:space="preserve"><value>Dempen tot deze datum (optioneel; leeg betekent tot je het opheft)</value></data>
+  <data name="Mute_ByCert" xml:space="preserve"><value>(het certificaat is gedempt)</value></data>
+  <data name="Mute_Count" xml:space="preserve"><value>{0} gedempt</value></data>
+  <data name="Issue_TlsExpired" xml:space="preserve"><value>Certificaat verlopen</value></data>
+  <data name="Issue_TlsExpiring" xml:space="preserve"><value>Certificaat verloopt binnenkort</value></data>
+  <data name="Issue_TlsTrust" xml:space="preserve"><value>Certificaat niet vertrouwd</value></data>
+  <data name="Issue_TlsError" xml:space="preserve"><value>TLS-controle mislukt</value></data>
+  <data name="Issue_CtError" xml:space="preserve"><value>Opzoeken in certificaatlogs mislukt</value></data>
+  <data name="Issue_DnsError" xml:space="preserve"><value>DNS-controle mislukt</value></data>
+  <data name="Bulk_Pause" xml:space="preserve"><value>Pauzeer geselecteerde</value></data>
+  <data name="Bulk_Resume" xml:space="preserve"><value>Hervat geselecteerde</value></data>
+  <data name="Bulk_Paused" xml:space="preserve"><value>{0} asset(s) gepauzeerd.</value></data>
+  <data name="Bulk_Resumed" xml:space="preserve"><value>{0} asset(s) hervat.</value></data>
+  <data name="Mute_UntilLabel" xml:space="preserve"><value>Tot (optioneel)</value></data>
+  <data name="Fix_Title" xml:space="preserve"><value>Oplossen: {0}</value></data>
+  <data name="Fix_Link" xml:space="preserve"><value>Oplossen</value></data>
+  <data name="Fix_WhatTitle" xml:space="preserve"><value>Wat dit betekent</value></data>
+  <data name="Fix_StepsTitle" xml:space="preserve"><value>Wat te doen</value></data>
+  <data name="Fix_CommandsTitle" xml:space="preserve"><value>Controleer het zelf</value></data>
+  <data name="Fix_ExampleTitle" xml:space="preserve"><value>Voorbeeld om mee te beginnen</value></data>
+  <data name="Fix_LookupsTitle" xml:space="preserve"><value>Zoek het hier op</value></data>
+  <data name="Fix_FoundTitle" xml:space="preserve"><value>Wat er is gevonden</value></data>
+  <data name="Fix_Then" xml:space="preserve"><value>Als het is opgelost, verdwijnt deze melding bij de volgende scan. Gebruik Nu scannen op de assetpagina om het meteen te zien. Is het bewust zo, demp het dan op de assetpagina, bij voorkeur met een einddatum.</value></data>
+  <data name="Fix_None" xml:space="preserve"><value>Voor deze melding is er nog geen advies.</value></data>
+  <data name="Fix_BackToAsset" xml:space="preserve"><value>Terug naar het asset</value></data>
+  <data name="Fix_NoSpf_What" xml:space="preserve"><value>{0} heeft geen SPF-record. SPF noemt de servers die e-mail mogen versturen voor je domein. Zonder SPF kan iedereen mail sturen die van {0} lijkt te komen, en behandelen ontvangende servers je echte mail eerder als spam.</value></data>
+  <data name="Fix_NoSpf_Steps" xml:space="preserve"><value>Maak een lijst van alles wat e-mail verstuurt als {0}: je mailprovider, nieuwsbrief- en CRM-tools, webshop, ticketsysteem en elke server die meldingen mailt.
+Zoek in de documentatie van elke verzender de SPF-include op, bijvoorbeeld include:_spf.google.com voor Google Workspace of include:spf.protection.outlook.com voor Microsoft 365.
+Publiceer één TXT-record op {0} dat begint met v=spf1, die includes noemt en eindigt op ~all. Ga over op -all als je zeker weet dat de lijst compleet is.
+Een naam mag maar één SPF-record hebben. Bestaat er al een, voeg ze dan samen in plaats van een tweede toe te voegen.
+Houd het bij in totaal 10 DNS-opzoekingen, anders negeren ontvangers het record.
+Controleer het resultaat met de opdracht hieronder en scan daarna opnieuw.</value></data>
+  <data name="Fix_NoDmarc_What" xml:space="preserve"><value>{0} heeft geen DMARC-beleid. DMARC vertelt ontvangende servers wat ze moeten doen met mail die de SPF- en DKIM-controle niet doorstaat, en stuurt je rapporten over wie mail verstuurt als je domein. Zonder DMARC wordt vervalste mail geaccepteerd en zie je misbruik niet.</value></data>
+  <data name="Fix_NoDmarc_Steps" xml:space="preserve"><value>Zorg dat SPF en DKIM al werken voor al je mail, anders weigert DMARC later echte berichten.
+Maak een mailbox aan, of gebruik een DMARC-rapportagedienst, die de rapporten ontvangt.
+Publiceer een TXT-record op _dmarc.{0}, te beginnen in bewakingsmodus: p=none met een rua=-adres.
+Lees de rapporten een paar weken en herstel de legitieme verzenders die falen.
+Scherp het beleid stap voor stap aan: p=quarantine (begin met pct=25) en daarna p=reject.
+Controleer het resultaat met de opdracht hieronder en scan daarna opnieuw.</value></data>
+  <data name="Fix_DmarcNone_What" xml:space="preserve"><value>Het DMARC-beleid van {0} is p=none: mail die faalt wordt toch afgeleverd en DMARC rapporteert alleen. Dat is de goede manier om te beginnen, maar het beschermt niet tegen vervalsing.</value></data>
+  <data name="Fix_DmarcNone_Steps" xml:space="preserve"><value>Lees je DMARC-rapporten (het rua-adres) en maak een lijst van de verzenders die falen op SPF of DKIM.
+Herstel die verzenders: voeg ze toe aan SPF of stel DKIM-ondertekening voor ze in. Stop verzenders die je niet kent.
+Zet het beleid op p=quarantine met pct=25 en verhoog pct in een paar weken naar 100.
+Faalt er niets legitiems meer, ga dan over op p=reject. Voeg sp=reject toe als je subdomeinen geen mail versturen.
+Blijf je bewust nog in bewakingsmodus, demp deze melding dan met een einddatum, zodat hij terugkomt.</value></data>
+  <data name="Fix_NoCaa_What" xml:space="preserve"><value>{0} heeft geen CAA-record. CAA beperkt welke certificeringsinstanties certificaten voor het domein mogen uitgeven. Zonder CAA mag elke CA dat, waardoor foutieve uitgifte moeilijker te voorkomen is.</value></data>
+  <data name="Fix_NoCaa_Steps" xml:space="preserve"><value>Kijk welke CA's je huidige certificaten hebben uitgegeven: zie de kolom Uitgever in de certificatenlijst.
+Publiceer een CAA-record voor elke CA die je gebruikt, bijvoorbeeld 0 issue "letsencrypt.org". Gebruik issuewild voor wildcardcertificaten.
+Voeg een iodef-record toe met een adres dat bericht moet krijgen over geweigerde aanvragen.
+Controleer of je DNS-provider CAA-records ondersteunt (de meeste doen dat) en dat je geen CA bent vergeten, anders mislukt de verlenging bij die CA.
+Controleer het resultaat met de opdracht hieronder en scan daarna opnieuw.</value></data>
+  <data name="Fix_NoNs_What" xml:space="preserve"><value>Voor {0} zijn geen nameserverrecords gevonden. De naam wordt niet opgelost, dus niets dat ervan afhangt (web, e-mail, certificaten) kan werken.</value></data>
+  <data name="Fix_NoNs_Steps" xml:space="preserve"><value>Controleer de spelling van de naam.
+Controleer of het domein geregistreerd is en niet is verlopen: voer whois uit en kijk naar de status en de verloopdatum.
+Controleer bij de registrar of het domein naar de juiste nameservers wijst en of die servers een zone voor {0} hebben.
+Voer dig NS {0} +trace uit om te zien waar de keten breekt.
+Is het domein uit gebruik, verwijder of pauzeer het asset dan.</value></data>
+  <data name="Fix_DanglingCname_What" xml:space="preserve"><value>{0} is een CNAME die wijst naar {1}, en die naam bestaat niet. Wie {1} registreert of claimt (een verwijderde cloud-app, opslagbucket of naam van een gehoste dienst) kan inhoud serveren op {0}: een subdomain takeover.</value></data>
+  <data name="Fix_DanglingCname_Steps" xml:space="preserve"><value>Zoek uit waarvoor {0} diende. Wordt het niet meer gebruikt, verwijder het CNAME-record dan meteen bij je DNS-provider. Daarmee is het risico weg.
+Is het nog nodig, herstel dan {1}: maak de app, bucket of eigen domeinnaam bij de provider opnieuw aan onder dezelfde naam, of laat de CNAME naar het nieuwe doel wijzen.
+Controleer je andere records op CNAME's naar dezelfde provider die mogelijk ook verweesd zijn.
+Verwijder voortaan de eigen domeinnaam bij de provider en het DNS-record samen als je een dienst uit gebruik neemt.
+Controleer met de opdrachten hieronder en scan daarna opnieuw.</value></data>
+  <data name="Fix_ResolverMismatch_What" xml:space="preserve"><value>Openbare resolvers geven verschillende antwoorden voor de {1}-records van {0}. Dat is normaal kort nadat je een record hebt gewijzigd, maar het kan ook betekenen dat iemand je DNS heeft aangepast zonder dat je het weet, of dat een van je nameservers oude gegevens geeft.</value></data>
+  <data name="Fix_ResolverMismatch_Steps" xml:space="preserve"><value>Zoek het record op met alle resolvers (de opzoekknop hieronder) en vergelijk de antwoorden.
+Heb je het onlangs gewijzigd, wacht dan tot de TTL van het oude record voorbij is en scan opnieuw.
+Blijft het verschillen, vraag het dan rechtstreeks aan elk van je eigen nameservers (zie de opdrachten hieronder). Eén server met andere gegevens is de gebruikelijke oorzaak: synchroniseer of herstel die zone.
+Staan er in een antwoord nameservers of mailservers die je niet kent, behandel het dan als een hijack: wijzig de wachtwoorden van je registrar- en DNS-accounts, zet tweestapsverificatie en een registry lock aan en neem contact op met je registrar.
+Zijn verschillende antwoorden de bedoeling (split-horizon DNS), demp deze melding dan.</value></data>
+  <data name="Fix_DkimMissing_What" xml:space="preserve"><value>Voor selector {1} op {0} is geen DKIM-record gevonden. DKIM ondertekent uitgaande mail zodat ontvangers kunnen zien dat die echt van jou komt. Zonder gepubliceerde sleutel faalt ondertekende mail op DKIM en daarmee op DMARC.</value></data>
+  <data name="Fix_DkimMissing_Steps" xml:space="preserve"><value>Controleer dat de selector precies de s=-waarde is in de DKIM-Signature-header van een bericht dat je hebt verstuurd.
+Zoek in de instellingen van je mailprovider de DKIM-sleutel of het CNAME-record voor die selector en publiceer het op {1}._domainkey.{0}. Providers gebruiken een TXT-record of een CNAME.
+Kopieer de waarde exact. Lange sleutels moeten soms in meerdere tekenreeksen tussen aanhalingstekens worden gesplitst; de meeste DNS-providers doen dat voor je.
+Wacht op de TTL en controleer met de opdracht hieronder.
+Is de selector uit gebruik, verwijder hem dan uit de DKIM-selectors op de assetpagina.</value></data>
+  <data name="Fix_DkimRevoked_What" xml:space="preserve"><value>De DKIM-sleutel van selector {1} op {0} is leeg (p=), en dat trekt hem in. Mail die met deze selector is ondertekend, faalt op DKIM.</value></data>
+  <data name="Fix_DkimRevoked_Steps" xml:space="preserve"><value>Heb je de selector bewust uit gebruik genomen, verwijder hem dan uit de DKIM-selectors op de assetpagina.
+Zo niet, zoek dan de actuele publieke sleutel in de instellingen van je mailprovider en publiceer hem opnieuw op {1}._domainkey.{0}.
+Controleer dat je mailsysteem nog ondertekent met een selector waarvan de sleutel gepubliceerd is.
+Controleer met de opdracht hieronder en scan daarna opnieuw.</value></data>
+  <data name="Fix_DkimInvalid_What" xml:space="preserve"><value>Het DKIM-record voor selector {1} op {0} kan niet als publieke sleutel worden gelezen. Ontvangers beschouwen handtekeningen met deze selector als mislukt.</value></data>
+  <data name="Fix_DkimInvalid_Steps" xml:space="preserve"><value>Kopieer het record opnieuw van je mailprovider. Let op ontbrekende tekens, extra spaties of aanhalingstekens midden in de sleutel.
+Sommige DNS-panelen beperken een TXT-tekenreeks tot 255 tekens. Een sleutel van 2048 bits moet in meerdere tekenreeksen tussen aanhalingstekens worden gesplitst.
+Behoud de tags: v=DKIM1; k=rsa; p=&lt;sleutel&gt;.
+Controleer de gepubliceerde waarde met de opdracht hieronder en scan daarna opnieuw.</value></data>
+  <data name="Fix_DkimWeak_What" xml:space="preserve"><value>De DKIM-sleutel van selector {1} op {0} is slechts {2} bits. Sleutels onder 1024 bits zijn met beperkte moeite te kraken, waardoor iemand ondertekende mail van je domein zou kunnen vervalsen.</value></data>
+  <data name="Fix_DkimWeak_Steps" xml:space="preserve"><value>Genereer bij je mailprovider of op je mailserver een nieuwe DKIM-sleutel van 2048 bits.
+Publiceer hem onder een nieuwe selectornaam, bijvoorbeeld de maand en het jaar.
+Schakel de ondertekening om naar de nieuwe selector en wacht een paar dagen op mail die nog onderweg is.
+Verwijder de oude selector uit DNS en uit de DKIM-selectors op de assetpagina.</value></data>
+  <data name="Fix_DnsError_What" xml:space="preserve"><value>De DNS-controle voor {0} kon niet worden afgerond: {1}. Het gaat om het opzoeken, niet per se om {0} zelf.</value></data>
+  <data name="Fix_DnsError_Steps" xml:space="preserve"><value>Controleer of de server waarop FullyQualified draait een DNS-server kan bereiken: voer daar de eerste opdracht uit. Lukt dat niet, controleer dan het netwerk en de instelling Dns:Server.
+Controleer dat uitgaand DNS (UDP- en TCP-poort 53) niet door een firewall wordt geblokkeerd.
+Vergelijk met een openbare resolver (de tweede opdracht). Werkt die wel, dan ligt het probleem bij je lokale resolver.
+Antwoordt elke resolver met SERVFAIL voor dit domein, dan is DNSSEC mogelijk kapot of liggen de nameservers eruit: voer de derde opdracht uit en vraag het je DNS-provider.
+De controle probeert het binnen 15 minuten vanzelf opnieuw.</value></data>
+  <data name="Fix_TlsExpired_What" xml:space="preserve"><value>Het certificaat van {0} is verlopen op {1}. Browsers en apps tonen een beveiligingsfout of weigeren verbinding te maken.</value></data>
+  <data name="Fix_TlsExpiring_What" xml:space="preserve"><value>Het certificaat van {0} verloopt op {1} (nog {2} dagen). Wordt het niet op tijd vernieuwd, dan krijgen bezoekers en systemen beveiligingsfouten.</value></data>
+  <data name="Fix_Tls_Renew_Steps" xml:space="preserve"><value>Vernieuw het certificaat nu. Voer bij Let's Encrypt of een andere ACME-client (certbot, acme.sh, win-acme, Caddy, cert-manager) de verlenging met de hand uit en lees de foutmelding. Een geblokkeerde challenge (poort 80, een DNS-record), een gewijzigd DNS-record of een rate limit zijn de gebruikelijke oorzaken.
+Vraag bij een commercieel certificaat een vervanger aan bij je reseller of CA en rond de validatie af.
+Installeer het nieuwe certificaat overal waar deze naam wordt geserveerd: webserver of IIS-binding, load balancer, Azure Key Vault met Application Gateway of Front Door, CDN, Java-keystore. Laad de dienst daarna opnieuw.
+Controleer het resultaat met de opdracht hieronder: de datums en de uitgever horen nieuw te zijn.
+Automatiseer het. Levensduren van certificaten worden korter (100 dagen in 2027, 47 dagen in 2029), dus met de hand vernieuwen blijft niet beheersbaar.
+Is het systeem uit gebruik, pauzeer of verwijder het asset dan.</value></data>
+  <data name="Fix_TlsTrust_What" xml:space="preserve"><value>Het certificaat dat {0} laat zien wordt niet vertrouwd ({2}). Browsers en apps waarschuwen bezoekers of weigeren verbinding te maken.</value></data>
+  <data name="Fix_TlsTrust_Mismatch_Title" xml:space="preserve"><value>Het certificaat dekt de naam niet</value></data>
+  <data name="Fix_TlsTrust_Mismatch_Steps" xml:space="preserve"><value>Het certificaat is geldig voor: {1}. {0} staat daar niet bij.
+Moet {0} door dit certificaat worden gedekt, geef het dan opnieuw uit met {0} als alternatieve naam (SAN), of gebruik een wildcardcertificaat dat de naam dekt.
+Host de server meerdere sites, controleer dan dat hij het juiste certificaat voor {0} kiest (SNI of virtual host-instellingen) en dat niet het standaardcertificaat wordt getoond.
+Wijst {0} naar de verkeerde server, herstel dan het A-, AAAA- of CNAME-record: zoek het op met de knop hieronder.</value></data>
+  <data name="Fix_TlsTrust_Chain_Title" xml:space="preserve"><value>De certificaatketen wordt niet vertrouwd</value></data>
+  <data name="Fix_TlsTrust_Chain_Steps" xml:space="preserve"><value>Een ontbrekend tussencertificaat is de meest voorkomende oorzaak: installeer de volledige keten (bijvoorbeeld fullchain.pem), niet alleen het servercertificaat.
+Een zelfondertekend certificaat, of een certificaat van een private CA, wordt door browsers niet vertrouwd. Gebruik een certificaat van een openbare CA. Zorg bij interne systemen dat de clients je CA vertrouwen en demp deze melding.
+Controleer dat geen enkel certificaat in de keten is verlopen, ook de tussencertificaten niet.
+Controleer de keten met de tweede opdracht (die toont elk certificaat), laad de dienst opnieuw en scan daarna opnieuw.</value></data>
+  <data name="Fix_TlsError_What" xml:space="preserve"><value>De TLS-controle kon geen verbinding maken met {0} op poort {1}: {2}. Er is niets gecontroleerd, dus de staat van het certificaat is onbekend.</value></data>
+  <data name="Fix_TlsError_Steps" xml:space="preserve"><value>Controleer of het adres en de poort kloppen. Een endpoint wordt geschreven als host:poort, en zonder poort wordt 443 gebruikt.
+Controleer of de dienst draait en op die poort luistert (de eerste opdracht) en of geen firewall de verbinding vanaf de server met FullyQualified blokkeert.
+Wordt de naam niet opgelost, herstel of voeg dan het DNS-record toe.
+Lukt de verbinding maar mislukt de handshake, dan ondersteunt de server mogelijk alleen oude protocollen (TLS 1.0 of 1.1) of deelt hij geen cipher suite met deze client. Schakel TLS 1.2 of hoger in.
+Staat er dat de host niet is toegestaan, dan blokkeert deze installatie privéadressen: zet Scanning:AllowPrivateAddresses op true, of gebruik een openbare naam.
+Hoort het niet bereikbaar te zijn, pauzeer het asset dan of maak de controle optioneel.</value></data>
+  <data name="Fix_CtError_What" xml:space="preserve"><value>De zoekopdracht in de certificaatlogs voor {0} is mislukt: {1}. De openbare diensten die certificaten opsommen (crt.sh, daarna Cert Spotter) waren allebei niet beschikbaar. Er is niets mis met je domein en er wordt door dit probleem niets anders gemonitord.</value></data>
+  <data name="Fix_CtError_Steps" xml:space="preserve"><value>Wacht even: crt.sh is een gratis dienst die vaak overbelast is of aanvragen afknijpt, en de zoekopdracht valt terug op Cert Spotter als crt.sh faalt. Druk daarna opnieuw op Subdomeinen zoeken.
+Blijft het uren mislukken, controleer dan of de server met FullyQualified https://crt.sh en https://api.certspotter.com kan bereiken (uitgaand HTTPS, proxy, firewall).
+Zeer grote domeinen kunnen time-outs geven. Voeg de belangrijke hostnamen dan zelf toe als assets.
+Je hebt deze zoekopdracht niet nodig om een domein te monitoren: ze helpt alleen om hostnamen te vinden die je nog niet kende.</value></data>
+  <data name="Nav_Review" xml:space="preserve"><value>Beoordelen</value></data>
+  <data name="Discover_Title" xml:space="preserve"><value>Subdomeinen zoeken</value></data>
+  <data name="Discover_Help" xml:space="preserve"><value>Zoekt het domein op in de openbare certificaatlogs (crt.sh, daarna Cert Spotter) en toont de hostnamen met een certificaat. Er wordt niets vanzelf toegevoegd: jij beoordeelt wat er is gevonden. Hierbij gaat de domeinnaam naar die diensten, daarom draait het alleen als jij erom vraagt.</value></data>
+  <data name="Discover_Button" xml:space="preserve"><value>Subdomeinen zoeken</value></data>
+  <data name="Discover_Queued" xml:space="preserve"><value>Zoekopdracht staat klaar, ververs over een minuut</value></data>
+  <data name="Discover_Last" xml:space="preserve"><value>Laatste zoekopdracht</value></data>
+  <data name="Discover_Pending" xml:space="preserve"><value>{0} gevonden hostnaam/hostnamen wachten op beoordeling</value></data>
+  <data name="Discover_Reviewed" xml:space="preserve"><value>{0} gevonden hostnaam/hostnamen, allemaal beoordeeld</value></data>
+  <data name="Review_Title" xml:space="preserve"><value>Gevonden hostnamen beoordelen</value></data>
+  <data name="Review_Intro" xml:space="preserve"><value>Hostnamen uit de certificaatlogs worden pas gemonitord als je ze toevoegt. Voeg toe wat van jou is en negeer de rest met een reden. Genegeerde hostnamen blijven vastgelegd, komen bij de volgende zoekopdracht niet terug en staan in de rapporten.</value></data>
+  <data name="Review_DiscoverAll" xml:space="preserve"><value>Subdomeinen zoeken op alle domeinen</value></data>
+  <data name="Review_State_Pending" xml:space="preserve"><value>Wacht</value></data>
+  <data name="Review_State_Added" xml:space="preserve"><value>Toegevoegd</value></data>
+  <data name="Review_State_Ignored" xml:space="preserve"><value>Genegeerd</value></data>
+  <data name="Review_Filter_All" xml:space="preserve"><value>Alle</value></data>
+  <data name="Review_Banner" xml:space="preserve"><value>{0} hostnaam/hostnamen uit de certificaatlogs wachten op je beoordeling.</value></data>
+  <data name="Review_BannerButton" xml:space="preserve"><value>Nu beoordelen</value></data>
+  <data name="Review_Add" xml:space="preserve"><value>Toevoegen</value></data>
+  <data name="Review_AddSelected" xml:space="preserve"><value>Voeg geselecteerde toe</value></data>
+  <data name="Review_Ignore" xml:space="preserve"><value>Negeren</value></data>
+  <data name="Review_IgnoreSelected" xml:space="preserve"><value>Negeer geselecteerde</value></data>
+  <data name="Review_Restore" xml:space="preserve"><value>Herstellen</value></data>
+  <data name="Review_RestoreSelected" xml:space="preserve"><value>Herstel geselecteerde</value></data>
+  <data name="Review_ReasonLabel" xml:space="preserve"><value>Reden (verplicht)</value></data>
+  <data name="Review_ReasonPlaceholder" xml:space="preserve"><value>Waarom wordt dit niet gemonitord?</value></data>
+  <data name="Review_Nothing" xml:space="preserve"><value>Hier valt niets te beoordelen. Gebruik Subdomeinen zoeken bij een domein om meer te vinden.</value></data>
+  <data name="Review_Select" xml:space="preserve"><value>Selecteer eerst minstens één hostnaam.</value></data>
+  <data name="Review_NeedReason" xml:space="preserve"><value>Geef een reden voor het negeren.</value></data>
+  <data name="Review_Done_add" xml:space="preserve"><value>{0} hostnaam/hostnamen toegevoegd aan de monitoring.</value></data>
+  <data name="Review_Done_addLimit" xml:space="preserve"><value>{0} toegevoegd. {1} konden niet worden toegevoegd omdat de limiet van je abonnement is bereikt.</value></data>
+  <data name="Review_Done_ignore" xml:space="preserve"><value>{0} hostnaam/hostnamen genegeerd.</value></data>
+  <data name="Review_Done_restore" xml:space="preserve"><value>{0} hostnaam/hostnamen teruggezet naar beoordeling.</value></data>
+  <data name="Review_Done_discover" xml:space="preserve"><value>Zoeken op {0} domein(en). Ververs over een minuut om te zien wat er is gevonden.</value></data>
+  <data name="Review_RemovedReason" xml:space="preserve"><value>Verwijderd uit de monitoring</value></data>
+  <data name="Review_Automatic" xml:space="preserve"><value>automatisch toegevoegd, voordat beoordelen bestond</value></data>
+  <data name="Review_FoundFrom" xml:space="preserve"><value>{0} via {1}, certificaat van {2} geldig tot {3}</value></data>
+  <data name="Review_FoundShort" xml:space="preserve"><value>{0} via {1}</value></data>
+  <data name="Review_UnknownParent" xml:space="preserve"><value>een domein</value></data>
+  <data name="Review_More" xml:space="preserve"><value>De eerste {0} getoond; nog {1}. Gebruik zoeken om het te beperken.</value></data>
+  <data name="Col_FoundVia" xml:space="preserve"><value>Gevonden via</value></data>
+  <data name="Col_Reason" xml:space="preserve"><value>Reden</value></data>
+  <data name="Col_Decided" xml:space="preserve"><value>Besloten</value></data>
+  <data name="Col_DecidedBy" xml:space="preserve"><value>Besloten door</value></data>
+  <data name="Rep_ReviewTitle" xml:space="preserve"><value>Beoordeling gevonden hostnamen</value></data>
+  <data name="Rep_ReviewSummary" xml:space="preserve"><value>Hostnamen uit certificaatlogs: {0} toegevoegd, {1} genegeerd, {2} wachten op beoordeling.</value></data>
+  <data name="Refresh" xml:space="preserve"><value>Vernieuwen</value></data>
+  <data name="NotFound_Title" xml:space="preserve"><value>Pagina niet gevonden</value></data>
+  <data name="NotFound_Text" xml:space="preserve"><value>Deze pagina bestaat niet, of je mag hem niet zien.</value></data>
+  <data name="EmailTest_Title" xml:space="preserve"><value>Een DMARC-testmail versturen</value></data>
+  <data name="EmailTest_Intro" xml:space="preserve"><value>Verstuur een echte e-mail vanaf een domein dat je monitort, naar een ontvangende mailbox die je kunt bekijken.</value></data>
+  <data name="EmailTest_FromNotOwned" xml:space="preserve"><value>Het afzenderadres moet op een domein staan dat je monitort in FullyQualified. Voeg het domein eerst toe, of verstuur vanaf een domein dat je al monitort.</value></data>
+  <data name="EmailTest_Help" xml:space="preserve"><value>Deze test gebruikt de ingestelde SMTP-server van de applicatie. Die kan het bericht weigeren, aanpassen of ondertekenen. Je test deze verzendroute. Open bij het ontvangen bericht de oorspronkelijke headers en bekijk Authentication-Results van de ontvangende server voor dmarc, spf en dkim. SMTP-acceptatie bewijst geen aflevering of geslaagde DMARC-controle.</value></data>
+  <data name="EmailTest_From" xml:space="preserve"><value>Van</value></data>
+  <data name="EmailTest_To" xml:space="preserve"><value>Aan</value></data>
+  <data name="EmailTest_Subject" xml:space="preserve"><value>Onderwerp</value></data>
+  <data name="EmailTest_Message" xml:space="preserve"><value>Bericht</value></data>
+  <data name="EmailTest_DefaultSubject" xml:space="preserve"><value>FullyQualified: DMARC-testmail</value></data>
+  <data name="EmailTest_DefaultMessage" xml:space="preserve"><value>Dit is een e-mailauthenticatietest vanuit FullyQualified. Bekijk de Authentication-Results-header van de ontvangende server voor de resultaten van DMARC, SPF en DKIM.</value></data>
+  <data name="EmailTest_Send" xml:space="preserve"><value>Testmail versturen</value></data>
+  <data name="EmailTest_Success" xml:space="preserve"><value>De SMTP-server heeft de testmail geaccepteerd. Bekijk het postvak of de spammap van de ontvanger en controleer de oorspronkelijke headers voor het DMARC-resultaat.</value></data>
+  <data name="EmailTest_InvalidFrom" xml:space="preserve"><value>Vul één geldig afzenderadres in, zonder weergavenaam.</value></data>
+  <data name="EmailTest_InvalidTo" xml:space="preserve"><value>Vul één geldig e-mailadres van een ontvanger in, zonder weergavenaam.</value></data>
+  <data name="EmailTest_InvalidSubject" xml:space="preserve"><value>Vul een onderwerp in van maximaal 200 tekens, zonder regeleinden of besturingstekens.</value></data>
+  <data name="EmailTest_InvalidMessage" xml:space="preserve"><value>Vul een bericht in van maximaal 10.000 tekens.</value></data>
+  <data name="EmailTest_Failed" xml:space="preserve"><value>De SMTP-server kon de testmail niet versturen. Controleer het afzenderadres en de SMTP-instellingen van de server. De poging staat in het logboek.</value></data>
+  <data name="EmailTest_Rate" xml:space="preserve"><value>Je organisatie kan vijf testmails per minuut versturen. Wacht voordat je het opnieuw probeert.</value></data>
+  <data name="EmailTest_Channel" xml:space="preserve"><value>E-mailtest</value></data>
+  <data name="EmailTest_Accepted" xml:space="preserve"><value>SMTP geaccepteerd</value></data>
+  <data name="Tool_AlignmentDkim" xml:space="preserve"><value>DKIM-afstemming</value></data>
+  <data name="Tool_AlignmentSpf" xml:space="preserve"><value>SPF-afstemming</value></data>
+  <data name="Tool_Builder" xml:space="preserve"><value>DMARC-record samenstellen</value></data>
+  <data name="Tool_BuilderHelp" xml:space="preserve"><value>Maakt een voorbeeld-TXT-record en uitleg. Beoordeel dit voordat u DNS handmatig wijzigt. Dit hulpmiddel publiceert geen records en ontvangt geen rapporten.</value></data>
+  <data name="Tool_Cancel" xml:space="preserve"><value>Annuleren</value></data>
+  <data name="Tool_Cancelled" xml:space="preserve"><value>Diagnose geannuleerd.</value></data>
+  <data name="Tool_Certificate" xml:space="preserve"><value>Certificaatbestand / PEM</value></data>
+  <data name="Tool_CertificateFile" xml:space="preserve"><value>Certificaatbestand (PEM / DER)</value></data>
+  <data name="Tool_CertificateHelp" xml:space="preserve"><value>Plak certificaten of kies één bestand van maximaal 256 KiB. Geplakte tekst is beperkt tot 64 KiB. Verstuur nooit een privésleutel. Deze installatie onderzoekt certificaten zonder uploads naar derden.</value></data>
+  <data name="Tool_CertificateRequired" xml:space="preserve"><value>Plak PEM-certificaten of kies één certificaatbestand. Gebruik slechts één invoermethode.</value></data>
+  <data name="Tool_CertificateText" xml:space="preserve"><value>PEM-certificaat of -keten</value></data>
+  <data name="Tool_Choose" xml:space="preserve"><value>Kies een hulpmiddel</value></data>
+  <data name="Tool_Cleared" xml:space="preserve"><value>Invoer en resultaten gewist.</value></data>
+  <data name="Tool_Dkim" xml:space="preserve"><value>DKIM-selector onderzoeken</value></data>
+  <data name="Tool_Dmarc" xml:space="preserve"><value>DMARC onderzoeken</value></data>
+  <data name="Tool_Dns" xml:space="preserve"><value>DNS-resolvers vergelijken</value></data>
+  <data name="Tool_Domain" xml:space="preserve"><value>Domein</value></data>
+  <data name="Tool_Done" xml:space="preserve"><value>Diagnose afgerond. Bekijk de bevindingen hieronder.</value></data>
+  <data name="Tool_EmailHelp" xml:space="preserve"><value>Beheerders kunnen de bestaande verzendtest gebruiken. E-mail versturen gebruikt externe mailwachtrijen en ontvangerregistraties; lees vóór het versturen de toelichting over bewaring.</value></data>
+  <data name="Tool_EmailLink" xml:space="preserve"><value>Een geautoriseerde DMARC-testmail versturen</value></data>
+  <data name="Tool_EnvelopeFrom" xml:space="preserve"><value>Envelope-afzender (optioneel)</value></data>
+  <data name="Tool_Error_antiforgery" xml:space="preserve"><value>Het sessietoken ontbreekt of is verlopen. Vernieuw de pagina en probeer opnieuw.</value></data>
+  <data name="Tool_Error_blocked" xml:space="preserve"><value>Deze installatie staat controles van privé- of lokale netwerkadressen niet toe.</value></data>
+  <data name="Tool_Error_dns_failed" xml:space="preserve"><value>DNS-opzoeking is mislukt. Controleer de naam of probeer later opnieuw.</value></data>
+  <data name="Tool_Error_failed" xml:space="preserve"><value>De controle kon niet worden afgerond. Er is geen resultaat opgeslagen.</value></data>
+  <data name="Tool_Error_http_failed" xml:space="preserve"><value>Het beleid kon niet via HTTPS worden opgehaald.</value></data>
+  <data name="Tool_Error_invalid_host" xml:space="preserve"><value>Voer een geldige hostnaam of IP-adres in, zonder URL of pad.</value></data>
+  <data name="Tool_Error_invalid_input" xml:space="preserve"><value>Controleer de invoer en probeer opnieuw.</value></data>
+  <data name="Tool_Error_invalid_port" xml:space="preserve"><value>Voer een poort tussen 1 en 65535 in.</value></data>
+  <data name="Tool_Error_rate" xml:space="preserve"><value>Er lopen te veel controles of de aanvraaglimiet is bereikt. Probeer het straks opnieuw.</value></data>
+  <data name="Tool_Error_too_large" xml:space="preserve"><value>De invoer is groter dan toegestaan.</value></data>
+  <data name="Tool_Failed" xml:space="preserve"><value>De diagnose kon niet worden afgerond. Probeer het opnieuw.</value></data>
+  <data name="Tool_FileLimit" xml:space="preserve"><value>Het certificaatbestand overschrijdt de limiet van 256 KiB.</value></data>
+  <data name="Tool_Forbidden" xml:space="preserve"><value>U heeft geen toegang om deze diagnose uit te voeren.</value></data>
+  <data name="Tool_HeaderHelp" xml:space="preserve"><value>Plak alleen headers, maximaal 64 KiB. Authenticatieresultaten in geplakte headers zijn onbevestigde beweringen; dit hulpmiddel bewijst geen bezorging en valideert geen DKIM-handtekening.</value></data>
+  <data name="Tool_HeaderText" xml:space="preserve"><value>Berichtheaders</value></data>
+  <data name="Tool_Headers" xml:space="preserve"><value>Mailheaders analyseren</value></data>
+  <data name="Tool_Helo" xml:space="preserve"><value>HELO-naam (optioneel)</value></data>
+  <data name="Tool_Host" xml:space="preserve"><value>Hostnaam of IP-adres</value></data>
+  <data name="Tool_HostHelp" xml:space="preserve"><value>Voer een hostnaam of IPv4/IPv6-adres in zonder URL-schema of pad.</value></data>
+  <data name="Tool_Imap" xml:space="preserve"><value>IMAP STARTTLS (143)</value></data>
+  <data name="Tool_Imaps" xml:space="preserve"><value>IMAP met directe TLS (993)</value></data>
+  <data name="Tool_Incomplete" xml:space="preserve"><value>Onvolledige controle</value></data>
+  <data name="Tool_Inherit" xml:space="preserve"><value>Domeinbeleid overnemen</value></data>
+  <data name="Tool_Intro" xml:space="preserve"><value>Onderzoek een doel zonder het aan monitoring toe te voegen. Alle aangemelde gebruikers kunnen deze controles uitvoeren.</value></data>
+  <data name="Tool_Invalid" xml:space="preserve"><value>Controleer de gemarkeerde invoer voordat u de diagnose uitvoert.</value></data>
+  <data name="Tool_JavaScript" xml:space="preserve"><value>Schakel JavaScript in om diagnoses uit te voeren en de invoer tijdelijk te houden.</value></data>
+  <data name="Tool_MailRetention" xml:space="preserve"><value>Deze eenmalige test wordt niet in FullyQualified opgeslagen. Verzending gebruikt de ingestelde SMTP-wachtrij en kan relaylogs en een kopie in de mailbox van de ontvanger opleveren. SMTP-acceptatie bewijst geen DMARC-resultaat.</value></data>
+  <data name="Tool_Mode" xml:space="preserve"><value>Mailprotocol</value></data>
+  <data name="Tool_MtaSts" xml:space="preserve"><value>MTA-STS / TLS-RPT</value></data>
+  <data name="Tool_Mx" xml:space="preserve"><value>TLS voor maildomein (MX)</value></data>
+  <data name="Tool_NoResults" xml:space="preserve"><value>De diagnose heeft geen bevindingen opgeleverd.</value></data>
+  <data name="Tool_None" xml:space="preserve"><value>Monitoren (none)</value></data>
+  <data name="Tool_Partial" xml:space="preserve"><value>Diagnose onvolledig. Bekijk hieronder de gedeeltelijke bevindingen en beperkingen.</value></data>
+  <data name="Tool_Percentage" xml:space="preserve"><value>Beleidspercentage</value></data>
+  <data name="Tool_Policy" xml:space="preserve"><value>Domeinbeleid</value></data>
+  <data name="Tool_Pop3" xml:space="preserve"><value>POP3 STLS (110)</value></data>
+  <data name="Tool_Pop3s" xml:space="preserve"><value>POP3 met directe TLS (995)</value></data>
+  <data name="Tool_Port" xml:space="preserve"><value>Poort</value></data>
+  <data name="Tool_Privacy" xml:space="preserve"><value>Invoer en resultaten blijven alleen op deze pagina. Vernieuwen, verlaten of wissen verwijdert ze. Er wordt geen diagnostische geschiedenis opgeslagen.</value></data>
+  <data name="Tool_PrivateKey" xml:space="preserve"><value>Privésleutelmateriaal mag niet worden verstuurd. Gebruik alleen certificaten.</value></data>
+  <data name="Tool_Progress" xml:space="preserve"><value>Diagnose wordt uitgevoerd… Netwerkcontroles kunnen maximaal één minuut duren.</value></data>
+  <data name="Tool_Quarantine" xml:space="preserve"><value>Quarantaine</value></data>
+  <data name="Tool_Rate" xml:space="preserve"><value>Er worden te veel diagnoses uitgevoerd of de aanvraaglimiet is bereikt. Probeer het zo opnieuw.</value></data>
+  <data name="Tool_Ready" xml:space="preserve"><value>Kies een hulpmiddel en vul de invoer in om te beginnen.</value></data>
+  <data name="Tool_RecordType" xml:space="preserve"><value>DNS-recordtype</value></data>
+  <data name="Tool_Reject" xml:space="preserve"><value>Weigeren</value></data>
+  <data name="Tool_Relaxed" xml:space="preserve"><value>Soepel</value></data>
+  <data name="Tool_ReportUri" xml:space="preserve"><value>URI voor geaggregeerde rapporten (optioneel)</value></data>
+  <data name="Tool_Reset" xml:space="preserve"><value>Invoer en resultaten wissen</value></data>
+  <data name="Tool_Results" xml:space="preserve"><value>Diagnostische bevindingen</value></data>
+  <data name="Tool_Run" xml:space="preserve"><value>Diagnose uitvoeren</value></data>
+  <data name="Tool_Selector" xml:space="preserve"><value>DKIM-selector</value></data>
+  <data name="Tool_SenderIp" xml:space="preserve"><value>IP-adres van afzender (optioneel)</value></data>
+  <data name="Tool_ServerName" xml:space="preserve"><value>TLS-servernaam (optioneel)</value></data>
+  <data name="Tool_ServerNameHelp" xml:space="preserve"><value>Gebruik een aparte verwachte identiteit voor SNI en certificaatnaamvalidatie. Laat leeg om de doelhostnaam te gebruiken.</value></data>
+  <data name="Tool_SignIn" xml:space="preserve"><value>Uw sessie is verlopen. Meld u opnieuw aan om diagnoses uit te voeren.</value></data>
+  <data name="Tool_Smtp" xml:space="preserve"><value>SMTP STARTTLS (25 / 587)</value></data>
+  <data name="Tool_Smtps" xml:space="preserve"><value>SMTP met directe TLS (465)</value></data>
+  <data name="Tool_Spf" xml:space="preserve"><value>SPF-analyse</value></data>
+  <data name="Tool_SpfHelp" xml:space="preserve"><value>Zonder afzender-IP beschrijven resultaten de statische beleidsuitbreiding in plaats van een daadwerkelijke berichtbeoordeling.</value></data>
+  <data name="Tool_Starttls" xml:space="preserve"><value>Mail-TLS / STARTTLS</value></data>
+  <data name="Tool_Status" xml:space="preserve"><value>Status</value></data>
+  <data name="Tool_StatusError" xml:space="preserve"><value>Fout</value></data>
+  <data name="Tool_StatusInfo" xml:space="preserve"><value>Informatie</value></data>
+  <data name="Tool_StatusOk" xml:space="preserve"><value>OK</value></data>
+  <data name="Tool_StatusUnknown" xml:space="preserve"><value>Onbekend</value></data>
+  <data name="Tool_StatusWarning" xml:space="preserve"><value>Waarschuwing</value></data>
+  <data name="Tool_Strict" xml:space="preserve"><value>Strikt</value></data>
+  <data name="Tool_SubdomainPolicy" xml:space="preserve"><value>Subdomeinbeleid</value></data>
+  <data name="Tool_TextLimit" xml:space="preserve"><value>Geplakte tekst overschrijdt de limiet van 64 KiB.</value></data>
+  <data name="Tool_Timeout" xml:space="preserve"><value>De tijdslimiet is bereikt. Uit niet-afgeronde controles kan geen conclusie worden getrokken.</value></data>
+  <data name="Tool_Title" xml:space="preserve"><value>Diagnostische hulpmiddelen</value></data>
+  <data name="Tool_Tls" xml:space="preserve"><value>TLS-eindpunt</value></data>
+  <data name="Tool_Accepted" xml:space="preserve"><value>Geaccepteerd</value></data>
+  <data name="Tool_CertificateChainElement" xml:space="preserve"><value>Certificaat in lokaal opgebouwde keten</value></data>
+  <data name="Tool_CertificateChainErrors" xml:space="preserve"><value>Validatiefouten in de keten</value></data>
+  <data name="Tool_CertificateChainNoRevocation" xml:space="preserve"><value>Opgebouwd met de vertrouwensopslag en beschikbare tussencertificaten van de scanner. Certificaatdownloads en intrekkingscontroles zijn uitgeschakeld.</value></data>
+  <data name="Tool_CertificateChainStatus" xml:space="preserve"><value>Ketenstatus</value></data>
+  <data name="Tool_CertificateChainValidation" xml:space="preserve"><value>Lokale ketenvalidatie</value></data>
+  <data name="Tool_CertificateDetails" xml:space="preserve"><value>Certificaatgegevens</value></data>
+  <data name="Tool_CertificateDnsNames" xml:space="preserve"><value>Alternatieve DNS-namen</value></data>
+  <data name="Tool_CertificateExpired" xml:space="preserve"><value>Verlopen</value></data>
+  <data name="Tool_CertificateFingerprint" xml:space="preserve"><value>SHA-256-vingerafdruk</value></data>
+  <data name="Tool_CertificateInspection" xml:space="preserve"><value>Certificaatinspectie</value></data>
+  <data name="Tool_CertificateIpNames" xml:space="preserve"><value>Alternatieve IP-adressen</value></data>
+  <data name="Tool_CertificateIssuer" xml:space="preserve"><value>Uitgever</value></data>
+  <data name="Tool_CertificateLocalChain" xml:space="preserve"><value>Door het besturingssysteem opgebouwde certificaatketen</value></data>
+  <data name="Tool_CertificateLocalOnly" xml:space="preserve"><value>Alleen lokale inspectie; er is geen identiteit van een actieve server geverifieerd.</value></data>
+  <data name="Tool_CertificateNotAfter" xml:space="preserve"><value>Geldig tot (UTC)</value></data>
+  <data name="Tool_CertificateNotBefore" xml:space="preserve"><value>Geldig vanaf (UTC)</value></data>
+  <data name="Tool_CertificateNotYetValid" xml:space="preserve"><value>Nog niet geldig</value></data>
+  <data name="Tool_CertificatePublicKey" xml:space="preserve"><value>OID en bitlengte van de publieke sleutel</value></data>
+  <data name="Tool_CertificateScope" xml:space="preserve"><value>Inspectiebereik</value></data>
+  <data name="Tool_CertificateSignature" xml:space="preserve"><value>OID van het ondertekeningsalgoritme</value></data>
+  <data name="Tool_CertificateSubject" xml:space="preserve"><value>Onderwerp</value></data>
+  <data name="Tool_MxOmitted" xml:space="preserve"><value>MX-hosts overgeslagen door limiet</value></data>
+  <data name="Tool_MxResults" xml:space="preserve"><value>Mailservers</value></data>
+  <data name="Tool_MxStatus" xml:space="preserve"><value>MX-status</value></data>
+  <data name="Tool_No" xml:space="preserve"><value>Nee</value></data>
+  <data name="Tool_NoMx" xml:space="preserve"><value>Geen MX-record; er is geen SMTP-doel afgeleid.</value></data>
+  <data name="Tool_NullMx" xml:space="preserve"><value>Null-MX: het domein verklaart geen e-mail te accepteren.</value></data>
+  <data name="Tool_Rejected" xml:space="preserve"><value>Geweigerd</value></data>
+  <data name="Tool_StartTlsMalformed" xml:space="preserve"><value>Het antwoord op het upgradeverzoek was onvolledig, ongeldig of overschreed de parserlimieten.</value></data>
+  <data name="Tool_StartTlsRefused" xml:space="preserve"><value>De server bood de vereiste TLS-upgrade niet aan of accepteerde deze niet expliciet.</value></data>
+  <data name="Tool_StartTlsUpgrade" xml:space="preserve"><value>STARTTLS-upgrade</value></data>
+  <data name="Tool_TargetBlocked" xml:space="preserve"><value>Geblokkeerd door het adresbeleid van de installatie.</value></data>
+  <data name="Tool_Tls13CipherControl" xml:space="preserve"><value>Afzonderlijke aansturing van TLS 1.3-cijfersuites</value></data>
+  <data name="Tool_Tls13CipherLimitation" xml:space="preserve"><value>Afzonderlijke TLS 1.3-cijfersuiteproeven zijn niet overdraagbaar via deze runtime en worden niet uitgevoerd.</value></data>
+  <data name="Tool_TlsAddress" xml:space="preserve"><value>Verbonden doeladres</value></data>
+  <data name="Tool_TlsAddressesOmitted" xml:space="preserve"><value>Adressen overgeslagen door limiet</value></data>
+  <data name="Tool_TlsCipher" xml:space="preserve"><value>Onderhandelde cijfersuite</value></data>
+  <data name="Tool_TlsCipherCandidate" xml:space="preserve"><value>Aangeboden TLS 1.2-cijfersuite</value></data>
+  <data name="Tool_TlsCipherCandidates" xml:space="preserve"><value>Begrensde lijst met TLS 1.2-cijfersuites</value></data>
+  <data name="Tool_TlsCipherNotHonored" xml:space="preserve"><value>De onderhandelde cijfersuite verschilde van de enige aangeboden kandidaat; deze proef kan ondersteuning daarom niet vaststellen.</value></data>
+  <data name="Tool_TlsCipherPlatformLimitation" xml:space="preserve"><value>Proeven met één cijfersuite zijn alleen op Linux ingeschakeld; op dit platform is lokaal testen niet mogelijk.</value></data>
+  <data name="Tool_TlsCipherProbes" xml:space="preserve"><value>Cijfersuiteproeven</value></data>
+  <data name="Tool_TlsCipherScope" xml:space="preserve"><value>Bereik van cijfersuiteproeven</value></data>
+  <data name="Tool_TlsCipherScopeExplanation" xml:space="preserve"><value>Elke vermelde TLS 1.2-suite wordt afzonderlijk aangeboden. Deze begrensde lijst is geen volledige inventaris van alle historische suites.</value></data>
+  <data name="Tool_TlsEndpoint" xml:space="preserve"><value>TLS-eindpunt</value></data>
+  <data name="Tool_TlsHost" xml:space="preserve"><value>Doelhostnaam</value></data>
+  <data name="Tool_TlsIdentity" xml:space="preserve"><value>SNI en verwachte serveridentiteit</value></data>
+  <data name="Tool_TlsInconclusive" xml:space="preserve"><value>Niet vast te stellen</value></data>
+  <data name="Tool_TlsLimits" xml:space="preserve"><value>Scanlimieten</value></data>
+  <data name="Tool_TlsLocalPolicyLimitation" xml:space="preserve"><value>De runtime of het cryptografische platform van de scanner kan deze proef niet uitvoeren. Het cryptografische systeembeleid is niet gewijzigd.</value></data>
+  <data name="Tool_TlsLocallyUntestable" xml:space="preserve"><value>Lokaal niet te testen</value></data>
+  <data name="Tool_TlsOutcome" xml:space="preserve"><value>Verbindingsresultaat</value></data>
+  <data name="Tool_TlsPeerChain" xml:space="preserve"><value>Certificaatinformatie van de server</value></data>
+  <data name="Tool_TlsPort" xml:space="preserve"><value>Doelpoort</value></data>
+  <data name="Tool_TlsProbeAmbiguous" xml:space="preserve"><value>De handshake mislukte; dit kan komen door lokale cryptografische beperkingen of weigering door de server. Ondersteuning door de server kan niet worden vastgesteld.</value></data>
+  <data name="Tool_TlsProbeOutcome" xml:space="preserve"><value>Proefresultaat</value></data>
+  <data name="Tool_TlsProtocol" xml:space="preserve"><value>Onderhandeld TLS-protocol</value></data>
+  <data name="Tool_TlsProtocolProbe" xml:space="preserve"><value>Aangeboden TLS-protocol</value></data>
+  <data name="Tool_TlsProtocolProbes" xml:space="preserve"><value>Protocolproeven</value></data>
+  <data name="Tool_TlsTimeout" xml:space="preserve"><value>Tijdslimiet voor de verbinding bereikt</value></data>
+  <data name="Tool_TlsUnreachable" xml:space="preserve"><value>Eindpunt onbereikbaar</value></data>
+  <data name="Tool_TlsValidation" xml:space="preserve"><value>Validatiefouten voor serveridentiteit en certificaat</value></data>
+  <data name="Tool_TlsWeakCipher" xml:space="preserve"><value>Geaccepteerde zwakke cijfersuite</value></data>
+  <data name="Tool_TlsWeakCipherExplanation" xml:space="preserve"><value>Deze kandidaat gebruikt verouderde RSA-sleuteluitwisseling of 3DES; moderne AEAD-suites met forward secrecy hebben de voorkeur.</value></data>
+  <data name="Tool_TlsWireChain" xml:space="preserve"><value>Zichtbaarheid van de aangeleverde keten</value></data>
+  <data name="Tool_TlsWireChainLimitation" xml:space="preserve"><value>SslStream toont het servercertificaat en een door het besturingssysteem opgebouwde keten, niet de volledige verzonden keten. Lokaal opgebouwde certificaten kunnen uit lokale opslag komen.</value></data>
+  <data name="Tool_TlsWireChainUnavailable" xml:space="preserve"><value>De volledige verzonden keten is niet beschikbaar via deze runtime.</value></data>
+  <data name="Tool_TlsWireLeaf" xml:space="preserve"><value>Servercertificaat</value></data>
+  <data name="Tool_Unknown" xml:space="preserve"><value>Onbekend</value></data>
+  <data name="Tool_Yes" xml:space="preserve"><value>Ja</value></data>
+  <data name="Tool_AlignmentNone" xml:space="preserve"><value>Niet uitgelijnd</value></data>
+  <data name="Tool_AlignmentRelaxed" xml:space="preserve"><value>Ontspannen uitlijning</value></data>
+  <data name="Tool_AlignmentStrict" xml:space="preserve"><value>Strikte uitlijning</value></data>
+  <data name="Tool_Connection" xml:space="preserve"><value>Verbinding</value></data>
+  <data name="Tool_DkimDiscoveryOnly" xml:space="preserve"><value>Het vinden van een sleutel verifieert geen berichtondertekening. Voor verificatie is het oorspronkelijke ondertekende bericht vereist.</value></data>
+  <data name="Tool_DkimKeyBits" xml:space="preserve"><value>Bits van openbare sleutel</value></data>
+  <data name="Tool_DkimKeyType" xml:space="preserve"><value>Type openbare sleutel</value></data>
+  <data name="Tool_DkimRevoked" xml:space="preserve"><value>De selectorsleutel is ingetrokken (lege p-tag).</value></data>
+  <data name="Tool_DkimState" xml:space="preserve"><value>Status DKIM-record</value></data>
+  <data name="Tool_DkimVerification" xml:space="preserve"><value>Verificatiebereik</value></data>
+  <data name="Tool_DmarcAlignmentExplanation" xml:space="preserve"><value>Strikte uitlijning vereist identieke domeinen; ontspannen uitlijning vergelijkt organisatiedomeinen via de Public Suffix List.</value></data>
+  <data name="Tool_DmarcBuilder" xml:space="preserve"><value>DMARC-recordbouwer</value></data>
+  <data name="Tool_DmarcBuilderExplanation" xml:space="preserve"><value>Bereik recordbouwer</value></data>
+  <data name="Tool_DmarcBuilderTextOnly" xml:space="preserve"><value>Alleen voorbeeldtekst voor TXT. Er wordt niets gepubliceerd of gewijzigd. Controleer externe rapportautorisatie vóór ingebruikname.</value></data>
+  <data name="Tool_DmarcDkimAlignment" xml:space="preserve"><value>DKIM-uitlijningsmodus</value></data>
+  <data name="Tool_DmarcEffectivePolicy" xml:space="preserve"><value>Effectief DMARC-beleid</value></data>
+  <data name="Tool_DmarcPercentage" xml:space="preserve"><value>Beleidspercentage</value></data>
+  <data name="Tool_DmarcPercentageExplanation" xml:space="preserve"><value>Het geselecteerde percentage verzoekt welk deel van falende e-mail het beleid krijgt.</value></data>
+  <data name="Tool_DmarcPolicyExplanation" xml:space="preserve"><value>none verzoekt monitoring; quarantine verzoekt behandeling als verdacht; reject verzoekt afwijzing van e-mail die niet aan DMARC voldoet.</value></data>
+  <data name="Tool_DmarcSource" xml:space="preserve"><value>Domein voor beleidsdetectie</value></data>
+  <data name="Tool_DmarcSpfAlignment" xml:space="preserve"><value>SPF-uitlijningsmodus</value></data>
+  <data name="Tool_DnsAddressLimit" xml:space="preserve"><value>Sommige nameserveradressen zijn weggelaten vanwege de ingestelde limiet.</value></data>
+  <data name="Tool_DnsAnswer" xml:space="preserve"><value>DNS-antwoord (inclusief TTL)</value></data>
+  <data name="Tool_DnsComparison" xml:space="preserve"><value>Vergelijking met ingestelde resolver</value></data>
+  <data name="Tool_DnsConfigured" xml:space="preserve"><value>Ingestelde recursieve resolver</value></data>
+  <data name="Tool_DnsDifferent" xml:space="preserve"><value>Recordgegevens wijken af van de ingestelde resolver.</value></data>
+  <data name="Tool_DnsEmpty" xml:space="preserve"><value>Geslaagd antwoord zonder antwoordrecords (NODATA).</value></data>
+  <data name="Tool_DnsError" xml:space="preserve"><value>DNS kon niet worden voltooid; het resultaat is onbekend.</value></data>
+  <data name="Tool_DnsIncomplete" xml:space="preserve"><value>Afgekapt DNS-antwoord; waarnemingen zijn onvolledig.</value></data>
+  <data name="Tool_DnsMilliseconds" xml:space="preserve"><value>Opzoektijd (milliseconden)</value></data>
+  <data name="Tool_DnsNsLimit" xml:space="preserve"><value>Sommige gezaghebbende nameservers zijn weggelaten vanwege de limiet van tien hosts.</value></data>
+  <data name="Tool_DnsResolver" xml:space="preserve"><value>Resolver of gezaghebbende nameserver</value></data>
+  <data name="Tool_DnsResponse" xml:space="preserve"><value>DNS-antwoordcode</value></data>
+  <data name="Tool_DnsSame" xml:space="preserve"><value>Recordgegevens komen overeen; antwoordvolgorde en TTL-verschillen worden genegeerd.</value></data>
+  <data name="Tool_HeaderAlignmentOnly" xml:space="preserve"><value>Alleen vergelijking van identiteiten; dit verifieert geen authenticatie of de ingestelde DMARC-uitlijningsmodus.</value></data>
+  <data name="Tool_HeaderAuthentication" xml:space="preserve"><value>Authentication-Results-bewering</value></data>
+  <data name="Tool_HeaderDkim" xml:space="preserve"><value>DKIM-Signature-header</value></data>
+  <data name="Tool_HeaderDkimAlignment" xml:space="preserve"><value>DKIM-identiteitsuitlijning</value></data>
+  <data name="Tool_HeaderFrom" xml:space="preserve"><value>From-identiteit</value></data>
+  <data name="Tool_HeaderIdentityUnknown" xml:space="preserve"><value>Er kon geen enkele geldige From-identiteit worden bepaald.</value></data>
+  <data name="Tool_HeaderReceived" xml:space="preserve"><value>Received-routeringsstap (headervolgorde, nieuwste eerst)</value></data>
+  <data name="Tool_HeaderReportedDkim" xml:space="preserve"><value>Gerapporteerd DKIM-resultaat (ongeverifieerd)</value></data>
+  <data name="Tool_HeaderReportedDmarc" xml:space="preserve"><value>Gerapporteerd DMARC-resultaat (ongeverifieerd)</value></data>
+  <data name="Tool_HeaderReportedSpf" xml:space="preserve"><value>Gerapporteerd SPF-resultaat (ongeverifieerd)</value></data>
+  <data name="Tool_HeaderReturnPath" xml:space="preserve"><value>Return-Path</value></data>
+  <data name="Tool_HeaderSelector" xml:space="preserve"><value>DKIM-selector</value></data>
+  <data name="Tool_HeaderSigningDomain" xml:space="preserve"><value>DKIM-ondertekeningsdomein</value></data>
+  <data name="Tool_HeaderSpf" xml:space="preserve"><value>Received-SPF-bewering</value></data>
+  <data name="Tool_HeaderSpfAlignment" xml:space="preserve"><value>SPF-identiteitsuitlijning</value></data>
+  <data name="Tool_HeaderSyntax" xml:space="preserve"><value>Headersyntaxis</value></data>
+  <data name="Tool_HeaderTrust" xml:space="preserve"><value>Vertrouwensgrens voor authenticatie</value></data>
+  <data name="Tool_HeaderUnverified" xml:space="preserve"><value>Geplakte headers zijn ongeverifieerde beweringen. Er is geen vertrouwde ontvangende grens, verificatie van berichtondertekening of bewijs van bezorging beschikbaar.</value></data>
+  <data name="Tool_InvalidRecord" xml:space="preserve"><value>Ongeldige of dubbelzinnige recordsyntaxis</value></data>
+  <data name="Tool_Limit" xml:space="preserve"><value>Diagnostische limiet</value></data>
+  <data name="Tool_MissingRecord" xml:space="preserve"><value>Er is geen overeenkomend record gepubliceerd.</value></data>
+  <data name="Tool_MtaDiscovery" xml:space="preserve"><value>MTA-STS-detectie-TXT</value></data>
+  <data name="Tool_MtaMxCoverage" xml:space="preserve"><value>MX-beleidsdekking</value></data>
+  <data name="Tool_MtaMxCovered" xml:space="preserve"><value>De MX-host komt overeen met een beleidspatroon.</value></data>
+  <data name="Tool_MtaMxUncovered" xml:space="preserve"><value>De MX-host komt niet overeen met een beleidspatroon.</value></data>
+  <data name="Tool_MtaPolicy" xml:space="preserve"><value>HTTPS MTA-STS-beleid</value></data>
+  <data name="Tool_MtaSyntax" xml:space="preserve"><value>MTA-STS-beleidssyntaxis</value></data>
+  <data name="Tool_PolicyUnavailable" xml:space="preserve"><value>Het beveiligde HTTPS-beleidsverzoek kon niet worden voltooid. Er is geen geldig beleid vastgesteld.</value></data>
+  <data name="Tool_Record" xml:space="preserve"><value>Gepubliceerd record</value></data>
+  <data name="Tool_ReportAuthorization" xml:space="preserve"><value>Autorisatie externe rapportage</value></data>
+  <data name="Tool_ReportAuthorized" xml:space="preserve"><value>Externe bestemming heeft een DMARC-autorisatierecord.</value></data>
+  <data name="Tool_ReportDestination" xml:space="preserve"><value>Rapportbestemming</value></data>
+  <data name="Tool_ReportUnauthorized" xml:space="preserve"><value>Er is geen geldige autorisatie voor externe rapportage gevonden.</value></data>
+  <data name="Tool_SpfActualLookups" xml:space="preserve"><value>Geëvalueerde termen die DNS opvragen</value></data>
+  <data name="Tool_SpfConcrete" xml:space="preserve"><value>Concrete SPF-afzenderbeoordeling</value></data>
+  <data name="Tool_SpfCycle" xml:space="preserve"><value>Er is een cyclus gevonden in include- of redirect-paden.</value></data>
+  <data name="Tool_SpfEvaluation" xml:space="preserve"><value>SPF-afzenderresultaat</value></data>
+  <data name="Tool_SpfEvaluationExplanation" xml:space="preserve"><value>Beoordeling geldt alleen voor dit IP en deze envelope-/HELO-identiteit. Dit bewijst geen DMARC, berichtauthenticiteit of bezorging.</value></data>
+  <data name="Tool_SpfFinding" xml:space="preserve"><value>SPF-waarneming</value></data>
+  <data name="Tool_SpfIdentity" xml:space="preserve"><value>Beoordeeld SPF-domein</value></data>
+  <data name="Tool_SpfLookupLimit" xml:space="preserve"><value>SPF overschrijdt de limiet van tien termen die DNS opvragen.</value></data>
+  <data name="Tool_SpfMacroUnknown" xml:space="preserve"><value>Domeinuitbreiding met macro's wordt niet beoordeeld; het betreffende pad is onbekend.</value></data>
+  <data name="Tool_SpfMissing" xml:space="preserve"><value>Er is geen SPF-beleid gevonden in een vereist pad.</value></data>
+  <data name="Tool_SpfMultiple" xml:space="preserve"><value>Er is meer dan één SPF-beleidsrecord gevonden.</value></data>
+  <data name="Tool_SpfMxLimit" xml:space="preserve"><value>De SPF-MX-uitbreiding overschrijdt de werklimiet van tien records/adressen.</value></data>
+  <data name="Tool_SpfNoTerminal" xml:space="preserve"><value>Er is geen afsluitend all-mechanisme of redirect; niet-overeenkomende afzenders krijgen neutral.</value></data>
+  <data name="Tool_SpfPermissive" xml:space="preserve"><value>Het +all-mechanisme autoriseert elke afzender.</value></data>
+  <data name="Tool_SpfPtrDiscouraged" xml:space="preserve"><value>Het ptr-mechanisme wordt afgeraden en vereist reverse-/forward-validatie.</value></data>
+  <data name="Tool_SpfPtrUnknown" xml:space="preserve"><value>Concrete ptr-beoordeling wordt niet ondersteund; het resultaat is onbekend.</value></data>
+  <data name="Tool_SpfRecord" xml:space="preserve"><value>SPF-beleid en domein</value></data>
+  <data name="Tool_SpfScope" xml:space="preserve"><value>Analysebereik</value></data>
+  <data name="Tool_SpfSenderIp" xml:space="preserve"><value>IP-adres afzender</value></data>
+  <data name="Tool_SpfStatic" xml:space="preserve"><value>Statische SPF-uitbreiding</value></data>
+  <data name="Tool_SpfStaticBudget" xml:space="preserve"><value>Conservatieve uitbreiding telt termen die DNS opvragen over paden; dit staat los van een concrete afzenderbeoordeling.</value></data>
+  <data name="Tool_SpfStaticLookups" xml:space="preserve"><value>Statisch uitgebreide termen die DNS opvragen</value></data>
+  <data name="Tool_SpfStaticOnly" xml:space="preserve"><value>Statische analyse bewijst niet dat een bericht aan SPF voldoet. Geef een afzender-IP en optioneel envelope-afzender/HELO voor een concrete beoordeling.</value></data>
+  <data name="Tool_SpfSyntax" xml:space="preserve"><value>Ongeldige SPF-beleidssyntaxis</value></data>
+  <data name="Tool_SpfVoidLimit" xml:space="preserve"><value>Er zijn meer dan twee lege DNS-antwoorden gevonden; de beoordeling is onvolledig.</value></data>
+  <data name="Tool_SpfVoidLookups" xml:space="preserve"><value>Aangetroffen lege DNS-antwoorden</value></data>
+  <data name="Tool_SpfWorkLimit" xml:space="preserve"><value>SPF-uitbreiding overschrijdt de begrensde werk- of recursielimiet.</value></data>
+  <data name="Tool_Target" xml:space="preserve"><value>Doel</value></data>
+  <data name="Tool_TlsRpt" xml:space="preserve"><value>TLS-RPT-detectie-TXT</value></data>
+  <data name="Tool_TlsRptSyntax" xml:space="preserve"><value>TLS-RPT-syntaxis</value></data>
+  <data name="Tool_ValidRecord" xml:space="preserve"><value>Recordsyntaxis is geldig.</value></data>
+  <data name="Tool_Error_dns_incomplete" xml:space="preserve"><value>Het DNS-antwoord was onvolledig; de controle kan geen conclusie trekken.</value></data>
+  <data name="Tool_Error_invalid_certificate" xml:space="preserve"><value>Voer PEM-certificaatblokken of een DER-certificaat in.</value></data>
+  <data name="Tool_Error_invalid_ip" xml:space="preserve"><value>Voer een geldig IP-adres van de verzender in.</value></data>
+  <data name="Tool_Error_invalid_mode" xml:space="preserve"><value>Kies een ondersteund mail-TLS-protocol.</value></data>
+  <data name="Tool_Error_invalid_policy" xml:space="preserve"><value>Controleer het DMARC-beleid en de rapportageadressen.</value></data>
+  <data name="Tool_Error_invalid_selector" xml:space="preserve"><value>Voer één geldige DKIM-selector in.</value></data>
+  <data name="Tool_Error_invalid_sender" xml:space="preserve"><value>Voer een geldige envelopafzender in, of een HELO-hostnaam voor een lege afzender.</value></data>
+  <data name="Tool_Error_invalid_type" xml:space="preserve"><value>Kies een ondersteund DNS-recordtype.</value></data>
+  <data name="Tool_Error_private_key" xml:space="preserve"><value>Privésleutels worden niet geaccepteerd. Voer alleen openbare certificaten in.</value></data>
+  <data name="Tool_RunIncomplete" xml:space="preserve"><value>De diagnose is geannuleerd of heeft de tijdslimiet bereikt; eerdere waarnemingen blijven zichtbaar.</value></data>
+  <data name="Tool_TlsRunStopped" xml:space="preserve"><value>De uitvoering is geannuleerd of de tijdslimiet is bereikt. De verzamelde waarnemingen zijn onvolledig.</value></data>
+</root>

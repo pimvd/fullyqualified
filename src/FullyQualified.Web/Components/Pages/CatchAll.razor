@@ -1,0 +1,11 @@
+@page "/{*path}"
+@using Microsoft.AspNetCore.Authorization
+@attribute [AllowAnonymous]
+@inject NavigationManager Nav
+
+@* The last route to match. A URL that is nothing else answers 404 with the "not found" screen, menu included, instead of a blank page. *@
+@code {
+    [Parameter] public string? Path { get; set; }
+
+    protected override void OnInitialized() => Nav.NotFound();
+}

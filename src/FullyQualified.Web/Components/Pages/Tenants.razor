@@ -1,0 +1,70 @@
+@page "/tenants"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Policy = Roles.Platform)]
+@inject IStringLocalizer<SharedResource> L
+@inject TenantStats Stats
+@inject AppDbContext Db
+
+<PageTitle>@L["Nav_Tenants"]</PageTitle>
+<h1>@L["Tenants_Title"]</h1>
+<AdminRoot>
+    <section class="card">
+        <h2>@L["Tenants_New"]</h2>
+        <p>@L["Tenants_NewIntro"]</p>
+        <p class="inline">
+            <input id="adm-tenant-name" maxlength="100" placeholder="@L["Tenants_Name"]" autocomplete="off" />
+            <input id="adm-email" type="email" required maxlength="254" placeholder="@L["Tenants_AdminEmail"]" autocomplete="off" />
+            <select id="adm-tier" aria-label="@L["Plan_Tier"]">
+                @foreach (var t in tiers) { <option value="@t.Key" selected="@(t.Key == Tiers.Free)">@t.Name</option> }
+            </select>
+            <button type="button" data-admin="tenant">@L["Tenants_Create"]</button>
+        </p>
+        <p><input id="adm-link" readonly hidden style="width:100%" /></p>
+        <p id="adm-note" class="muted" hidden></p>
+    </section>
+
+    <section class="tiles">
+        <div class="tile"><b>@stats.Count</b><span>@L["Tenants_Count"]</span></div>
+        <div class="tile"><b>@stats.Sum(s => s.Users)</b><span>@L["Tenants_Users"]</span></div>
+        <div class="tile"><b>@stats.Sum(s => s.Assets)</b><span>@L["Tile_Assets"]</span></div>
+        <div class="tile @(stats.Sum(s => s.Problems) > 0 ? "bad" : "")"><b>@stats.Sum(s => s.Problems)</b><span>@L["Tile_Problems"]</span></div>
+    </section>
+
+    <section class="card">
+        <table>
+            <thead><tr>
+                <th>@L["Col_Name"]</th><th>@L["Plan_Tier"]</th><th>@L["Tenants_Users"]</th><th>@L["Tile_Assets"]</th><th>@L["Nav_Certificates"]</th>
+                <th>@L["Col_Expiring"]</th><th>@L["Tile_Problems"]</th><th>@L["Col_LastScan"]</th><th>@L["Col_LastLogin"]</th><th>@L["Col_Created"]</th>
+            </tr></thead>
+            <tbody>
+            @foreach (var s in stats)
+            {
+                <tr>
+                    <td><a href="/tenants/@s.Tenant.Id">@s.Tenant.Name</a> @if (s.Tenant.IsManagement) { <span class="badge pending">@L["Tenants_Management"]</span> }</td>
+                    <td>@tiers.FirstOrDefault(t => t.Key == s.Tenant.TierKey)?.Name@(s.Tenant.OverrideMaxDomains is not null || s.Tenant.OverrideMaxEndpoints is not null || s.Tenant.OverrideMaxUsers is not null || s.Tenant.OverrideReports is not null || s.Tenant.OverrideRetentionMonths is not null ? " *" : "")</td>
+                    <td>@s.Users</td>
+                    <td>@s.Assets <span class="muted">(@s.Domains / @s.Endpoints)</span></td>
+                    <td>@s.Certificates</td>
+                    <td class="@(s.Expiring > 0 ? "warn-text" : "")">@s.Expiring</td>
+                    <td class="@(s.Problems > 0 ? "bad-text" : "")">@s.Problems</td>
+                    <td class="nowrap">@(s.LastScan?.ToString("yyyy-MM-dd HH:mm") ?? "—")</td>
+                    <td class="nowrap">@(s.LastLogin?.ToString("yyyy-MM-dd HH:mm") ?? L["Passkeys_Never"].Value)</td>
+                    <td class="nowrap">@s.Tenant.CreatedAt.ToString("yyyy-MM-dd")</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        <p class="muted"><small>@L["Tenants_AssetsLegend"] @L["Tenants_OverrideLegend"]</small></p>
+    </section>
+</AdminRoot>
+
+@code {
+    List<TenantStat> stats = [];
+    List<Tier> tiers = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        stats = await Stats.ForAsync();
+        tiers = await Db.Tiers.OrderBy(t => t.SortOrder).ToListAsync();
+    }
+}

@@ -1,0 +1,39 @@
+@inherits LayoutComponentBase
+@inject IStringLocalizer<SharedResource> L
+@inject NavigationManager Nav
+<header class="top">
+    <a class="brand" href="/">Fully<span>Qualified</span></a>
+    <nav>
+        @if (signedIn)
+        {
+            <a href="/">@L["Nav_Dashboard"]</a>
+            <a href="/certificates">@L["Nav_Certificates"]</a>
+            <a href="/changes">@L["Nav_Changes"]</a>
+            <a href="/review">@L["Nav_Review"]</a>
+            <a href="/reports">@L["Nav_Reports"]</a>
+            <a href="/log">@L["Nav_Log"]</a>
+            <a href="/toolbox">@L["Tool_Title"]</a>
+        }
+    </nav>
+    @* Loads the page again with a plain GET, so it also works on a page that came from a form post. *@
+    <button type="button" class="refresh" data-refresh title="@L["Refresh"]" aria-label="@L["Refresh"]" onclick="window.location.assign(window.location.href)">⟳</button>
+    <div class="lang">
+        <a href="/culture?culture=en&redirect=@Uri.EscapeDataString(Nav.ToBaseRelativePath(Nav.Uri).Insert(0, "/"))">EN</a> ·
+        <a href="/culture?culture=nl&redirect=@Uri.EscapeDataString(Nav.ToBaseRelativePath(Nav.Uri).Insert(0, "/"))">NL</a>
+    </div>
+    @if (signedIn)
+    {
+        <button type="button" class="dig-open" data-dig-open title="@L["Dig_Hint"]">⌕ @L["Dig_Open"] <kbd>/</kbd></button>
+        @if (Roles.IsPlatformAdmin(Ctx?.User)) { <a href="/tenants">@L["Nav_Tenants"]</a><a href="/limits">@L["Nav_Limits"]</a> }
+        @if (Roles.IsAdmin(Ctx?.User)) { <a href="/alerts">@L["Nav_Alerts"]</a><a href="/users">@L["Nav_Users"]</a><a href="/organization">@L["Nav_Organization"]</a> }
+        <a href="/account">@L["Nav_Account"]</a>
+        <form method="post" action="/auth/logout"><button type="submit" class="link">@L["Nav_SignOut"]</button></form>
+    }
+</header>
+<main>@Body</main>
+@if (signedIn) { <DigDialog /> }
+
+@code {
+    [CascadingParameter] HttpContext? Ctx { get; set; }
+    bool signedIn => Ctx?.User.Identity?.IsAuthenticated == true;
+}

@@ -1,0 +1,11 @@
+@page "/not-found"
+@using Microsoft.AspNetCore.Authorization
+@attribute [AllowAnonymous]
+@inject IStringLocalizer<SharedResource> L
+
+<PageTitle>@L["NotFound_Title"]</PageTitle>
+<section class="card narrow">
+    <h1>@L["NotFound_Title"]</h1>
+    <p>@L["NotFound_Text"]</p>
+    <a href="/">@L["Detail_Back"]</a>
+</section>

@@ -1,0 +1,81 @@
+@page "/scan"
+@using Microsoft.AspNetCore.Authorization
+@attribute [AllowAnonymous]
+@inject IStringLocalizer<SharedResource> L
+@inject PublicScanService Scanner
+@inject NavigationManager Nav
+
+<PageTitle>@L["Scan_Title"]</PageTitle>
+<HeadContent><meta name="robots" content="noindex" /></HeadContent>
+
+<section class="card narrow wide">
+    <h1>@L["Scan_Title"]</h1>
+    @if (!Scanner.Enabled)
+    {
+        <p class="muted">@L["Scan_Disabled"]</p>
+    }
+    else
+    {
+        <p>@L["Scan_Intro"]</p>
+        <form method="get" action="/scan" class="inline">
+            <input name="domain" value="@Domain" placeholder="example.com" required maxlength="253" autocomplete="off" aria-label="@L["Scan_Domain"]" />
+            <button type="submit">@L["Scan_Button"]</button>
+        </form>
+        @if (error is not null) { <p class="error" role="alert">@L["Scan_Err_" + error]</p> }
+    }
+</section>
+
+@if (result is not null)
+{
+    <section class="card">
+        <h2>@result.Domain</h2>
+        <div class="check">
+            <div><b>@L["Check_tls"]</b> <StatusBadge Status="result.Tls.Status" /></div>
+            <div>@ResourceText.Summary(L, result.Tls.Summary)</div>
+            @if (result.Tls.Certs?.FirstOrDefault() is { } cert)
+            {
+                <dl>
+                    <dt>@L["Col_Issuer"]</dt><dd>@cert.Issuer</dd>
+                    <dt>@L["Col_Expires"]</dt><dd>@cert.NotAfter.ToString("yyyy-MM-dd") (@((int)Math.Floor((cert.NotAfter - DateTimeOffset.UtcNow).TotalDays)) @L["Col_Days"])</dd>
+                    <dt>@L["Scan_Protocol"]</dt><dd>@result.Tls.Values.GetValueOrDefault("protocol")</dd>
+                    <dt>@L["Col_Renewal"]</dt><dd>@L["Renewal_" + cert.Renewal]</dd>
+                </dl>
+            }
+        </div>
+        <div class="check">
+            <div><b>@L["Check_dns"]</b> <StatusBadge Status="result.Dns.Status" /></div>
+            <div>@ResourceText.Summary(L, result.Dns.Summary)</div>
+            @foreach (var issue in (result.Dns.Values.GetValueOrDefault("_issues") ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries)) { <div class="issue">⚠ @L["Issue_" + issue]</div> }
+            <dl>
+                @foreach (var (key, label) in new[] { ("spf", "Ctl_Spf"), ("dmarc", "Ctl_Dmarc"), ("caa", "Ctl_Caa") })
+                {
+                    <dt>@L[label]</dt><dd>@(string.IsNullOrEmpty(result.Dns.Values.GetValueOrDefault(key)) ? L["Rep_No"].Value : result.Dns.Values[key])</dd>
+                }
+                <dt>@L["Ctl_Dnssec"]</dt><dd>@(result.Dns.Values.GetValueOrDefault("dnssec") == "yes" ? L["Rep_Yes"].Value : L["Rep_No"].Value)</dd>
+                @foreach (var key in new[] { "mx", "ns" }.Where(k => !string.IsNullOrEmpty(result.Dns.Values.GetValueOrDefault(k))))
+                { <dt>@key.ToUpperInvariant()</dt><dd>@result.Dns.Values[key]</dd> }
+            </dl>
+        </div>
+        <p class="muted"><small>@L["Scan_Stored"]</small></p>
+    </section>
+    <section class="card narrow wide">
+        <h2>@L["Scan_Next"]</h2>
+        <p>@L["Scan_NextText"]</p>
+        <p><a class="button" href="https://github.com/pimvd/fullyqualified">GitHub</a></p>
+    </section>
+}
+
+@code {
+    [CascadingParameter] HttpContext? Ctx { get; set; }
+    [SupplyParameterFromQuery] public string? Domain { get; set; }
+    PublicScanResult? result;
+    string? error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (!Scanner.Enabled) { Nav.NotFound(); return; }
+        if (string.IsNullOrWhiteSpace(Domain)) return;
+        (result, error) = await Scanner.ScanAsync(Domain, Ctx?.Connection.RemoteIpAddress, Ctx?.RequestAborted ?? default);
+        if (error == "rate_limited" && Ctx is not null) Ctx.Response.StatusCode = 429;
+    }
+}

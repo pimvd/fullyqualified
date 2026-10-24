@@ -1,0 +1,23 @@
+@inject IStringLocalizer<SharedResource> L
+<div data-passkey-root data-return="@Return" data-invite="@Invite"
+     data-msg-unsupported="@L["Err_Unsupported"]"
+     data-msg-cancelled="@L["Err_Cancelled"]"
+     data-msg-failed="@L["Err_Failed"]"
+     data-msg-invalid_setup_code="@L["Err_InvalidSetupCode"]"
+     data-msg-invalid_invite="@L["Err_InvalidInvite"]"
+     data-msg-last_passkey="@L["Err_LastPasskey"]"
+     data-msg-unknown_passkey="@L["Err_UnknownPasskey"]"
+     data-msg-expired="@L["Err_Expired"]"
+     data-msg-invalid_name="@L["Err_InvalidName"]"
+     data-msg-verification_failed="@L["Err_VerificationFailed"]"
+     data-msg-already_registered="@L["Err_AlreadyRegistered"]"
+     data-msg-not_found="@L["Err_NotFound"]">
+    @ChildContent
+    <p id="pk-error" class="error" role="alert" hidden></p>
+</div>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    [Parameter] public string? Return { get; set; }
+    [Parameter] public string? Invite { get; set; }
+}

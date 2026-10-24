@@ -1,0 +1,996 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Nav_Dashboard" xml:space="preserve"><value>Dashboard</value></data>
+  <data name="Nav_Certificates" xml:space="preserve"><value>Certificates</value></data>
+  <data name="Nav_Changes" xml:space="preserve"><value>Changes</value></data>
+  <data name="Nav_Reports" xml:space="preserve"><value>Reports</value></data>
+  <data name="Tile_Assets" xml:space="preserve"><value>Assets</value></data>
+  <data name="Tile_Expiring" xml:space="preserve"><value>Certificates expiring within 30 days</value></data>
+  <data name="Tile_Problems" xml:space="preserve"><value>Assets with issues</value></data>
+  <data name="Tile_Changes" xml:space="preserve"><value>Changes in the last 7 days</value></data>
+  <data name="Add_Title" xml:space="preserve"><value>Add a domain or endpoint</value></data>
+  <data name="Add_Placeholder" xml:space="preserve"><value>example.com or host:8443</value></data>
+  <data name="Add_Button" xml:space="preserve"><value>Add</value></data>
+  <data name="Add_Invalid" xml:space="preserve"><value>Enter a valid host name.</value></data>
+  <data name="Add_Duplicate" xml:space="preserve"><value>Already monitored.</value></data>
+  <data name="Col_Name" xml:space="preserve"><value>Name</value></data>
+  <data name="Col_Type" xml:space="preserve"><value>Type</value></data>
+  <data name="Col_Status" xml:space="preserve"><value>Status</value></data>
+  <data name="Col_Summary" xml:space="preserve"><value>Summary</value></data>
+  <data name="Col_Expires" xml:space="preserve"><value>Expires</value></data>
+  <data name="Col_Days" xml:space="preserve"><value>Days left</value></data>
+  <data name="Col_Issuer" xml:space="preserve"><value>Issuer</value></data>
+  <data name="Col_Source" xml:space="preserve"><value>Source</value></data>
+  <data name="Col_Renewal" xml:space="preserve"><value>Renewal</value></data>
+  <data name="Col_Asset" xml:space="preserve"><value>Asset</value></data>
+  <data name="Col_Check" xml:space="preserve"><value>Check</value></data>
+  <data name="Col_Change" xml:space="preserve"><value>Change</value></data>
+  <data name="Col_Before" xml:space="preserve"><value>Before</value></data>
+  <data name="Col_After" xml:space="preserve"><value>After</value></data>
+  <data name="Col_Detected" xml:space="preserve"><value>Detected</value></data>
+  <data name="Col_Domain" xml:space="preserve"><value>Domain</value></data>
+  <data name="Kind_Domain" xml:space="preserve"><value>Domain</value></data>
+  <data name="Kind_Endpoint" xml:space="preserve"><value>Endpoint</value></data>
+  <data name="Kind_CloudResource" xml:space="preserve"><value>Cloud resource</value></data>
+  <data name="Status_Ok" xml:space="preserve"><value>OK</value></data>
+  <data name="Status_Warning" xml:space="preserve"><value>Warning</value></data>
+  <data name="Status_Error" xml:space="preserve"><value>Error</value></data>
+  <data name="Status_Critical" xml:space="preserve"><value>Critical</value></data>
+  <data name="Status_Pending" xml:space="preserve"><value>Pending</value></data>
+  <data name="Empty_Assets" xml:space="preserve"><value>Nothing monitored yet. Add your first domain above.</value></data>
+  <data name="Empty_Generic" xml:space="preserve"><value>Nothing to show yet.</value></data>
+  <data name="Detail_ScanNow" xml:space="preserve"><value>Scan now</value></data>
+  <data name="Detail_Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="Detail_Confirm" xml:space="preserve"><value>Delete this asset and its history?</value></data>
+  <data name="Detail_Checks" xml:space="preserve"><value>Latest checks</value></data>
+  <data name="Detail_Certs" xml:space="preserve"><value>Certificates</value></data>
+  <data name="Detail_Changes" xml:space="preserve"><value>Changes</value></data>
+  <data name="Detail_NotFound" xml:space="preserve"><value>Not found.</value></data>
+  <data name="Detail_Back" xml:space="preserve"><value>Back</value></data>
+  <data name="Check_tls" xml:space="preserve"><value>TLS certificate</value></data>
+  <data name="Check_dns" xml:space="preserve"><value>DNS records</value></data>
+  <data name="Check_ct" xml:space="preserve"><value>Certificate Transparency</value></data>
+  <data name="Renewal_Automated" xml:space="preserve"><value>Automated</value></data>
+  <data name="Renewal_Manual" xml:space="preserve"><value>Manual (likely)</value></data>
+  <data name="Source_endpoint" xml:space="preserve"><value>Endpoint scan</value></data>
+  <data name="Source_ct" xml:space="preserve"><value>CT log</value></data>
+  <data name="Certificates_Title" xml:space="preserve"><value>Certificate inventory</value></data>
+  <data name="Changes_Title" xml:space="preserve"><value>Change log</value></data>
+  <data name="Reports_Title" xml:space="preserve"><value>NIS2 report</value></data>
+  <data name="Reports_Intro" xml:space="preserve"><value>Evidence of certificate and DNS control for your NIS2 documentation: certificate inventory with expiry and renewal, DNS controls per domain and the change log of the last 90 days.</value></data>
+  <data name="Reports_Excel" xml:space="preserve"><value>Download Excel</value></data>
+  <data name="Reports_Pdf" xml:space="preserve"><value>Download PDF</value></data>
+  <data name="Sum_TlsOk" xml:space="preserve"><value>Expires in {0} days ({1}), issued by {2}</value></data>
+  <data name="Sum_TlsExpired" xml:space="preserve"><value>Certificate expired on {0}</value></data>
+  <data name="Sum_TlsChain" xml:space="preserve"><value>Certificate not trusted: {0}</value></data>
+  <data name="Sum_Error" xml:space="preserve"><value>Check failed: {0}</value></data>
+  <data name="Sum_DnsOk" xml:space="preserve"><value>All DNS controls in place</value></data>
+  <data name="Sum_DnsIssues" xml:space="preserve"><value>{0} DNS issue(s)</value></data>
+  <data name="Sum_CtOk" xml:space="preserve"><value>{0} active certificates, {1} hostnames discovered</value></data>
+  <data name="Sum_Blocked" xml:space="preserve"><value>Host not allowed by scanning policy</value></data>
+  <data name="Issue_NoSpf" xml:space="preserve"><value>No SPF record</value></data>
+  <data name="Issue_NoDmarc" xml:space="preserve"><value>No DMARC record</value></data>
+  <data name="Issue_DmarcNone" xml:space="preserve"><value>DMARC policy is 'none'</value></data>
+  <data name="Issue_NoCaa" xml:space="preserve"><value>No CAA record</value></data>
+  <data name="Issue_NoNs" xml:space="preserve"><value>No NS records found</value></data>
+  <data name="Issue_DanglingCname" xml:space="preserve"><value>Dangling CNAME (subdomain takeover risk)</value></data>
+  <data name="Rep_Title" xml:space="preserve"><value>NIS2 compliance report</value></data>
+  <data name="Rep_Summary" xml:space="preserve"><value>Summary</value></data>
+  <data name="Rep_GeneratedAt" xml:space="preserve"><value>Generated</value></data>
+  <data name="Rep_Assets" xml:space="preserve"><value>Assets</value></data>
+  <data name="Rep_Certs" xml:space="preserve"><value>Certificates</value></data>
+  <data name="Rep_Expiring" xml:space="preserve"><value>Expiring within 30 days</value></data>
+  <data name="Rep_Expired" xml:space="preserve"><value>Expired</value></data>
+  <data name="Rep_DnsControls" xml:space="preserve"><value>DNS controls</value></data>
+  <data name="Ctl_Spf" xml:space="preserve"><value>SPF</value></data>
+  <data name="Ctl_Dmarc" xml:space="preserve"><value>DMARC</value></data>
+  <data name="Ctl_Caa" xml:space="preserve"><value>CAA</value></data>
+  <data name="Ctl_Dnssec" xml:space="preserve"><value>DNSSEC</value></data>
+  <data name="Rep_Yes" xml:space="preserve"><value>Yes</value></data>
+  <data name="Rep_No" xml:space="preserve"><value>No</value></data>
+  <data name="Rep_ChangesTitle" xml:space="preserve"><value>Changes (last 90 days)</value></data>
+  <data name="Nav_Account" xml:space="preserve"><value>Account</value></data>
+  <data name="Nav_SignOut" xml:space="preserve"><value>Sign out</value></data>
+  <data name="Login_Title" xml:space="preserve"><value>Sign in</value></data>
+  <data name="Login_Intro" xml:space="preserve"><value>Sign in with a passkey on this device, or with your phone or a security key.</value></data>
+  <data name="Login_Button" xml:space="preserve"><value>Sign in with a passkey</value></data>
+  <data name="Setup_Title" xml:space="preserve"><value>Set up FullyQualified</value></data>
+  <data name="Setup_Intro" xml:space="preserve"><value>Create the first account. It signs in with a passkey; there are no passwords.</value></data>
+  <data name="Setup_Code" xml:space="preserve"><value>Setup code</value></data>
+  <data name="Setup_CodeHelp" xml:space="preserve"><value>Needed because Auth:SetupCode is set on the server.</value></data>
+  <data name="Account_Name" xml:space="preserve"><value>Your name</value></data>
+  <data name="Register_Button" xml:space="preserve"><value>Create account with a passkey</value></data>
+  <data name="Invite_Title" xml:space="preserve"><value>Accept invitation</value></data>
+  <data name="Invite_Intro" xml:space="preserve"><value>You have been invited. Enter your name and create a passkey.</value></data>
+  <data name="Invite_Invalid" xml:space="preserve"><value>This invitation link is invalid, expired or already used.</value></data>
+  <data name="Account_Title" xml:space="preserve"><value>Account</value></data>
+  <data name="Passkeys_Title" xml:space="preserve"><value>Passkeys</value></data>
+  <data name="Passkeys_Intro" xml:space="preserve"><value>Add a passkey for every device you use. At least one must remain.</value></data>
+  <data name="Passkeys_Label" xml:space="preserve"><value>Name of the new passkey</value></data>
+  <data name="Passkeys_Add" xml:space="preserve"><value>Add a passkey</value></data>
+  <data name="Passkeys_Remove" xml:space="preserve"><value>Remove</value></data>
+  <data name="Passkeys_ConfirmRemove" xml:space="preserve"><value>Remove this passkey?</value></data>
+  <data name="Passkeys_Never" xml:space="preserve"><value>Never</value></data>
+  <data name="Col_Created" xml:space="preserve"><value>Created</value></data>
+  <data name="Col_LastUsed" xml:space="preserve"><value>Last used</value></data>
+  <data name="Invites_Title" xml:space="preserve"><value>Invite someone</value></data>
+  <data name="Invites_Intro" xml:space="preserve"><value>Invite someone with a single-use link, valid for 7 days. The role decides what they may do: viewers read, members also manage assets, admins also manage people.</value></data>
+  <data name="Invites_Create" xml:space="preserve"><value>Create invitation link</value></data>
+  <data name="Err_Unsupported" xml:space="preserve"><value>This browser does not support passkeys.</value></data>
+  <data name="Err_Cancelled" xml:space="preserve"><value>The passkey request was cancelled.</value></data>
+  <data name="Err_Failed" xml:space="preserve"><value>Something went wrong. Try again.</value></data>
+  <data name="Err_InvalidSetupCode" xml:space="preserve"><value>The setup code is not correct.</value></data>
+  <data name="Err_InvalidInvite" xml:space="preserve"><value>This invitation is invalid, expired or already used.</value></data>
+  <data name="Err_LastPasskey" xml:space="preserve"><value>You cannot remove your last passkey.</value></data>
+  <data name="Err_UnknownPasskey" xml:space="preserve"><value>This passkey is not known here.</value></data>
+  <data name="Err_Expired" xml:space="preserve"><value>The request expired. Try again.</value></data>
+  <data name="Err_InvalidName" xml:space="preserve"><value>Enter a name of up to 100 characters.</value></data>
+  <data name="Err_VerificationFailed" xml:space="preserve"><value>The passkey could not be verified.</value></data>
+  <data name="Err_NotFound" xml:space="preserve"><value>Not found.</value></data>
+  <data name="Err_AlreadyRegistered" xml:space="preserve"><value>This device already has a passkey for this account. Use another device or security key.</value></data>
+  <data name="Nav_Users" xml:space="preserve"><value>Users</value></data>
+  <data name="Users_Title" xml:space="preserve"><value>Users</value></data>
+  <data name="Users_You" xml:space="preserve"><value>you</value></data>
+  <data name="Users_ConfirmRemove" xml:space="preserve"><value>Remove this user and their passkeys?</value></data>
+  <data name="Col_Email" xml:space="preserve"><value>Email</value></data>
+  <data name="Col_Role" xml:space="preserve"><value>Role</value></data>
+  <data name="Col_SignIn" xml:space="preserve"><value>Sign-in</value></data>
+  <data name="Method_Passkeys" xml:space="preserve"><value>Passkeys</value></data>
+  <data name="Role_Viewer" xml:space="preserve"><value>Viewer</value></data>
+  <data name="Role_Member" xml:space="preserve"><value>Member</value></data>
+  <data name="Role_Admin" xml:space="preserve"><value>Admin</value></data>
+  <data name="Forbidden_Title" xml:space="preserve"><value>No access</value></data>
+  <data name="Forbidden_Text" xml:space="preserve"><value>Your role does not allow this.</value></data>
+  <data name="Invites_Email" xml:space="preserve"><value>Email (optional)</value></data>
+  <data name="Invites_Pending" xml:space="preserve"><value>Pending invitations</value></data>
+  <data name="Invites_Revoke" xml:space="preserve"><value>Revoke</value></data>
+  <data name="Invites_ConfirmRevoke" xml:space="preserve"><value>Revoke this invitation?</value></data>
+  <data name="Invites_Emailed" xml:space="preserve"><value>The invitation was emailed. You can also share this link privately.</value></data>
+  <data name="Invites_Copy" xml:space="preserve"><value>Share this link privately. It works once and expires in 7 days.</value></data>
+  <data name="Invites_MailOn" xml:space="preserve"><value>With an email address, the link is sent by email. The address also lets that person sign in with SSO.</value></data>
+  <data name="Invites_MailOff" xml:space="preserve"><value>No SMTP server is set up (Alerts:Email), so you share the link yourself.</value></data>
+  <data name="Login_Or" xml:space="preserve"><value>or</value></data>
+  <data name="Login_Sso" xml:space="preserve"><value>Sign in with {0}</value></data>
+  <data name="Err_LastAdmin" xml:space="preserve"><value>There must always be at least one administrator.</value></data>
+  <data name="Err_CannotResetSelf" xml:space="preserve"><value>You cannot reset your own passkey. Ask another admin.</value></data>
+  <data name="Err_CannotRemoveSelf" xml:space="preserve"><value>You cannot remove yourself.</value></data>
+  <data name="Err_EmailExists" xml:space="preserve"><value>This email address already belongs to a user.</value></data>
+  <data name="Err_InvalidEmail" xml:space="preserve"><value>Enter a valid email address.</value></data>
+  <data name="Err_InvalidRole" xml:space="preserve"><value>Choose a role.</value></data>
+  <data name="Err_SsoFailed" xml:space="preserve"><value>Single sign-on failed. Try again.</value></data>
+  <data name="Err_SsoNoAccount" xml:space="preserve"><value>Your identity provider signed you in, but you have no account here. Ask an administrator for an invitation.</value></data>
+  <data name="Err_SsoDomain" xml:space="preserve"><value>Your email address is not allowed to sign in here.</value></data>
+  <data name="Err_SsoNoEmail" xml:space="preserve"><value>Your identity provider did not share an email address.</value></data>
+  <data name="Mail_InviteSubject" xml:space="preserve"><value>You are invited to FullyQualified</value></data>
+  <data name="Mail_InviteBody" xml:space="preserve"><value>{0} invited you to FullyQualified.
+
+Open this link to create your account with a passkey, or sign in with single sign-on if your organization uses it:
+{1}
+
+The link works once and expires in {2} days.</value></data>
+  <data name="Nav_Alerts" xml:space="preserve"><value>Alarms</value></data>
+  <data name="Nav_Log" xml:space="preserve"><value>Log</value></data>
+  <data name="Nav_Tenants" xml:space="preserve"><value>Tenants</value></data>
+  <data name="Alerts_Title" xml:space="preserve"><value>Alarms</value></data>
+  <data name="Alerts_Intro" xml:space="preserve"><value>Choose where FullyQualified sends an alarm when a certificate or DNS check gets worse, recovers or drifts. These settings apply to your organization only.</value></data>
+  <data name="Alerts_ServerDefaults" xml:space="preserve"><value>No alarms are configured here yet, so the server's default settings are used. Saving this form replaces them for your organization.</value></data>
+  <data name="Alerts_Enabled" xml:space="preserve"><value>Send alarms</value></data>
+  <data name="Alerts_Channels" xml:space="preserve"><value>Channels</value></data>
+  <data name="Alerts_Slack" xml:space="preserve"><value>Slack incoming webhook</value></data>
+  <data name="Alerts_Webhook" xml:space="preserve"><value>Generic webhook (PagerDuty, Opsgenie, ...)</value></data>
+  <data name="Alerts_Email" xml:space="preserve"><value>Email recipients</value></data>
+  <data name="Alerts_NoSmtp" xml:space="preserve"><value>The server has no SMTP host (Alerts:Email:Host), so email cannot be sent yet.</value></data>
+  <data name="Alerts_Configured" xml:space="preserve"><value>Configured ({0}). Leave empty to keep it.</value></data>
+  <data name="Alerts_Remove" xml:space="preserve"><value>Remove</value></data>
+  <data name="Alerts_When" xml:space="preserve"><value>When</value></data>
+  <data name="Alerts_Minimum" xml:space="preserve"><value>Alarm from this status upward</value></data>
+  <data name="Alerts_Recovery" xml:space="preserve"><value>Also tell me when a check recovers</value></data>
+  <data name="Alerts_Drift" xml:space="preserve"><value>Also tell me when a DNS record or certificate changes</value></data>
+  <data name="Alerts_Save" xml:space="preserve"><value>Save</value></data>
+  <data name="Alerts_Saved" xml:space="preserve"><value>Saved.</value></data>
+  <data name="Alerts_Test" xml:space="preserve"><value>Send a test alarm</value></data>
+  <data name="Alerts_TestOk" xml:space="preserve"><value>delivered</value></data>
+  <data name="Alerts_TestFailed" xml:space="preserve"><value>failed</value></data>
+  <data name="Alerts_TestNone" xml:space="preserve"><value>No channel was attempted.</value></data>
+  <data name="Err_InvalidStatus" xml:space="preserve"><value>Choose a status.</value></data>
+  <data name="Err_InvalidSlack" xml:space="preserve"><value>The Slack webhook must be a full http(s) URL.</value></data>
+  <data name="Err_InvalidWebhook" xml:space="preserve"><value>The webhook must be a full http(s) URL.</value></data>
+  <data name="Err_BlockedHost" xml:space="preserve"><value>This address points to a private network, which this server does not allow.</value></data>
+  <data name="Err_NoChannels" xml:space="preserve"><value>Configure at least one channel first.</value></data>
+  <data name="Err_TenantExists" xml:space="preserve"><value>A tenant with this name already exists.</value></data>
+  <data name="Err_Forbidden" xml:space="preserve"><value>You may not do this.</value></data>
+  <data name="Col_Date" xml:space="preserve"><value>Date</value></data>
+  <data name="Col_Time" xml:space="preserve"><value>Time</value></data>
+  <data name="Col_Subject" xml:space="preserve"><value>Subject</value></data>
+  <data name="Col_Registered" xml:space="preserve"><value>Registered</value></data>
+  <data name="Col_LastLogin" xml:space="preserve"><value>Last login</value></data>
+  <data name="Col_LastScan" xml:space="preserve"><value>Last scan</value></data>
+  <data name="Col_Expiring" xml:space="preserve"><value>Expiring ≤ 30 days</value></data>
+  <data name="Log_Title" xml:space="preserve"><value>Log</value></data>
+  <data name="Log_Range" xml:space="preserve"><value>Period</value></data>
+  <data name="Log_LastDays" xml:space="preserve"><value>Last {0} days</value></data>
+  <data name="Log_Check" xml:space="preserve"><value>Check</value></data>
+  <data name="Log_All" xml:space="preserve"><value>All</value></data>
+  <data name="Log_Apply" xml:space="preserve"><value>Apply</value></data>
+  <data name="Log_Results" xml:space="preserve"><value>Check results</value></data>
+  <data name="Log_OkShare" xml:space="preserve"><value>Results that were OK</value></data>
+  <data name="Log_AlertsSent" xml:space="preserve"><value>Alarms delivered</value></data>
+  <data name="Log_AlertsFailed" xml:space="preserve"><value>failed</value></data>
+  <data name="Log_Changes" xml:space="preserve"><value>Changes</value></data>
+  <data name="Log_PerDay" xml:space="preserve"><value>Results per day</value></data>
+  <data name="Log_ByCheck" xml:space="preserve"><value>Results per check</value></data>
+  <data name="Log_ChangesPerDay" xml:space="preserve"><value>Changes per day</value></data>
+  <data name="Log_TableView" xml:space="preserve"><value>Show as table</value></data>
+  <data name="Log_Empty" xml:space="preserve"><value>Nothing logged in this period.</value></data>
+  <data name="Log_Entries" xml:space="preserve"><value>Entries</value></data>
+  <data name="Log_Newer" xml:space="preserve"><value>Newer</value></data>
+  <data name="Log_Older" xml:space="preserve"><value>Older</value></data>
+  <data name="Log_Page" xml:space="preserve"><value>Page {0} of {1}</value></data>
+  <data name="Log_AlertLog" xml:space="preserve"><value>Alarms sent</value></data>
+  <data name="Log_NoAlerts" xml:space="preserve"><value>No alarms have been sent.</value></data>
+  <data name="Log_Channel" xml:space="preserve"><value>Channel</value></data>
+  <data name="Log_Delivered" xml:space="preserve"><value>Delivered</value></data>
+  <data name="Log_Failed" xml:space="preserve"><value>Failed</value></data>
+  <data name="Tenants_Title" xml:space="preserve"><value>Tenants</value></data>
+  <data name="Tenants_New" xml:space="preserve"><value>New tenant</value></data>
+  <data name="Tenants_NewIntro" xml:space="preserve"><value>Create a tenant and invite its first administrator. Tenants cannot see each other's data; only the management tenant sees all of them.</value></data>
+  <data name="Tenants_Name" xml:space="preserve"><value>Organization name</value></data>
+  <data name="Tenants_AdminEmail" xml:space="preserve"><value>Administrator email (optional)</value></data>
+  <data name="Tenants_Create" xml:space="preserve"><value>Create tenant and invitation</value></data>
+  <data name="Tenants_Management" xml:space="preserve"><value>Management</value></data>
+  <data name="Tenants_Count" xml:space="preserve"><value>Tenants</value></data>
+  <data name="Tenants_Users" xml:space="preserve"><value>Users</value></data>
+  <data name="Tenants_Since" xml:space="preserve"><value>Tenant since {0}</value></data>
+  <data name="Tenants_DomainsShort" xml:space="preserve"><value>domains</value></data>
+  <data name="Tenants_EndpointsShort" xml:space="preserve"><value>endpoints</value></data>
+  <data name="Tenants_AssetsLegend" xml:space="preserve"><value>Assets: total (domains / endpoints). Expiring counts endpoint certificates that expire within 30 days or already have.</value></data>
+  <data name="Setup_Organization" xml:space="preserve"><value>Organization name</value></data>
+  <data name="Recovery_Button" xml:space="preserve"><value>Reset passkey</value></data>
+  <data name="Recovery_Created" xml:space="preserve"><value>Share this link privately with the person. It works once, for 24 hours; setting up a new passkey removes their old ones.</value></data>
+  <data name="Recovery_Kind" xml:space="preserve"><value>Passkey recovery</value></data>
+  <data name="Recover_Title" xml:space="preserve"><value>Set up a new passkey</value></data>
+  <data name="Recover_Intro" xml:space="preserve"><value>You were sent here because you lost access to your passkey. Creating a new one removes the old passkeys of your account.</value></data>
+  <data name="Recover_Button" xml:space="preserve"><value>Create a new passkey</value></data>
+  <data name="Recover_Invalid" xml:space="preserve"><value>This recovery link is invalid, expired or already used.</value></data>
+  <data name="Mail_RecoverySubject" xml:space="preserve"><value>Set up a new passkey for FullyQualified</value></data>
+  <data name="Mail_RecoveryBody" xml:space="preserve"><value>{0} created a link for you to set up a new passkey for FullyQualified:
+{1}
+
+The link works once and expires in {2} hours. Setting up a new passkey removes your old ones. If you did not expect this, ignore this message.</value></data>
+  <data name="Nav_Limits" xml:space="preserve"><value>Limits</value></data>
+  <data name="Nav_Organization" xml:space="preserve"><value>Organization</value></data>
+  <data name="Plan_Title" xml:space="preserve"><value>Plan</value></data>
+  <data name="Plan_Intro" xml:space="preserve"><value>What your organization may use, and how much it uses now. Ask the platform owner to change a plan.</value></data>
+  <data name="Plan_Resource" xml:space="preserve"><value>Resource</value></data>
+  <data name="Plan_Used" xml:space="preserve"><value>In use</value></data>
+  <data name="Plan_Limit" xml:space="preserve"><value>Limit</value></data>
+  <data name="Plan_Domains" xml:space="preserve"><value>Domains</value></data>
+  <data name="Plan_Endpoints" xml:space="preserve"><value>Endpoints</value></data>
+  <data name="Plan_Users" xml:space="preserve"><value>Users</value></data>
+  <data name="Plan_Pending" xml:space="preserve"><value>invited</value></data>
+  <data name="Plan_Reports" xml:space="preserve"><value>NIS2 report</value></data>
+  <data name="Plan_Retention" xml:space="preserve"><value>History kept</value></data>
+  <data name="Plan_RetentionMonths" xml:space="preserve"><value>History (months)</value></data>
+  <data name="Plan_Unlimited" xml:space="preserve"><value>Unlimited</value></data>
+  <data name="Plan_Month" xml:space="preserve"><value>1 month</value></data>
+  <data name="Plan_Months" xml:space="preserve"><value>{0} months</value></data>
+  <data name="Plan_AllHistory" xml:space="preserve"><value>Everything</value></data>
+  <data name="Plan_Overridden" xml:space="preserve"><value>agreed for this organization</value></data>
+  <data name="Plan_Tier" xml:space="preserve"><value>Plan</value></data>
+  <data name="Plan_TierValue" xml:space="preserve"><value>Plan value</value></data>
+  <data name="Plan_Override" xml:space="preserve"><value>For this tenant</value></data>
+  <data name="Plan_Follow" xml:space="preserve"><value>follow plan</value></data>
+  <data name="Plan_EditorIntro" xml:space="preserve"><value>Choose the plan, and override single limits for this tenant. Use the Custom plan for agreements made per customer.</value></data>
+  <data name="Plan_OverrideHelp" xml:space="preserve"><value>Override: leave blank to follow the plan, type a number to set a limit, or type unlimited to lift it. For history, unlimited keeps everything.</value></data>
+  <data name="Limits_Title" xml:space="preserve"><value>Plans and limits</value></data>
+  <data name="Limits_Intro" xml:space="preserve"><value>The limits of each plan. They apply to every tenant on that plan unless the tenant has its own override. Changes take effect at once; history is trimmed to the new period within hours.</value></data>
+  <data name="Limits_Tenants" xml:space="preserve"><value>Tenants</value></data>
+  <data name="Limits_CustomHelp" xml:space="preserve"><value>For agreements per customer; set the values per tenant.</value></data>
+  <data name="Limits_Blank" xml:space="preserve"><value>Leave a number blank for unlimited. History blank keeps everything. Domains count assets of type domain, endpoints count hosts with a port or found in certificate logs.</value></data>
+  <data name="Limit_Domains" xml:space="preserve"><value>This plan's domain limit is reached. Remove a domain or ask for a bigger plan.</value></data>
+  <data name="Limit_Endpoints" xml:space="preserve"><value>This plan's endpoint limit is reached. Remove an endpoint or ask for a bigger plan.</value></data>
+  <data name="Err_UserLimit" xml:space="preserve"><value>The user limit of this plan is reached, counting open invitations.</value></data>
+  <data name="Err_SsoLimit" xml:space="preserve"><value>Your organization has reached its user limit. Ask an administrator.</value></data>
+  <data name="Err_InvalidTier" xml:space="preserve"><value>Choose a plan.</value></data>
+  <data name="Err_InvalidLimit" xml:space="preserve"><value>Enter a whole number, or leave it blank.</value></data>
+  <data name="Err_ConfirmMismatch" xml:space="preserve"><value>The name does not match, so nothing was deleted.</value></data>
+  <data name="Err_ManagementTenant" xml:space="preserve"><value>The management tenant cannot be deleted.</value></data>
+  <data name="Delete_Title" xml:space="preserve"><value>Delete this organization</value></data>
+  <data name="Delete_Button" xml:space="preserve"><value>Delete everything</value></data>
+  <data name="Delete_OwnText" xml:space="preserve"><value>This permanently deletes {0}: all its domains, results, history, alarms and every user account in it. Everyone is signed out. It cannot be undone.</value></data>
+  <data name="Delete_PlatformText" xml:space="preserve"><value>This permanently deletes {0} and everything it owns, including {1} user account(s) and {2} asset(s). It cannot be undone.</value></data>
+  <data name="Delete_Confirm" xml:space="preserve"><value>Type the exact name of the organization to confirm.</value></data>
+  <data name="Reports_NotInPlan" xml:space="preserve"><value>The NIS2 report is not part of this plan. Ask the platform owner for a plan that includes it.</value></data>
+  <data name="Tenants_OverrideLegend" xml:space="preserve"><value>An asterisk marks a tenant with its own overrides.</value></data>
+  <data name="Scan_Title" xml:space="preserve"><value>Free certificate and DNS check</value></data>
+  <data name="Scan_Disabled" xml:space="preserve"><value>The public checker is not switched on for this installation.</value></data>
+  <data name="Scan_Intro" xml:space="preserve"><value>Enter a public domain name to see its TLS certificate and its DNS email and security records. Nothing is stored.</value></data>
+  <data name="Scan_Domain" xml:space="preserve"><value>Domain name</value></data>
+  <data name="Scan_Button" xml:space="preserve"><value>Check</value></data>
+  <data name="Scan_Protocol" xml:space="preserve"><value>Protocol</value></data>
+  <data name="Scan_Err_invalid" xml:space="preserve"><value>Enter a public domain name such as example.com, without a port or path. Addresses and local names are not checked.</value></data>
+  <data name="Scan_Err_rate_limited" xml:space="preserve"><value>You checked a lot of domains recently. Try again later.</value></data>
+  <data name="Scan_Err_busy" xml:space="preserve"><value>The checker is busy. Try again in a minute.</value></data>
+  <data name="Scan_Err_disabled" xml:space="preserve"><value>The public checker is not available.</value></data>
+  <data name="Scan_Stored" xml:space="preserve"><value>Nothing about this check is stored. Only the certificate on port 443 and public DNS records are looked at.</value></data>
+  <data name="Scan_Next" xml:space="preserve"><value>Keep watching it</value></data>
+  <data name="Scan_NextText" xml:space="preserve"><value>This is a single look. FullyQualified checks every domain on a schedule, tells you when a certificate is about to expire or a record changes, and turns it into a NIS2 report.</value></data>
+  <data name="Plan_Interval" xml:space="preserve"><value>Checks run every</value></data>
+  <data name="Plan_IntervalMinutes" xml:space="preserve"><value>Check every (minutes)</value></data>
+  <data name="Plan_ServerDefault" xml:space="preserve"><value>server default</value></data>
+  <data name="Plan_ServerDefaultValue" xml:space="preserve"><value>{0} (server default)</value></data>
+  <data name="Unit_Minute" xml:space="preserve"><value>min</value></data>
+  <data name="Unit_Hour" xml:space="preserve"><value>h</value></data>
+  <data name="Unit_Day" xml:space="preserve"><value>d</value></data>
+  <data name="Limits_IntervalHelp" xml:space="preserve"><value>The interval is how long a result stays fresh before an asset is checked again; checks run on a one-minute rhythm, so the shortest is one minute. Blank uses the server default (Scanning:IntervalHours). A failed check is always retried after 15 minutes.</value></data>
+  <data name="CheckAll_Title" xml:space="preserve"><value>Check everything now</value></data>
+  <data name="CheckAll_Text" xml:space="preserve"><value>Queue every check of every asset right away instead of waiting for the next round. You can do this once every {0} minutes.</value></data>
+  <data name="CheckAll_Button" xml:space="preserve"><value>Check everything now</value></data>
+  <data name="CheckAll_Queued" xml:space="preserve"><value>{0} checks queued. The results appear within a minute; follow them on the Log page.</value></data>
+  <data name="CheckAll_Cooldown" xml:space="preserve"><value>You just did this. Try again in {0} minute(s).</value></data>
+  <data name="CheckAll_AlreadyQueued" xml:space="preserve"><value>Everything is already waiting to be checked.</value></data>
+  <data name="Diag_Title" xml:space="preserve"><value>Test settings</value></data>
+  <data name="Diag_Intro" xml:space="preserve"><value>Checks that FullyQualified is set up to do its job for your organization: your plan, whether checks are running, whether alarms reach you and whether you can recover from a lost passkey. Nothing is changed.</value></data>
+  <data name="Diag_SendAlarm" xml:space="preserve"><value>Also send a test alarm through every channel</value></data>
+  <data name="Diag_Run" xml:space="preserve"><value>Test settings</value></data>
+  <data name="Diag_Group_plan" xml:space="preserve"><value>Plan</value></data>
+  <data name="Diag_Group_scan" xml:space="preserve"><value>Checks</value></data>
+  <data name="Diag_Group_alarms" xml:space="preserve"><value>Alarms</value></data>
+  <data name="Diag_Group_people" xml:space="preserve"><value>People</value></data>
+  <data name="Diag_Group_server" xml:space="preserve"><value>Server</value></data>
+  <data name="Diag_Status_Ok" xml:space="preserve"><value>OK</value></data>
+  <data name="Diag_Status_Info" xml:space="preserve"><value>Info</value></data>
+  <data name="Diag_Status_Warning" xml:space="preserve"><value>Warning</value></data>
+  <data name="Diag_Status_Fail" xml:space="preserve"><value>Failed</value></data>
+  <data name="Diag_Summary" xml:space="preserve"><value>{0} OK, {1} warnings, {2} failed.</value></data>
+  <data name="Diag_PlanLimits" xml:space="preserve"><value>Plan and limits</value></data>
+  <data name="Diag_PlanIs" xml:space="preserve"><value>You are on the {0} plan.</value></data>
+  <data name="Diag_RoomLeft" xml:space="preserve"><value>There is room left for everything.</value></data>
+  <data name="Diag_AtLimit" xml:space="preserve"><value>Limit reached for: {0}. Adding more is refused until you remove something or the plan is raised.</value></data>
+  <data name="Diag_Interval" xml:space="preserve"><value>Check interval</value></data>
+  <data name="Diag_IntervalIs" xml:space="preserve"><value>Every asset is checked every {0} ({1}).</value></data>
+  <data name="Diag_FromServer" xml:space="preserve"><value>server default</value></data>
+  <data name="Diag_FromPlan" xml:space="preserve"><value>from your plan</value></data>
+  <data name="Diag_ScannerOn" xml:space="preserve"><value>Scanner</value></data>
+  <data name="Diag_ScannerOff" xml:space="preserve"><value>Scanning is switched off on this server (Scanning:Enabled), so nothing is checked on a schedule. Ask whoever runs the server.</value></data>
+  <data name="Diag_Fresh" xml:space="preserve"><value>Results are fresh</value></data>
+  <data name="Diag_NoAssets" xml:space="preserve"><value>No assets yet. Add a domain on the dashboard.</value></data>
+  <data name="Diag_FreshOk" xml:space="preserve"><value>All {0} assets have recent results.</value></data>
+  <data name="Diag_Stale" xml:space="preserve"><value>{0} checks have no recent result (for example {1}). The scanner may be stopped or the host may be unreachable; look at the Log page.</value></data>
+  <data name="Diag_AlarmSetup" xml:space="preserve"><value>Alarm settings</value></data>
+  <data name="Diag_NoChannel" xml:space="preserve"><value>No channel is configured. Nobody will be told when a certificate expires or a record changes. Add Slack, Telegram, a webhook or an email address on the Alarms page.</value></data>
+  <data name="Diag_AlarmsOff" xml:space="preserve"><value>Alarms are switched off for your organization.</value></data>
+  <data name="Diag_AlarmsOn" xml:space="preserve"><value>Alarms are on, from status {0} upward.</value></data>
+  <data name="Diag_EmailChannel" xml:space="preserve"><value>Email setup</value></data>
+  <data name="Diag_NoSmtp" xml:space="preserve"><value>Email recipients are set, but the server has no SMTP host, so no email can be sent. Ask whoever runs the server (Alerts:Email:Host).</value></data>
+  <data name="Diag_Channel_slack" xml:space="preserve"><value>Slack</value></data>
+  <data name="Diag_Channel_webhook" xml:space="preserve"><value>Webhook</value></data>
+  <data name="Diag_Channel_email" xml:space="preserve"><value>Email</value></data>
+  <data name="Diag_Delivered" xml:space="preserve"><value>The test alarm was delivered.</value></data>
+  <data name="Diag_NotDelivered" xml:space="preserve"><value>The test alarm was not delivered: {0}</value></data>
+  <data name="Diag_TestAlarm" xml:space="preserve"><value>Test alarm</value></data>
+  <data name="Diag_NotSent" xml:space="preserve"><value>No test alarm was sent because alarms are switched off.</value></data>
+  <data name="Diag_RecentAlarms" xml:space="preserve"><value>Recent alarms</value></data>
+  <data name="Diag_RecentFailed" xml:space="preserve"><value>{0} of {1} alarms in the last 7 days failed to deliver. See the Log page.</value></data>
+  <data name="Diag_Admins" xml:space="preserve"><value>Administrators</value></data>
+  <data name="Diag_AdminsOk" xml:space="preserve"><value>There are {0} administrators, so one can help the other.</value></data>
+  <data name="Diag_OneAdmin" xml:space="preserve"><value>There is only one administrator. If that person loses their passkey, only the platform owner or the server operator can help. Invite a second administrator.</value></data>
+  <data name="Diag_Passkeys" xml:space="preserve"><value>Passkeys of administrators</value></data>
+  <data name="Diag_PasskeysOk" xml:space="preserve"><value>Every administrator has more than one way to sign in.</value></data>
+  <data name="Diag_PasskeysFew" xml:space="preserve"><value>{0} administrator(s) have a single passkey and no single sign-on. Ask them to add a second device on the Account page.</value></data>
+  <data name="Diag_Https" xml:space="preserve"><value>Secure connection</value></data>
+  <data name="Diag_HttpsOk" xml:space="preserve"><value>You are using {0}, which passkeys accept.</value></data>
+  <data name="Diag_NotHttps" xml:space="preserve"><value>This page is served over plain http at {0}. Passkeys only work over HTTPS (or on localhost), so other people cannot sign in.</value></data>
+  <data name="Diag_Origin" xml:space="preserve"><value>Passkey address</value></data>
+  <data name="Diag_OriginDiffers" xml:space="preserve"><value>Auth:Origin is {0} but you are using {1}. Passkeys are tied to the configured address, so sign-in will fail.</value></data>
+  <data name="Diag_Proxy" xml:space="preserve"><value>Reverse proxy</value></data>
+  <data name="Diag_ProxyHeaders" xml:space="preserve"><value>Requests arrive through a proxy, but forwarded headers are not switched on (ASPNETCORE_FORWARDEDHEADERS_ENABLED). Visitors will share one address, which breaks per-address limits.</value></data>
+  <data name="Diag_Migrations" xml:space="preserve"><value>Database</value></data>
+  <data name="Diag_MigrationsOk" xml:space="preserve"><value>The database is up to date.</value></data>
+  <data name="Diag_MigrationsPending" xml:space="preserve"><value>{0} database migrations are not applied. Restart the app with Database:AutoMigrate on, or apply them by hand.</value></data>
+  <data name="Diag_Keys" xml:space="preserve"><value>Session keys</value></data>
+  <data name="Diag_KeysOk" xml:space="preserve"><value>Sign-in keys are stored in the database, so sessions survive a restart.</value></data>
+  <data name="Diag_KeysNone" xml:space="preserve"><value>No sign-in keys are stored yet; people are signed out when the app restarts until one is created.</value></data>
+  <data name="Diag_Smtp" xml:space="preserve"><value>Email server</value></data>
+  <data name="Diag_SmtpOk" xml:space="preserve"><value>The mail server {0} accepts connections.</value></data>
+  <data name="Diag_SmtpDown" xml:space="preserve"><value>The mail server {0} cannot be reached: {1}</value></data>
+  <data name="Diag_NoSmtpHost" xml:space="preserve"><value>No mail server is configured, so there are no email alarms or emailed invitations (Alerts:Email:Host).</value></data>
+  <data name="Diag_Sso" xml:space="preserve"><value>Single sign-on</value></data>
+  <data name="Diag_SsoOk" xml:space="preserve"><value>The identity provider at {0} answers.</value></data>
+  <data name="Diag_SsoDown" xml:space="preserve"><value>The identity provider at {0} cannot be reached: {1}</value></data>
+  <data name="Diag_NoSso" xml:space="preserve"><value>Single sign-on is not configured; people sign in with passkeys.</value></data>
+  <data name="Diag_SsoOpen" xml:space="preserve"><value>Open sign-up</value></data>
+  <data name="Diag_SsoOpenText" xml:space="preserve"><value>Sso:AutoProvision is on without Sso:AllowedDomains, so anyone whose email the provider has verified can create an account.</value></data>
+  <data name="Diag_Resolver" xml:space="preserve"><value>Name resolution</value></data>
+  <data name="Diag_ResolverOk" xml:space="preserve"><value>The server can look up names.</value></data>
+  <data name="Diag_ResolverDown" xml:space="preserve"><value>The server cannot look up names: {0}</value></data>
+  <data name="Diag_Ct" xml:space="preserve"><value>Certificate Transparency</value></data>
+  <data name="Diag_CtOk" xml:space="preserve"><value>crt.sh can be reached, so certificates can be discovered.</value></data>
+  <data name="Diag_CtDown" xml:space="preserve"><value>crt.sh cannot be reached ({0}), so Cert Spotter is used instead.</value></data>
+  <data name="Diag_PrivateScans" xml:space="preserve"><value>Private networks</value></data>
+  <data name="Diag_PrivateAllowed" xml:space="preserve"><value>Scans may reach private addresses. Right for a company network, not for a shared installation (Scanning:AllowPrivateAddresses).</value></data>
+  <data name="Diag_PrivateBlocked" xml:space="preserve"><value>Scans cannot reach private addresses.</value></data>
+  <data name="Diag_PublicCheck" xml:space="preserve"><value>Free public check</value></data>
+  <data name="Diag_PublicOn" xml:space="preserve"><value>The public check is on, at most {0} checks per hour per address.</value></data>
+  <data name="Diag_PublicOff" xml:space="preserve"><value>The public check is off.</value></data>
+  <data name="Plan_Cooldown" xml:space="preserve"><value>Wait between "check everything now"</value></data>
+  <data name="Plan_CooldownMinutes" xml:space="preserve"><value>Check-now wait (minutes)</value></data>
+  <data name="Plan_NoWait" xml:space="preserve"><value>no wait</value></data>
+  <data name="Limits_CooldownHelp" xml:space="preserve"><value>The wait is how long a tenant must wait before it can press "check everything now" again, so it cannot be used to get around the check interval. 0 means no wait; blank uses the server default (Scanning:ManualCooldownMinutes).</value></data>
+  <data name="Issue_ResolverMismatch" xml:space="preserve"><value>Public resolvers disagree about the {0} records (possible hijack, or a change that is still propagating)</value></data>
+  <data name="Issue_DkimMissing" xml:space="preserve"><value>DKIM selector '{0}' not found</value></data>
+  <data name="Issue_DkimRevoked" xml:space="preserve"><value>DKIM key for selector '{0}' is revoked (empty key)</value></data>
+  <data name="Issue_DkimInvalid" xml:space="preserve"><value>DKIM record for selector '{0}' is not valid</value></data>
+  <data name="Issue_DkimWeak" xml:space="preserve"><value>DKIM key for selector '{0}' is only {1} bits</value></data>
+  <data name="Dkim_Title" xml:space="preserve"><value>DKIM selectors</value></data>
+  <data name="Dkim_Help" xml:space="preserve"><value>Selectors to check, separated by commas. You find yours in the s= tag of the DKIM-Signature header of an e-mail you sent.</value></data>
+  <data name="Dkim_Placeholder" xml:space="preserve"><value>selector1, selector2</value></data>
+  <data name="Dkim_Save" xml:space="preserve"><value>Save and scan</value></data>
+  <data name="Dkim_Invalid" xml:space="preserve"><value>Use letters, digits, dots, hyphens or underscores, at most 10 selectors.</value></data>
+  <data name="Col_Origin" xml:space="preserve"><value>Origin</value></data>
+  <data name="Col_Why" xml:space="preserve"><value>Why</value></data>
+  <data name="Origin_added" xml:space="preserve"><value>Added manually</value></data>
+  <data name="Origin_discovered" xml:space="preserve"><value>Discovered</value></data>
+  <data name="Filter_Search" xml:space="preserve"><value>Search by name</value></data>
+  <data name="Filter_AllOrigins" xml:space="preserve"><value>All origins</value></data>
+  <data name="Filter_AllTypes" xml:space="preserve"><value>All types</value></data>
+  <data name="Filter_AllStatuses" xml:space="preserve"><value>All statuses</value></data>
+  <data name="Filter_Problems" xml:space="preserve"><value>Needs attention (warning or worse)</value></data>
+  <data name="Filter_Apply" xml:space="preserve"><value>Filter</value></data>
+  <data name="Filter_Reset" xml:space="preserve"><value>Reset</value></data>
+  <data name="Filter_Count" xml:space="preserve"><value>Showing {0} of {1}</value></data>
+  <data name="Filter_None" xml:space="preserve"><value>Nothing matches these filters.</value></data>
+  <data name="Disc_Title" xml:space="preserve"><value>How it was discovered</value></data>
+  <data name="Disc_Via" xml:space="preserve"><value>via {0}</value></data>
+  <data name="Disc_ViaCt" xml:space="preserve"><value>via CT log</value></data>
+  <data name="Disc_From" xml:space="preserve"><value>from {0}</value></data>
+  <data name="Disc_Manual" xml:space="preserve"><value>Added manually.</value></data>
+  <data name="Disc_UnknownParent" xml:space="preserve"><value>a monitored domain</value></data>
+  <data name="Disc_Why" xml:space="preserve"><value>The name appears on a publicly logged certificate (issued by {2}, valid until {3}) that {1} returned when searching the Certificate Transparency logs for {0}. You added it from the review on {4}, and it is monitored like any other endpoint. If you delete it, it goes on the ignored list and does not come back.</value></data>
+  <data name="Disc_Legacy" xml:space="preserve"><value>The name appears on a publicly logged certificate found when searching the Certificate Transparency logs for {0}. It was added before the details were recorded. If you delete it, it goes on the ignored list and does not come back.</value></data>
+  <data name="Alerts_Telegram" xml:space="preserve"><value>Telegram bot token</value></data>
+  <data name="Alerts_TelegramConfigured" xml:space="preserve"><value>Configured: bot {0} (leave empty to keep it)</value></data>
+  <data name="Alerts_TelegramChat" xml:space="preserve"><value>Telegram chat ID</value></data>
+  <data name="Alerts_TelegramHelp" xml:space="preserve"><value>Create a bot with @BotFather, add it to your chat or channel, and enter its token and the chat ID. Both are needed.</value></data>
+  <data name="Err_InvalidTelegramToken" xml:space="preserve"><value>That does not look like a Telegram bot token (123456789:AAH…).</value></data>
+  <data name="Err_InvalidTelegramChat" xml:space="preserve"><value>The chat ID must be a number (negative for groups) or @channelname.</value></data>
+  <data name="Err_TelegramIncomplete" xml:space="preserve"><value>Telegram needs both a bot token and a chat ID.</value></data>
+  <data name="Diag_Channel_telegram" xml:space="preserve"><value>Telegram</value></data>
+  <data name="TgHow_Title" xml:space="preserve"><value>How do I create a Telegram bot?</value></data>
+  <data name="TgHow_1" xml:space="preserve"><value>In Telegram, open @BotFather (the official bot for making bots) and send</value></data>
+  <data name="TgHow_1b" xml:space="preserve"><value>It asks for a display name (for example “FullyQualified alarms”) and a username that ends in “bot” (for example fq_alarms_bot).</value></data>
+  <data name="TgHow_2" xml:space="preserve"><value>BotFather replies with the bot token. Paste it in the token field above. It looks like:</value></data>
+  <data name="TgHow_3" xml:space="preserve"><value>Decide where alarms should go. For yourself, open your new bot and press Start. For a team, add the bot to a group. For a channel, add the bot as an administrator. Then send any message there.</value></data>
+  <data name="TgHow_4" xml:space="preserve"><value>Find the chat ID: open this address in your browser, with your own token filled in:</value></data>
+  <data name="TgHow_4b" xml:space="preserve"><value>In the answer, the number after “id” in “chat” is the chat ID. It is negative for groups. For a public channel you can enter @channelname instead. For example:</value></data>
+  <data name="TgHow_5" xml:space="preserve"><value>Enter the chat ID above, press Save, then Send a test alarm. The message should arrive within a few seconds.</value></data>
+  <data name="TgHow_Token" xml:space="preserve"><value>token</value></data>
+  <data name="TgHow_Secret" xml:space="preserve"><value>Keep the token secret: anyone who has it can send messages as your bot. If it leaks, send /revoke to @BotFather and enter the new token here.</value></data>
+  <data name="Bulk_SelectAll" xml:space="preserve"><value>Select all shown</value></data>
+  <data name="Bulk_Delete" xml:space="preserve"><value>Delete selected</value></data>
+  <data name="Bulk_Confirm" xml:space="preserve"><value>Delete the selected assets and their history?</value></data>
+  <data name="Bulk_Deleted" xml:space="preserve"><value>Deleted {0} asset(s).</value></data>
+  <data name="Bulk_None" xml:space="preserve"><value>Select at least one asset first.</value></data>
+  <data name="Bulk_Note" xml:space="preserve"><value>A deleted hostname that was found in the certificate logs goes on the ignored list and does not come back.</value></data>
+  <data name="Sum_TlsChainMismatch" xml:space="preserve"><value>Certificate not trusted: {0}. It was checked for {1}, but the certificate is valid for: {2}</value></data>
+  <data name="Dig_Open" xml:space="preserve"><value>DNS lookup</value></data>
+  <data name="Dig_Title" xml:space="preserve"><value>DNS lookup</value></data>
+  <data name="Dig_Sub" xml:space="preserve"><value>A live dig: ask the system resolver and public resolvers, and compare what they answer.</value></data>
+  <data name="Dig_Placeholder" xml:space="preserve"><value>example.com or an IP address</value></data>
+  <data name="Dig_Name" xml:space="preserve"><value>Name</value></data>
+  <data name="Dig_Type" xml:space="preserve"><value>Type</value></data>
+  <data name="Dig_Data" xml:space="preserve"><value>Data</value></data>
+  <data name="Dig_Resolver" xml:space="preserve"><value>Resolver</value></data>
+  <data name="Dig_All" xml:space="preserve"><value>All resolvers (compare)</value></data>
+  <data name="Dig_Go" xml:space="preserve"><value>Look up</value></data>
+  <data name="Dig_Querying" xml:space="preserve"><value>Querying…</value></data>
+  <data name="Dig_Empty" xml:space="preserve"><value>Type a name to look up.</value></data>
+  <data name="Dig_NoRecords" xml:space="preserve"><value>No {0} records found (NODATA).</value></data>
+  <data name="Dig_NxDomain" xml:space="preserve"><value>{0} does not exist (NXDOMAIN).</value></data>
+  <data name="Dig_Agree" xml:space="preserve"><value>All resolvers give the same answer.</value></data>
+  <data name="Dig_Disagree" xml:space="preserve"><value>The resolvers disagree. The odd ones out are marked. This can mean a hijack, or a change that is still propagating.</value></data>
+  <data name="Dig_Differs" xml:space="preserve"><value>differs</value></data>
+  <data name="Dig_Copy" xml:space="preserve"><value>Copy</value></data>
+  <data name="Dig_Copied" xml:space="preserve"><value>Copied</value></data>
+  <data name="Dig_Command" xml:space="preserve"><value>Same query in a terminal:</value></data>
+  <data name="Dig_Close" xml:space="preserve"><value>Close</value></data>
+  <data name="Dig_Hint" xml:space="preserve"><value>Press / anywhere to open this window</value></data>
+  <data name="Dig_Err_invalid_name" xml:space="preserve"><value>That is not a valid host name or IP address.</value></data>
+  <data name="Dig_Err_invalid_type" xml:space="preserve"><value>Unsupported record type.</value></data>
+  <data name="Dig_Err_rate" xml:space="preserve"><value>Too many lookups. Wait a minute and try again.</value></data>
+  <data name="Dig_Err_failed" xml:space="preserve"><value>The lookup failed.</value></data>
+  <data name="Dig_ResolverFailed" xml:space="preserve"><value>No answer</value></data>
+  <data name="Dig_LookUp" xml:space="preserve"><value>Look up {0} ({1}) in DNS</value></data>
+  <data name="Status_Paused" xml:space="preserve"><value>Paused</value></data>
+  <data name="Pause_Title" xml:space="preserve"><value>Pause monitoring</value></data>
+  <data name="Pause_Help" xml:space="preserve"><value>A paused asset is not checked, never alarms and does not count as a problem. Resume it at any time, or set a date to resume automatically.</value></data>
+  <data name="Pause_UntilLabel" xml:space="preserve"><value>Resume on (optional)</value></data>
+  <data name="Pause_Reason" xml:space="preserve"><value>Reason (optional)</value></data>
+  <data name="Pause_Button" xml:space="preserve"><value>Pause</value></data>
+  <data name="Pause_Resume" xml:space="preserve"><value>Resume now</value></data>
+  <data name="Pause_Until" xml:space="preserve"><value>until {0}</value></data>
+  <data name="Pause_Indefinitely" xml:space="preserve"><value>until resumed</value></data>
+  <data name="Pause_UntilLong" xml:space="preserve"><value>Paused until {0}, then it is checked again by itself.</value></data>
+  <data name="Pause_IndefinitelyLong" xml:space="preserve"><value>Paused until someone resumes it.</value></data>
+  <data name="Pause_Effect" xml:space="preserve"><value>Nothing is checked and no alarms are sent while it is paused. The last results are kept.</value></data>
+  <data name="Mute_Button" xml:space="preserve"><value>Mute</value></data>
+  <data name="Mute_Unmute" xml:space="preserve"><value>Unmute</value></data>
+  <data name="Mute_MakeOptional" xml:space="preserve"><value>Make optional</value></data>
+  <data name="Mute_MakeRequired" xml:space="preserve"><value>Make required</value></data>
+  <data name="Mute_OptionalBadge" xml:space="preserve"><value>Optional</value></data>
+  <data name="Mute_Muted" xml:space="preserve"><value>muted</value></data>
+  <data name="Mute_UntilShort" xml:space="preserve"><value>muted until {0}</value></data>
+  <data name="Mute_UntilHelp" xml:space="preserve"><value>Mute until this date (optional; empty means until you unmute)</value></data>
+  <data name="Mute_ByCert" xml:space="preserve"><value>(the certificate is muted)</value></data>
+  <data name="Mute_Count" xml:space="preserve"><value>{0} muted</value></data>
+  <data name="Issue_TlsExpired" xml:space="preserve"><value>Certificate expired</value></data>
+  <data name="Issue_TlsExpiring" xml:space="preserve"><value>Certificate expires soon</value></data>
+  <data name="Issue_TlsTrust" xml:space="preserve"><value>Certificate not trusted</value></data>
+  <data name="Issue_TlsError" xml:space="preserve"><value>TLS check failed</value></data>
+  <data name="Issue_CtError" xml:space="preserve"><value>Certificate log lookup failed</value></data>
+  <data name="Issue_DnsError" xml:space="preserve"><value>DNS check failed</value></data>
+  <data name="Bulk_Pause" xml:space="preserve"><value>Pause selected</value></data>
+  <data name="Bulk_Resume" xml:space="preserve"><value>Resume selected</value></data>
+  <data name="Bulk_Paused" xml:space="preserve"><value>Paused {0} asset(s).</value></data>
+  <data name="Bulk_Resumed" xml:space="preserve"><value>Resumed {0} asset(s).</value></data>
+  <data name="Mute_UntilLabel" xml:space="preserve"><value>Until (optional)</value></data>
+  <data name="Fix_Title" xml:space="preserve"><value>How to fix: {0}</value></data>
+  <data name="Fix_Link" xml:space="preserve"><value>How to fix</value></data>
+  <data name="Fix_WhatTitle" xml:space="preserve"><value>What this means</value></data>
+  <data name="Fix_StepsTitle" xml:space="preserve"><value>What to do</value></data>
+  <data name="Fix_CommandsTitle" xml:space="preserve"><value>Check it yourself</value></data>
+  <data name="Fix_ExampleTitle" xml:space="preserve"><value>Example to start from</value></data>
+  <data name="Fix_LookupsTitle" xml:space="preserve"><value>Look it up here</value></data>
+  <data name="Fix_FoundTitle" xml:space="preserve"><value>What was found</value></data>
+  <data name="Fix_Then" xml:space="preserve"><value>When it is fixed, the next scan clears this finding. Use Scan now on the asset page to see it right away. If it is intentional, mute it on the asset page, ideally with an end date.</value></data>
+  <data name="Fix_None" xml:space="preserve"><value>There is no advice for this finding yet.</value></data>
+  <data name="Fix_BackToAsset" xml:space="preserve"><value>Back to the asset</value></data>
+  <data name="Fix_NoSpf_What" xml:space="preserve"><value>{0} has no SPF record. SPF lists the servers that may send email for your domain. Without it, anyone can send mail that appears to come from {0}, and receiving servers are more likely to treat your real mail as spam.</value></data>
+  <data name="Fix_NoSpf_Steps" xml:space="preserve"><value>List everything that sends email as {0}: your mail provider, newsletter and CRM tools, web shop, ticket system, and any server that sends alerts.
+Look up each sender's SPF include in its documentation, for example include:_spf.google.com for Google Workspace or include:spf.protection.outlook.com for Microsoft 365.
+Publish one TXT record on {0} that starts with v=spf1, lists those includes, and ends with ~all. Move to -all once you are sure the list is complete.
+A name may have only one SPF record. If one exists, merge the two instead of adding a second.
+Keep it to 10 DNS lookups in total, or receivers will ignore the record.
+Check the result with the command below, then scan again.</value></data>
+  <data name="Fix_NoDmarc_What" xml:space="preserve"><value>{0} has no DMARC policy. DMARC tells receiving servers what to do with mail that fails the SPF and DKIM checks, and sends you reports about who sends mail as your domain. Without it, spoofed mail is accepted and you cannot see abuse.</value></data>
+  <data name="Fix_NoDmarc_Steps" xml:space="preserve"><value>Make sure SPF and DKIM already work for all your mail, or DMARC will reject real messages later.
+Create a mailbox, or use a DMARC reporting service, that receives the reports.
+Publish a TXT record on _dmarc.{0}, starting in monitoring mode: p=none with an rua= address.
+Read the reports for a few weeks and fix the legitimate senders that fail.
+Tighten the policy step by step: p=quarantine (start with pct=25), then p=reject.
+Check the result with the command below, then scan again.</value></data>
+  <data name="Fix_DmarcNone_What" xml:space="preserve"><value>The DMARC policy of {0} is p=none: mail that fails is still delivered and DMARC only reports. That is the right way to start, but it does not protect against spoofing.</value></data>
+  <data name="Fix_DmarcNone_Steps" xml:space="preserve"><value>Read your DMARC reports (the rua address) and list the senders that fail SPF or DKIM.
+Fix those senders: add them to SPF, or set up DKIM signing for them. Stop senders you do not recognise.
+Change the policy to p=quarantine with pct=25, and raise pct to 100 over a few weeks.
+When nothing legitimate fails any more, move to p=reject. Add sp=reject if your subdomains do not send mail.
+If you deliberately stay in monitoring mode for now, mute this finding with an end date so it comes back.</value></data>
+  <data name="Fix_NoCaa_What" xml:space="preserve"><value>{0} has no CAA record. CAA limits which certificate authorities may issue certificates for the domain. Without it, any CA can, which makes mis-issuance harder to prevent.</value></data>
+  <data name="Fix_NoCaa_Steps" xml:space="preserve"><value>Check which CAs issued your current certificates: see the Issuer column on the certificate list.
+Publish a CAA record for every CA you use, for example 0 issue "letsencrypt.org". Use issuewild for wildcard certificates.
+Add an iodef record with an address that should be told about refused requests.
+Check that your DNS provider supports CAA records (most do) and that you have not left a CA out, or its renewals will fail.
+Check the result with the command below, then scan again.</value></data>
+  <data name="Fix_NoNs_What" xml:space="preserve"><value>No name server records were found for {0}. The name does not resolve, so nothing that depends on it (web, email, certificates) can work.</value></data>
+  <data name="Fix_NoNs_Steps" xml:space="preserve"><value>Check the spelling of the name.
+Check that the domain is registered and has not expired: run whois and look at the status and expiry date.
+Check at the registrar that the domain points to the right name servers, and that those servers have a zone for {0}.
+Run dig NS {0} +trace to see where the chain breaks.
+If the domain is retired, delete or pause the asset.</value></data>
+  <data name="Fix_DanglingCname_What" xml:space="preserve"><value>{0} is a CNAME that points to {1}, and that name does not exist. Whoever registers or claims {1} (a deleted cloud app, storage bucket or hosted service name) can serve content on {0}: a subdomain takeover.</value></data>
+  <data name="Fix_DanglingCname_Steps" xml:space="preserve"><value>Find out what {0} was for. If it is no longer used, delete the CNAME record at your DNS provider right away. That removes the risk.
+If it is still needed, restore {1}: recreate the app, bucket or custom domain at the provider under the same name, or point the CNAME to the new target.
+Check your other records for CNAMEs that point to the same provider and may be orphaned too.
+In future, remove the custom domain from the provider and the DNS record together when you retire a service.
+Check with the commands below, then scan again.</value></data>
+  <data name="Fix_ResolverMismatch_What" xml:space="preserve"><value>Public resolvers give different answers for the {1} records of {0}. That is normal for a short while after you change a record, but it can also mean that someone changed your DNS without you knowing, or that one of your name servers serves old data.</value></data>
+  <data name="Fix_ResolverMismatch_Steps" xml:space="preserve"><value>Look up the record with all resolvers (the lookup button below) and compare the answers.
+If you changed it recently, wait until the old record's TTL has passed and scan again.
+If it persists, ask each of your own name servers directly (see the commands below). One server with different data is the usual cause: sync or fix that zone.
+If an answer lists name servers or mail servers you do not recognise, treat it as a hijack: change the passwords of your registrar and DNS accounts, turn on two-factor authentication and a registry lock, and contact your registrar.
+If different answers are intended (split-horizon DNS), mute this finding.</value></data>
+  <data name="Fix_DkimMissing_What" xml:space="preserve"><value>No DKIM record was found for selector {1} on {0}. DKIM signs outgoing mail so receivers can tell it really came from you. Without a published key, signed mail fails DKIM and, with it, DMARC.</value></data>
+  <data name="Fix_DkimMissing_Steps" xml:space="preserve"><value>Check that the selector is exactly the s= value in the DKIM-Signature header of a message you sent.
+In your mail provider's settings, find the DKIM key or CNAME record for that selector and publish it at {1}._domainkey.{0}. Providers use either a TXT record or a CNAME.
+Copy the value exactly. Long keys may need to be split into several quoted strings; most DNS providers do that for you.
+Wait for the TTL and check with the command below.
+If the selector is retired, remove it from the DKIM selectors on the asset page.</value></data>
+  <data name="Fix_DkimRevoked_What" xml:space="preserve"><value>The DKIM key of selector {1} on {0} is empty (p=), which revokes it. Mail signed with this selector fails DKIM.</value></data>
+  <data name="Fix_DkimRevoked_Steps" xml:space="preserve"><value>If you retired the selector on purpose, remove it from the DKIM selectors on the asset page.
+If not, find the current public key in your mail provider's settings and publish it again at {1}._domainkey.{0}.
+Check that your mail system still signs with a selector that has a published key.
+Check with the command below, then scan again.</value></data>
+  <data name="Fix_DkimInvalid_What" xml:space="preserve"><value>The DKIM record for selector {1} on {0} cannot be read as a public key. Receivers treat signatures with this selector as failed.</value></data>
+  <data name="Fix_DkimInvalid_Steps" xml:space="preserve"><value>Copy the record again from your mail provider. Look for lost characters, extra spaces, or quotes inside the key.
+Some DNS panels limit a TXT string to 255 characters. A 2048-bit key must be split into several quoted strings.
+Keep the tags: v=DKIM1; k=rsa; p=&lt;key&gt;.
+Check the published value with the command below, then scan again.</value></data>
+  <data name="Fix_DkimWeak_What" xml:space="preserve"><value>The DKIM key of selector {1} on {0} is only {2} bits. Keys below 1024 bits can be broken with modest effort, which would let someone forge signed mail from your domain.</value></data>
+  <data name="Fix_DkimWeak_Steps" xml:space="preserve"><value>In your mail provider or mail server, generate a new DKIM key of 2048 bits.
+Publish it under a new selector name, for example the month and year.
+Switch signing to the new selector and wait a few days for mail that is still in transit.
+Remove the old selector from DNS and from the DKIM selectors on the asset page.</value></data>
+  <data name="Fix_DnsError_What" xml:space="preserve"><value>The DNS check for {0} could not finish: {1}. This is about the lookup, not necessarily about {0} itself.</value></data>
+  <data name="Fix_DnsError_Steps" xml:space="preserve"><value>Check that the server running FullyQualified can reach a DNS server: run the first command there. If it cannot, check its network and the Dns:Server setting.
+Check that outgoing DNS (UDP and TCP port 53) is not blocked by a firewall.
+Compare with a public resolver (the second command). If that works, the problem is your local resolver.
+If every resolver answers SERVFAIL for this domain, DNSSEC may be broken or the name servers are down: run the third command and ask your DNS provider.
+The check tries again by itself within 15 minutes.</value></data>
+  <data name="Fix_TlsExpired_What" xml:space="preserve"><value>The certificate of {0} expired on {1}. Browsers and apps show a security error or refuse to connect.</value></data>
+  <data name="Fix_TlsExpiring_What" xml:space="preserve"><value>The certificate of {0} expires on {1} ({2} days left). If it is not renewed in time, visitors and systems will get security errors.</value></data>
+  <data name="Fix_Tls_Renew_Steps" xml:space="preserve"><value>Renew the certificate now. With Let's Encrypt or another ACME client (certbot, acme.sh, win-acme, Caddy, cert-manager), run the renewal by hand and read the error. A blocked challenge (port 80, a DNS record), a changed DNS record or a rate limit are the usual causes.
+With a commercial certificate, request a replacement at your reseller or CA and complete the validation.
+Install the new certificate everywhere this name is served: web server or IIS binding, load balancer, Azure Key Vault with Application Gateway or Front Door, CDN, Java keystore. Then reload the service.
+Check the result with the command below: the dates and the issuer should be new.
+Automate it. Certificate lifetimes are getting shorter (100 days in 2027, 47 days in 2029), so renewing by hand will not stay manageable.
+If the system is retired, pause or delete the asset instead.</value></data>
+  <data name="Fix_TlsTrust_What" xml:space="preserve"><value>The certificate that {0} presents is not trusted ({2}). Browsers and apps will warn visitors or refuse to connect.</value></data>
+  <data name="Fix_TlsTrust_Mismatch_Title" xml:space="preserve"><value>The certificate does not cover the name</value></data>
+  <data name="Fix_TlsTrust_Mismatch_Steps" xml:space="preserve"><value>The certificate is valid for: {1}. {0} is not among those names.
+If {0} should be served by this certificate, reissue it with {0} as a subject alternative name, or use a wildcard certificate that covers it.
+If the server hosts several sites, check that it picks the right certificate for {0} (SNI or virtual host settings) and that the default certificate is not served instead.
+If {0} points to the wrong server, fix the A, AAAA or CNAME record: look it up with the button below.</value></data>
+  <data name="Fix_TlsTrust_Chain_Title" xml:space="preserve"><value>The certificate chain is not trusted</value></data>
+  <data name="Fix_TlsTrust_Chain_Steps" xml:space="preserve"><value>A missing intermediate certificate is the most common cause: install the full chain (for example fullchain.pem), not only the server certificate.
+A self-signed certificate, or one from a private CA, is not trusted by browsers. Use a certificate from a public CA. For internal systems, make sure the clients trust your CA and mute this finding.
+Check that no certificate in the chain has expired, including the intermediate ones.
+Check the chain with the second command (it prints every certificate), reload the service, then scan again.</value></data>
+  <data name="Fix_TlsError_What" xml:space="preserve"><value>The TLS check could not connect to {0} on port {1}: {2}. Nothing was checked, so the state of the certificate is unknown.</value></data>
+  <data name="Fix_TlsError_Steps" xml:space="preserve"><value>Check that the address and port are right. An endpoint is written as host:port, and without a port 443 is used.
+Check that the service runs and listens on that port (the first command), and that no firewall blocks the connection from the server running FullyQualified.
+If the name does not resolve, fix or add the DNS record.
+If the connection works but the handshake fails, the server may only support old protocols (TLS 1.0 or 1.1) or share no cipher suite with this client. Enable TLS 1.2 or higher.
+If it says the host is not allowed, this installation blocks private addresses: set Scanning:AllowPrivateAddresses to true, or use a public name.
+If it is not meant to be reachable, pause the asset or make the check optional.</value></data>
+  <data name="Fix_CtError_What" xml:space="preserve"><value>The certificate log search for {0} failed: {1}. The public services that list certificates (crt.sh, then Cert Spotter) were both unavailable. Nothing is wrong with your domain, and nothing is monitored differently because of it.</value></data>
+  <data name="Fix_CtError_Steps" xml:space="preserve"><value>Wait a little: crt.sh is a free service that is often overloaded or rate limiting, and the search falls back to Cert Spotter when crt.sh fails. Then press Find subdomains again.
+If it keeps failing for hours, check that the server running FullyQualified can reach https://crt.sh and https://api.certspotter.com (outgoing HTTPS, proxy, firewall).
+Very large domains can time out. Add the important hostnames as assets yourself instead.
+You do not need this search to monitor a domain: it only helps to find hostnames you did not know about.</value></data>
+  <data name="Nav_Review" xml:space="preserve"><value>Review</value></data>
+  <data name="Discover_Title" xml:space="preserve"><value>Find subdomains</value></data>
+  <data name="Discover_Help" xml:space="preserve"><value>Looks the domain up in the public certificate logs (crt.sh, then Cert Spotter) and lists the hostnames that have a certificate. Nothing is added by itself: you review what is found. This sends the domain name to those services, which is why it only runs when you ask.</value></data>
+  <data name="Discover_Button" xml:space="preserve"><value>Find subdomains</value></data>
+  <data name="Discover_Queued" xml:space="preserve"><value>Search queued, refresh in a minute</value></data>
+  <data name="Discover_Last" xml:space="preserve"><value>Last search</value></data>
+  <data name="Discover_Pending" xml:space="preserve"><value>{0} found hostname(s) waiting for review</value></data>
+  <data name="Discover_Reviewed" xml:space="preserve"><value>{0} found hostname(s), all reviewed</value></data>
+  <data name="Review_Title" xml:space="preserve"><value>Review found hostnames</value></data>
+  <data name="Review_Intro" xml:space="preserve"><value>Hostnames found in the certificate logs are not monitored until you add them. Add what is yours, and ignore the rest with a reason. Ignored hostnames are kept on record, do not come back at the next search, and appear in the reports.</value></data>
+  <data name="Review_DiscoverAll" xml:space="preserve"><value>Find subdomains on all domains</value></data>
+  <data name="Review_State_Pending" xml:space="preserve"><value>Waiting</value></data>
+  <data name="Review_State_Added" xml:space="preserve"><value>Added</value></data>
+  <data name="Review_State_Ignored" xml:space="preserve"><value>Ignored</value></data>
+  <data name="Review_Filter_All" xml:space="preserve"><value>All</value></data>
+  <data name="Review_Banner" xml:space="preserve"><value>{0} hostname(s) found in the certificate logs are waiting for your review.</value></data>
+  <data name="Review_BannerButton" xml:space="preserve"><value>Review now</value></data>
+  <data name="Review_Add" xml:space="preserve"><value>Add</value></data>
+  <data name="Review_AddSelected" xml:space="preserve"><value>Add selected</value></data>
+  <data name="Review_Ignore" xml:space="preserve"><value>Ignore</value></data>
+  <data name="Review_IgnoreSelected" xml:space="preserve"><value>Ignore selected</value></data>
+  <data name="Review_Restore" xml:space="preserve"><value>Restore</value></data>
+  <data name="Review_RestoreSelected" xml:space="preserve"><value>Restore selected</value></data>
+  <data name="Review_ReasonLabel" xml:space="preserve"><value>Reason (required)</value></data>
+  <data name="Review_ReasonPlaceholder" xml:space="preserve"><value>Why is this not monitored?</value></data>
+  <data name="Review_Nothing" xml:space="preserve"><value>Nothing to review here. Use Find subdomains on a domain to look for more.</value></data>
+  <data name="Review_Select" xml:space="preserve"><value>Select at least one hostname first.</value></data>
+  <data name="Review_NeedReason" xml:space="preserve"><value>Give a reason for ignoring.</value></data>
+  <data name="Review_Done_add" xml:space="preserve"><value>Added {0} hostname(s) to monitoring.</value></data>
+  <data name="Review_Done_addLimit" xml:space="preserve"><value>Added {0}. {1} could not be added because the limit of your plan is reached.</value></data>
+  <data name="Review_Done_ignore" xml:space="preserve"><value>Ignored {0} hostname(s).</value></data>
+  <data name="Review_Done_restore" xml:space="preserve"><value>Moved {0} hostname(s) back to review.</value></data>
+  <data name="Review_Done_discover" xml:space="preserve"><value>Searching {0} domain(s). Refresh in a minute to see what was found.</value></data>
+  <data name="Review_RemovedReason" xml:space="preserve"><value>Removed from monitoring</value></data>
+  <data name="Review_Automatic" xml:space="preserve"><value>added automatically, before review existed</value></data>
+  <data name="Review_FoundFrom" xml:space="preserve"><value>{0} via {1}, certificate by {2} valid until {3}</value></data>
+  <data name="Review_FoundShort" xml:space="preserve"><value>{0} via {1}</value></data>
+  <data name="Review_UnknownParent" xml:space="preserve"><value>a domain</value></data>
+  <data name="Review_More" xml:space="preserve"><value>Showing the first {0}; {1} more. Use the search to narrow it down.</value></data>
+  <data name="Col_FoundVia" xml:space="preserve"><value>Found via</value></data>
+  <data name="Col_Reason" xml:space="preserve"><value>Reason</value></data>
+  <data name="Col_Decided" xml:space="preserve"><value>Decided</value></data>
+  <data name="Col_DecidedBy" xml:space="preserve"><value>Decided by</value></data>
+  <data name="Rep_ReviewTitle" xml:space="preserve"><value>Discovery review</value></data>
+  <data name="Rep_ReviewSummary" xml:space="preserve"><value>Hostnames found in certificate logs: {0} added, {1} ignored, {2} waiting for review.</value></data>
+  <data name="Refresh" xml:space="preserve"><value>Refresh</value></data>
+  <data name="NotFound_Title" xml:space="preserve"><value>Page not found</value></data>
+  <data name="NotFound_Text" xml:space="preserve"><value>This page does not exist, or you are not allowed to see it.</value></data>
+  <data name="EmailTest_Title" xml:space="preserve"><value>Send a DMARC test email</value></data>
+  <data name="EmailTest_Intro" xml:space="preserve"><value>Send a real email from a domain you monitor, to a recipient mailbox you can inspect.</value></data>
+  <data name="EmailTest_FromNotOwned" xml:space="preserve"><value>The From address must be on a domain you monitor in FullyQualified. Add the domain first, or send from one you already monitor.</value></data>
+  <data name="EmailTest_Help" xml:space="preserve"><value>This test uses the application’s configured SMTP relay, which may reject, rewrite or sign the message. It tests this sending route. In the received message, open the original headers and check the receiving server’s Authentication-Results for dmarc, spf and dkim. SMTP acceptance does not prove delivery or a DMARC pass.</value></data>
+  <data name="EmailTest_From" xml:space="preserve"><value>From</value></data>
+  <data name="EmailTest_To" xml:space="preserve"><value>To</value></data>
+  <data name="EmailTest_Subject" xml:space="preserve"><value>Subject</value></data>
+  <data name="EmailTest_Message" xml:space="preserve"><value>Message</value></data>
+  <data name="EmailTest_DefaultSubject" xml:space="preserve"><value>FullyQualified: DMARC test email</value></data>
+  <data name="EmailTest_DefaultMessage" xml:space="preserve"><value>This is an email authentication test sent from FullyQualified. Check the receiving server’s Authentication-Results header for DMARC, SPF and DKIM results.</value></data>
+  <data name="EmailTest_Send" xml:space="preserve"><value>Send test email</value></data>
+  <data name="EmailTest_Success" xml:space="preserve"><value>The SMTP server accepted the test email. Check the recipient’s inbox or spam folder and inspect the original headers for the DMARC result.</value></data>
+  <data name="EmailTest_InvalidFrom" xml:space="preserve"><value>Enter one valid From email address, without a display name.</value></data>
+  <data name="EmailTest_InvalidTo" xml:space="preserve"><value>Enter one valid recipient email address, without a display name.</value></data>
+  <data name="EmailTest_InvalidSubject" xml:space="preserve"><value>Enter a subject of at most 200 characters, without line breaks or control characters.</value></data>
+  <data name="EmailTest_InvalidMessage" xml:space="preserve"><value>Enter a message of at most 10,000 characters.</value></data>
+  <data name="EmailTest_Failed" xml:space="preserve"><value>The SMTP server could not send the test email. Check the sender address and the server’s SMTP settings. The attempt is recorded in the log.</value></data>
+  <data name="EmailTest_Rate" xml:space="preserve"><value>Your organization can send five test emails per minute. Please wait before trying again.</value></data>
+  <data name="EmailTest_Channel" xml:space="preserve"><value>Email test</value></data>
+  <data name="EmailTest_Accepted" xml:space="preserve"><value>SMTP accepted</value></data>
+  <data name="Tool_AlignmentDkim" xml:space="preserve"><value>DKIM alignment</value></data>
+  <data name="Tool_AlignmentSpf" xml:space="preserve"><value>SPF alignment</value></data>
+  <data name="Tool_Builder" xml:space="preserve"><value>DMARC record builder</value></data>
+  <data name="Tool_BuilderHelp" xml:space="preserve"><value>Creates an example TXT record and explanations. Review it before manually changing DNS. This tool never publishes records or receives reports.</value></data>
+  <data name="Tool_Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Tool_Cancelled" xml:space="preserve"><value>Diagnostic cancelled.</value></data>
+  <data name="Tool_Certificate" xml:space="preserve"><value>Certificate file / PEM</value></data>
+  <data name="Tool_CertificateFile" xml:space="preserve"><value>Certificate file (PEM / DER)</value></data>
+  <data name="Tool_CertificateHelp" xml:space="preserve"><value>Paste certificates or choose one file, up to 256 KiB. Pasted text is limited to 64 KiB. Never submit a private key. Certificates are inspected by this installation without third-party uploads.</value></data>
+  <data name="Tool_CertificateRequired" xml:space="preserve"><value>Paste PEM certificates or choose one certificate file, using only one input method.</value></data>
+  <data name="Tool_CertificateText" xml:space="preserve"><value>PEM certificate or chain</value></data>
+  <data name="Tool_Choose" xml:space="preserve"><value>Choose a tool</value></data>
+  <data name="Tool_Cleared" xml:space="preserve"><value>Inputs and results cleared.</value></data>
+  <data name="Tool_Dkim" xml:space="preserve"><value>DKIM selector inspection</value></data>
+  <data name="Tool_Dmarc" xml:space="preserve"><value>DMARC inspection</value></data>
+  <data name="Tool_Dns" xml:space="preserve"><value>DNS resolver comparison</value></data>
+  <data name="Tool_Domain" xml:space="preserve"><value>Domain</value></data>
+  <data name="Tool_Done" xml:space="preserve"><value>Diagnostic finished. Review the findings below.</value></data>
+  <data name="Tool_EmailHelp" xml:space="preserve"><value>Administrators can use the existing sending test. Sending email uses external mail queues and receiver records; review the retention notice before sending.</value></data>
+  <data name="Tool_EmailLink" xml:space="preserve"><value>Send an authorized DMARC test email</value></data>
+  <data name="Tool_EnvelopeFrom" xml:space="preserve"><value>Envelope sender (optional)</value></data>
+  <data name="Tool_Error_antiforgery" xml:space="preserve"><value>The session token is missing or expired. Reload the page and try again.</value></data>
+  <data name="Tool_Error_blocked" xml:space="preserve"><value>This installation does not allow checks of private or local network addresses.</value></data>
+  <data name="Tool_Error_dns_failed" xml:space="preserve"><value>DNS lookup failed. Check the name or try again later.</value></data>
+  <data name="Tool_Error_failed" xml:space="preserve"><value>The check could not be completed. No result was saved.</value></data>
+  <data name="Tool_Error_http_failed" xml:space="preserve"><value>The policy could not be retrieved over HTTPS.</value></data>
+  <data name="Tool_Error_invalid_host" xml:space="preserve"><value>Enter a valid hostname or IP address, without a URL or path.</value></data>
+  <data name="Tool_Error_invalid_input" xml:space="preserve"><value>Check the input and try again.</value></data>
+  <data name="Tool_Error_invalid_port" xml:space="preserve"><value>Enter a port between 1 and 65535.</value></data>
+  <data name="Tool_Error_rate" xml:space="preserve"><value>Too many checks are running or the request limit has been reached. Try again shortly.</value></data>
+  <data name="Tool_Error_too_large" xml:space="preserve"><value>The input exceeds the allowed size.</value></data>
+  <data name="Tool_Failed" xml:space="preserve"><value>The diagnostic could not be completed. Try again.</value></data>
+  <data name="Tool_FileLimit" xml:space="preserve"><value>The certificate file exceeds the 256 KiB limit.</value></data>
+  <data name="Tool_Forbidden" xml:space="preserve"><value>You do not have access to run this diagnostic.</value></data>
+  <data name="Tool_HeaderHelp" xml:space="preserve"><value>Paste headers only, up to 64 KiB. Authentication results in pasted headers are unverified assertions; this tool cannot prove message delivery or validate a DKIM signature.</value></data>
+  <data name="Tool_HeaderText" xml:space="preserve"><value>Message headers</value></data>
+  <data name="Tool_Headers" xml:space="preserve"><value>Mail header analyzer</value></data>
+  <data name="Tool_Helo" xml:space="preserve"><value>HELO name (optional)</value></data>
+  <data name="Tool_Host" xml:space="preserve"><value>Hostname or IP address</value></data>
+  <data name="Tool_HostHelp" xml:space="preserve"><value>Enter a hostname or IPv4/IPv6 address without a URL scheme or path.</value></data>
+  <data name="Tool_Imap" xml:space="preserve"><value>IMAP STARTTLS (143)</value></data>
+  <data name="Tool_Imaps" xml:space="preserve"><value>IMAP implicit TLS (993)</value></data>
+  <data name="Tool_Incomplete" xml:space="preserve"><value>Incomplete check</value></data>
+  <data name="Tool_Inherit" xml:space="preserve"><value>Inherit domain policy</value></data>
+  <data name="Tool_Intro" xml:space="preserve"><value>Inspect a target without adding it to monitoring. All signed-in roles can run these read-only checks.</value></data>
+  <data name="Tool_Invalid" xml:space="preserve"><value>Check the highlighted inputs before running the diagnostic.</value></data>
+  <data name="Tool_JavaScript" xml:space="preserve"><value>Enable JavaScript to run diagnostics and keep their inputs transient.</value></data>
+  <data name="Tool_MailRetention" xml:space="preserve"><value>This one-time test is not saved in FullyQualified. Sending mail uses the configured relay queue and may produce relay logs and a copy in the recipient mailbox. SMTP acceptance does not establish a DMARC result.</value></data>
+  <data name="Tool_Mode" xml:space="preserve"><value>Mail protocol</value></data>
+  <data name="Tool_MtaSts" xml:space="preserve"><value>MTA-STS / TLS-RPT</value></data>
+  <data name="Tool_Mx" xml:space="preserve"><value>Mail domain TLS (MX)</value></data>
+  <data name="Tool_NoResults" xml:space="preserve"><value>The diagnostic returned no findings.</value></data>
+  <data name="Tool_None" xml:space="preserve"><value>Monitor (none)</value></data>
+  <data name="Tool_Partial" xml:space="preserve"><value>Diagnostic incomplete. Review the partial findings and limitations below.</value></data>
+  <data name="Tool_Percentage" xml:space="preserve"><value>Policy percentage</value></data>
+  <data name="Tool_Policy" xml:space="preserve"><value>Domain policy</value></data>
+  <data name="Tool_Pop3" xml:space="preserve"><value>POP3 STLS (110)</value></data>
+  <data name="Tool_Pop3s" xml:space="preserve"><value>POP3 implicit TLS (995)</value></data>
+  <data name="Tool_Port" xml:space="preserve"><value>Port</value></data>
+  <data name="Tool_Privacy" xml:space="preserve"><value>Inputs and results stay on this page only. Refreshing, leaving, or resetting clears them. No diagnostic history is saved.</value></data>
+  <data name="Tool_PrivateKey" xml:space="preserve"><value>Private-key material must not be submitted. Use certificates only.</value></data>
+  <data name="Tool_Progress" xml:space="preserve"><value>Running diagnostic… Network tools can take up to one minute.</value></data>
+  <data name="Tool_Quarantine" xml:space="preserve"><value>Quarantine</value></data>
+  <data name="Tool_Rate" xml:space="preserve"><value>Too many diagnostics are running or the request limit was reached. Please try again shortly.</value></data>
+  <data name="Tool_Ready" xml:space="preserve"><value>Choose a tool and enter its inputs to begin.</value></data>
+  <data name="Tool_RecordType" xml:space="preserve"><value>DNS record type</value></data>
+  <data name="Tool_Reject" xml:space="preserve"><value>Reject</value></data>
+  <data name="Tool_Relaxed" xml:space="preserve"><value>Relaxed</value></data>
+  <data name="Tool_ReportUri" xml:space="preserve"><value>Aggregate report URI (optional)</value></data>
+  <data name="Tool_Reset" xml:space="preserve"><value>Clear inputs and results</value></data>
+  <data name="Tool_Results" xml:space="preserve"><value>Diagnostic findings</value></data>
+  <data name="Tool_Run" xml:space="preserve"><value>Run diagnostic</value></data>
+  <data name="Tool_Selector" xml:space="preserve"><value>DKIM selector</value></data>
+  <data name="Tool_SenderIp" xml:space="preserve"><value>Sender IP address (optional)</value></data>
+  <data name="Tool_ServerName" xml:space="preserve"><value>TLS server name (optional)</value></data>
+  <data name="Tool_ServerNameHelp" xml:space="preserve"><value>Use a separate expected identity for SNI and certificate name validation. Leave blank to use the target hostname.</value></data>
+  <data name="Tool_SignIn" xml:space="preserve"><value>Your session has expired. Sign in again to run diagnostics.</value></data>
+  <data name="Tool_Smtp" xml:space="preserve"><value>SMTP STARTTLS (25 / 587)</value></data>
+  <data name="Tool_Smtps" xml:space="preserve"><value>SMTP implicit TLS (465)</value></data>
+  <data name="Tool_Spf" xml:space="preserve"><value>SPF analysis</value></data>
+  <data name="Tool_SpfHelp" xml:space="preserve"><value>Without a sender IP, results describe static policy expansion rather than an actual message evaluation.</value></data>
+  <data name="Tool_Starttls" xml:space="preserve"><value>Mail TLS / STARTTLS</value></data>
+  <data name="Tool_Status" xml:space="preserve"><value>Status</value></data>
+  <data name="Tool_StatusError" xml:space="preserve"><value>Error</value></data>
+  <data name="Tool_StatusInfo" xml:space="preserve"><value>Information</value></data>
+  <data name="Tool_StatusOk" xml:space="preserve"><value>OK</value></data>
+  <data name="Tool_StatusUnknown" xml:space="preserve"><value>Unknown</value></data>
+  <data name="Tool_StatusWarning" xml:space="preserve"><value>Warning</value></data>
+  <data name="Tool_Strict" xml:space="preserve"><value>Strict</value></data>
+  <data name="Tool_SubdomainPolicy" xml:space="preserve"><value>Subdomain policy</value></data>
+  <data name="Tool_TextLimit" xml:space="preserve"><value>Pasted text exceeds the 64 KiB limit.</value></data>
+  <data name="Tool_Timeout" xml:space="preserve"><value>The time limit was reached. No conclusion can be drawn from checks that did not finish.</value></data>
+  <data name="Tool_Title" xml:space="preserve"><value>Diagnostic toolbox</value></data>
+  <data name="Tool_Tls" xml:space="preserve"><value>TLS endpoint</value></data>
+  <data name="Tool_Accepted" xml:space="preserve"><value>Accepted</value></data>
+  <data name="Tool_CertificateChainElement" xml:space="preserve"><value>Locally built chain certificate</value></data>
+  <data name="Tool_CertificateChainErrors" xml:space="preserve"><value>Chain validation errors</value></data>
+  <data name="Tool_CertificateChainNoRevocation" xml:space="preserve"><value>Built using the scanner's trust store and available intermediates. Certificate downloads and revocation checks are disabled.</value></data>
+  <data name="Tool_CertificateChainStatus" xml:space="preserve"><value>Chain status</value></data>
+  <data name="Tool_CertificateChainValidation" xml:space="preserve"><value>Local chain validation</value></data>
+  <data name="Tool_CertificateDetails" xml:space="preserve"><value>Certificate details</value></data>
+  <data name="Tool_CertificateDnsNames" xml:space="preserve"><value>DNS subject alternative names</value></data>
+  <data name="Tool_CertificateExpired" xml:space="preserve"><value>Expired</value></data>
+  <data name="Tool_CertificateFingerprint" xml:space="preserve"><value>SHA-256 fingerprint</value></data>
+  <data name="Tool_CertificateInspection" xml:space="preserve"><value>Certificate inspection</value></data>
+  <data name="Tool_CertificateIpNames" xml:space="preserve"><value>IP subject alternative names</value></data>
+  <data name="Tool_CertificateIssuer" xml:space="preserve"><value>Issuer</value></data>
+  <data name="Tool_CertificateLocalChain" xml:space="preserve"><value>OS-built certificate chain</value></data>
+  <data name="Tool_CertificateLocalOnly" xml:space="preserve"><value>Local inspection only; no live server identity was verified.</value></data>
+  <data name="Tool_CertificateNotAfter" xml:space="preserve"><value>Valid until (UTC)</value></data>
+  <data name="Tool_CertificateNotBefore" xml:space="preserve"><value>Valid from (UTC)</value></data>
+  <data name="Tool_CertificateNotYetValid" xml:space="preserve"><value>Not yet valid</value></data>
+  <data name="Tool_CertificatePublicKey" xml:space="preserve"><value>Public-key algorithm OID and bit length</value></data>
+  <data name="Tool_CertificateScope" xml:space="preserve"><value>Inspection scope</value></data>
+  <data name="Tool_CertificateSignature" xml:space="preserve"><value>Signature algorithm OID</value></data>
+  <data name="Tool_CertificateSubject" xml:space="preserve"><value>Subject</value></data>
+  <data name="Tool_MxOmitted" xml:space="preserve"><value>MX hosts omitted by limit</value></data>
+  <data name="Tool_MxResults" xml:space="preserve"><value>Mail exchangers</value></data>
+  <data name="Tool_MxStatus" xml:space="preserve"><value>MX status</value></data>
+  <data name="Tool_No" xml:space="preserve"><value>No</value></data>
+  <data name="Tool_NoMx" xml:space="preserve"><value>No MX record; no SMTP endpoint was inferred.</value></data>
+  <data name="Tool_NullMx" xml:space="preserve"><value>Null MX: the domain declares that it does not accept email.</value></data>
+  <data name="Tool_Rejected" xml:space="preserve"><value>Rejected</value></data>
+  <data name="Tool_StartTlsMalformed" xml:space="preserve"><value>The upgrade response was incomplete, malformed, or exceeded parser limits.</value></data>
+  <data name="Tool_StartTlsRefused" xml:space="preserve"><value>The server did not advertise or positively accept the required TLS upgrade.</value></data>
+  <data name="Tool_StartTlsUpgrade" xml:space="preserve"><value>STARTTLS upgrade</value></data>
+  <data name="Tool_TargetBlocked" xml:space="preserve"><value>Blocked by the installation's target-address policy.</value></data>
+  <data name="Tool_Tls13CipherControl" xml:space="preserve"><value>Independent TLS 1.3 cipher control</value></data>
+  <data name="Tool_Tls13CipherLimitation" xml:space="preserve"><value>Independent TLS 1.3 cipher-suite probes are not portable through this runtime and are not attempted.</value></data>
+  <data name="Tool_TlsAddress" xml:space="preserve"><value>Connected target address</value></data>
+  <data name="Tool_TlsAddressesOmitted" xml:space="preserve"><value>Addresses omitted by limit</value></data>
+  <data name="Tool_TlsCipher" xml:space="preserve"><value>Negotiated cipher suite</value></data>
+  <data name="Tool_TlsCipherCandidate" xml:space="preserve"><value>Offered TLS 1.2 cipher suite</value></data>
+  <data name="Tool_TlsCipherCandidates" xml:space="preserve"><value>Bounded TLS 1.2 cipher candidate list</value></data>
+  <data name="Tool_TlsCipherNotHonored" xml:space="preserve"><value>The negotiated cipher differed from the sole offered candidate, so this probe cannot establish support.</value></data>
+  <data name="Tool_TlsCipherPlatformLimitation" xml:space="preserve"><value>Single-suite probes are enabled only on Linux; this platform is reported as locally untestable.</value></data>
+  <data name="Tool_TlsCipherProbes" xml:space="preserve"><value>Cipher-suite probes</value></data>
+  <data name="Tool_TlsCipherScope" xml:space="preserve"><value>Cipher probe coverage</value></data>
+  <data name="Tool_TlsCipherScopeExplanation" xml:space="preserve"><value>Each listed TLS 1.2 suite is offered alone. This bounded list is not an exhaustive inventory of all historical suites.</value></data>
+  <data name="Tool_TlsEndpoint" xml:space="preserve"><value>TLS endpoint</value></data>
+  <data name="Tool_TlsHost" xml:space="preserve"><value>Target hostname</value></data>
+  <data name="Tool_TlsIdentity" xml:space="preserve"><value>SNI and expected server identity</value></data>
+  <data name="Tool_TlsInconclusive" xml:space="preserve"><value>Inconclusive</value></data>
+  <data name="Tool_TlsLimits" xml:space="preserve"><value>Scan limits</value></data>
+  <data name="Tool_TlsLocalPolicyLimitation" xml:space="preserve"><value>The scanner runtime or cryptographic platform cannot perform this probe. System crypto policy was not changed.</value></data>
+  <data name="Tool_TlsLocallyUntestable" xml:space="preserve"><value>Untestable locally</value></data>
+  <data name="Tool_TlsOutcome" xml:space="preserve"><value>Connection outcome</value></data>
+  <data name="Tool_TlsPeerChain" xml:space="preserve"><value>Peer certificate evidence</value></data>
+  <data name="Tool_TlsPort" xml:space="preserve"><value>Target port</value></data>
+  <data name="Tool_TlsProbeAmbiguous" xml:space="preserve"><value>The handshake failed; this may reflect local cryptographic restrictions or remote rejection. Remote support cannot be concluded.</value></data>
+  <data name="Tool_TlsProbeOutcome" xml:space="preserve"><value>Probe outcome</value></data>
+  <data name="Tool_TlsProtocol" xml:space="preserve"><value>Negotiated TLS protocol</value></data>
+  <data name="Tool_TlsProtocolProbe" xml:space="preserve"><value>Offered TLS protocol</value></data>
+  <data name="Tool_TlsProtocolProbes" xml:space="preserve"><value>Protocol probes</value></data>
+  <data name="Tool_TlsTimeout" xml:space="preserve"><value>Connection time limit reached</value></data>
+  <data name="Tool_TlsUnreachable" xml:space="preserve"><value>Endpoint unreachable</value></data>
+  <data name="Tool_TlsValidation" xml:space="preserve"><value>Server identity and certificate validation errors</value></data>
+  <data name="Tool_TlsWeakCipher" xml:space="preserve"><value>Accepted weak cipher suite</value></data>
+  <data name="Tool_TlsWeakCipherExplanation" xml:space="preserve"><value>This candidate uses legacy RSA key exchange or 3DES; modern forward-secret AEAD suites are preferred.</value></data>
+  <data name="Tool_TlsWireChain" xml:space="preserve"><value>Wire-supplied chain visibility</value></data>
+  <data name="Tool_TlsWireChainLimitation" xml:space="preserve"><value>SslStream exposes the peer leaf and an OS-built chain, not the complete chain as transmitted. Locally built certificates may come from local stores.</value></data>
+  <data name="Tool_TlsWireChainUnavailable" xml:space="preserve"><value>Complete wire-supplied chain unavailable through this runtime.</value></data>
+  <data name="Tool_TlsWireLeaf" xml:space="preserve"><value>Peer leaf certificate</value></data>
+  <data name="Tool_Unknown" xml:space="preserve"><value>Unknown</value></data>
+  <data name="Tool_Yes" xml:space="preserve"><value>Yes</value></data>
+  <data name="Tool_AlignmentNone" xml:space="preserve"><value>Not aligned</value></data>
+  <data name="Tool_AlignmentRelaxed" xml:space="preserve"><value>Relaxed alignment</value></data>
+  <data name="Tool_AlignmentStrict" xml:space="preserve"><value>Strict alignment</value></data>
+  <data name="Tool_Connection" xml:space="preserve"><value>Connection</value></data>
+  <data name="Tool_DkimDiscoveryOnly" xml:space="preserve"><value>Key discovery does not verify a message signature. The original signed message is required for verification.</value></data>
+  <data name="Tool_DkimKeyBits" xml:space="preserve"><value>Public key bits</value></data>
+  <data name="Tool_DkimKeyType" xml:space="preserve"><value>Public key type</value></data>
+  <data name="Tool_DkimRevoked" xml:space="preserve"><value>The selector key is revoked (empty p tag).</value></data>
+  <data name="Tool_DkimState" xml:space="preserve"><value>DKIM record state</value></data>
+  <data name="Tool_DkimVerification" xml:space="preserve"><value>Verification scope</value></data>
+  <data name="Tool_DmarcAlignmentExplanation" xml:space="preserve"><value>Strict alignment requires identical domains; relaxed alignment compares organizational domains using the Public Suffix List.</value></data>
+  <data name="Tool_DmarcBuilder" xml:space="preserve"><value>DMARC record builder</value></data>
+  <data name="Tool_DmarcBuilderExplanation" xml:space="preserve"><value>Builder scope</value></data>
+  <data name="Tool_DmarcBuilderTextOnly" xml:space="preserve"><value>Example TXT text only. Nothing is published or changed. Verify external report authorization before deployment.</value></data>
+  <data name="Tool_DmarcDkimAlignment" xml:space="preserve"><value>DKIM alignment mode</value></data>
+  <data name="Tool_DmarcEffectivePolicy" xml:space="preserve"><value>Effective DMARC policy</value></data>
+  <data name="Tool_DmarcPercentage" xml:space="preserve"><value>Policy percentage</value></data>
+  <data name="Tool_DmarcPercentageExplanation" xml:space="preserve"><value>The selected percentage requests how much failing mail receives the policy.</value></data>
+  <data name="Tool_DmarcPolicyExplanation" xml:space="preserve"><value>none requests monitoring; quarantine requests suspicious handling; reject requests rejection of mail failing DMARC.</value></data>
+  <data name="Tool_DmarcSource" xml:space="preserve"><value>Policy discovery domain</value></data>
+  <data name="Tool_DmarcSpfAlignment" xml:space="preserve"><value>SPF alignment mode</value></data>
+  <data name="Tool_DnsAddressLimit" xml:space="preserve"><value>Some nameserver addresses were omitted because of the configured limit.</value></data>
+  <data name="Tool_DnsAnswer" xml:space="preserve"><value>DNS answer (including TTL)</value></data>
+  <data name="Tool_DnsComparison" xml:space="preserve"><value>Comparison with configured resolver</value></data>
+  <data name="Tool_DnsConfigured" xml:space="preserve"><value>Configured recursive resolver</value></data>
+  <data name="Tool_DnsDifferent" xml:space="preserve"><value>Record data differs from the configured resolver.</value></data>
+  <data name="Tool_DnsEmpty" xml:space="preserve"><value>Successful response with no answer records (NODATA).</value></data>
+  <data name="Tool_DnsError" xml:space="preserve"><value>DNS could not be completed; the result is unknown.</value></data>
+  <data name="Tool_DnsIncomplete" xml:space="preserve"><value>Truncated DNS response; observations are incomplete.</value></data>
+  <data name="Tool_DnsMilliseconds" xml:space="preserve"><value>Query time (milliseconds)</value></data>
+  <data name="Tool_DnsNsLimit" xml:space="preserve"><value>Some authoritative nameservers were omitted because of the ten-host limit.</value></data>
+  <data name="Tool_DnsResolver" xml:space="preserve"><value>Resolver or authoritative nameserver</value></data>
+  <data name="Tool_DnsResponse" xml:space="preserve"><value>DNS response code</value></data>
+  <data name="Tool_DnsSame" xml:space="preserve"><value>Record data agrees; answer order and TTL differences are ignored.</value></data>
+  <data name="Tool_HeaderAlignmentOnly" xml:space="preserve"><value>Identity comparison only; this does not verify authentication or the configured DMARC alignment mode.</value></data>
+  <data name="Tool_HeaderAuthentication" xml:space="preserve"><value>Authentication-Results assertion</value></data>
+  <data name="Tool_HeaderDkim" xml:space="preserve"><value>DKIM-Signature header</value></data>
+  <data name="Tool_HeaderDkimAlignment" xml:space="preserve"><value>DKIM identity alignment</value></data>
+  <data name="Tool_HeaderFrom" xml:space="preserve"><value>From identity</value></data>
+  <data name="Tool_HeaderIdentityUnknown" xml:space="preserve"><value>A single valid From identity could not be determined.</value></data>
+  <data name="Tool_HeaderReceived" xml:space="preserve"><value>Received route hop (header order, newest first)</value></data>
+  <data name="Tool_HeaderReportedDkim" xml:space="preserve"><value>Reported DKIM result (unverified)</value></data>
+  <data name="Tool_HeaderReportedDmarc" xml:space="preserve"><value>Reported DMARC result (unverified)</value></data>
+  <data name="Tool_HeaderReportedSpf" xml:space="preserve"><value>Reported SPF result (unverified)</value></data>
+  <data name="Tool_HeaderReturnPath" xml:space="preserve"><value>Return-Path</value></data>
+  <data name="Tool_HeaderSelector" xml:space="preserve"><value>DKIM selector</value></data>
+  <data name="Tool_HeaderSigningDomain" xml:space="preserve"><value>DKIM signing domain</value></data>
+  <data name="Tool_HeaderSpf" xml:space="preserve"><value>Received-SPF assertion</value></data>
+  <data name="Tool_HeaderSpfAlignment" xml:space="preserve"><value>SPF identity alignment</value></data>
+  <data name="Tool_HeaderSyntax" xml:space="preserve"><value>Header syntax</value></data>
+  <data name="Tool_HeaderTrust" xml:space="preserve"><value>Authentication trust boundary</value></data>
+  <data name="Tool_HeaderUnverified" xml:space="preserve"><value>Pasted headers are unverified assertions. No trusted receiving boundary, message signature verification or delivery proof is available.</value></data>
+  <data name="Tool_InvalidRecord" xml:space="preserve"><value>Invalid or ambiguous record syntax</value></data>
+  <data name="Tool_Limit" xml:space="preserve"><value>Diagnostic limit</value></data>
+  <data name="Tool_MissingRecord" xml:space="preserve"><value>No matching record was published.</value></data>
+  <data name="Tool_MtaDiscovery" xml:space="preserve"><value>MTA-STS discovery TXT</value></data>
+  <data name="Tool_MtaMxCoverage" xml:space="preserve"><value>MX policy coverage</value></data>
+  <data name="Tool_MtaMxCovered" xml:space="preserve"><value>The MX host matches a policy pattern.</value></data>
+  <data name="Tool_MtaMxUncovered" xml:space="preserve"><value>The MX host does not match a policy pattern.</value></data>
+  <data name="Tool_MtaPolicy" xml:space="preserve"><value>HTTPS MTA-STS policy</value></data>
+  <data name="Tool_MtaSyntax" xml:space="preserve"><value>MTA-STS policy syntax</value></data>
+  <data name="Tool_PolicyUnavailable" xml:space="preserve"><value>The guarded HTTPS policy request could not complete. No valid policy is established.</value></data>
+  <data name="Tool_Record" xml:space="preserve"><value>Published record</value></data>
+  <data name="Tool_ReportAuthorization" xml:space="preserve"><value>External reporting authorization</value></data>
+  <data name="Tool_ReportAuthorized" xml:space="preserve"><value>External destination has a DMARC authorization record.</value></data>
+  <data name="Tool_ReportDestination" xml:space="preserve"><value>Report destination</value></data>
+  <data name="Tool_ReportUnauthorized" xml:space="preserve"><value>No valid external reporting authorization was found.</value></data>
+  <data name="Tool_SpfActualLookups" xml:space="preserve"><value>DNS-causing terms evaluated</value></data>
+  <data name="Tool_SpfConcrete" xml:space="preserve"><value>Concrete SPF sender evaluation</value></data>
+  <data name="Tool_SpfCycle" xml:space="preserve"><value>A cycle was found in include or redirect paths.</value></data>
+  <data name="Tool_SpfEvaluation" xml:space="preserve"><value>SPF sender result</value></data>
+  <data name="Tool_SpfEvaluationExplanation" xml:space="preserve"><value>Evaluation applies only to this IP and envelope/HELO identity. It does not establish DMARC, message authenticity or delivery.</value></data>
+  <data name="Tool_SpfFinding" xml:space="preserve"><value>SPF observation</value></data>
+  <data name="Tool_SpfIdentity" xml:space="preserve"><value>Evaluated SPF domain</value></data>
+  <data name="Tool_SpfLookupLimit" xml:space="preserve"><value>SPF exceeds the ten DNS-causing-term budget.</value></data>
+  <data name="Tool_SpfMacroUnknown" xml:space="preserve"><value>Macro-dependent domain expansion is not evaluated; the affected path is unknown.</value></data>
+  <data name="Tool_SpfMissing" xml:space="preserve"><value>No SPF policy was found in a required path.</value></data>
+  <data name="Tool_SpfMultiple" xml:space="preserve"><value>More than one SPF policy record was found.</value></data>
+  <data name="Tool_SpfMxLimit" xml:space="preserve"><value>The SPF MX expansion exceeds its ten-record/address work limit.</value></data>
+  <data name="Tool_SpfNoTerminal" xml:space="preserve"><value>There is no terminal all mechanism or redirect; unmatched senders receive neutral.</value></data>
+  <data name="Tool_SpfPermissive" xml:space="preserve"><value>The +all mechanism authorizes every sender.</value></data>
+  <data name="Tool_SpfPtrDiscouraged" xml:space="preserve"><value>The ptr mechanism is discouraged and requires reverse/forward validation.</value></data>
+  <data name="Tool_SpfPtrUnknown" xml:space="preserve"><value>Concrete ptr evaluation is unsupported; the result is unknown.</value></data>
+  <data name="Tool_SpfRecord" xml:space="preserve"><value>SPF policy and domain</value></data>
+  <data name="Tool_SpfScope" xml:space="preserve"><value>Analysis scope</value></data>
+  <data name="Tool_SpfSenderIp" xml:space="preserve"><value>Sender IP address</value></data>
+  <data name="Tool_SpfStatic" xml:space="preserve"><value>Static SPF expansion</value></data>
+  <data name="Tool_SpfStaticBudget" xml:space="preserve"><value>Conservative expansion counts lookup-causing terms across paths; this is separate from a concrete sender evaluation.</value></data>
+  <data name="Tool_SpfStaticLookups" xml:space="preserve"><value>Static expanded DNS-causing terms</value></data>
+  <data name="Tool_SpfStaticOnly" xml:space="preserve"><value>Static analysis is not proof that a message passes SPF. Supply a sender IP and optional envelope sender/HELO for a concrete evaluation.</value></data>
+  <data name="Tool_SpfSyntax" xml:space="preserve"><value>Invalid SPF policy syntax</value></data>
+  <data name="Tool_SpfVoidLimit" xml:space="preserve"><value>More than two void DNS answers were encountered; evaluation is incomplete.</value></data>
+  <data name="Tool_SpfVoidLookups" xml:space="preserve"><value>Void DNS answers encountered</value></data>
+  <data name="Tool_SpfWorkLimit" xml:space="preserve"><value>SPF expansion exceeded its bounded work or recursion limit.</value></data>
+  <data name="Tool_Target" xml:space="preserve"><value>Target</value></data>
+  <data name="Tool_TlsRpt" xml:space="preserve"><value>TLS-RPT discovery TXT</value></data>
+  <data name="Tool_TlsRptSyntax" xml:space="preserve"><value>TLS-RPT syntax</value></data>
+  <data name="Tool_ValidRecord" xml:space="preserve"><value>Record syntax is valid.</value></data>
+  <data name="Tool_Error_dns_incomplete" xml:space="preserve"><value>The DNS response was incomplete; the check cannot draw a conclusion.</value></data>
+  <data name="Tool_Error_invalid_certificate" xml:space="preserve"><value>Provide PEM certificate blocks or a DER certificate.</value></data>
+  <data name="Tool_Error_invalid_ip" xml:space="preserve"><value>Enter a valid sender IP address.</value></data>
+  <data name="Tool_Error_invalid_mode" xml:space="preserve"><value>Choose a supported mail TLS protocol.</value></data>
+  <data name="Tool_Error_invalid_policy" xml:space="preserve"><value>Check the DMARC policy and reporting addresses.</value></data>
+  <data name="Tool_Error_invalid_selector" xml:space="preserve"><value>Enter one valid DKIM selector.</value></data>
+  <data name="Tool_Error_invalid_sender" xml:space="preserve"><value>Enter a valid envelope sender or HELO hostname for a null sender.</value></data>
+  <data name="Tool_Error_invalid_type" xml:space="preserve"><value>Choose a supported DNS record type.</value></data>
+  <data name="Tool_Error_private_key" xml:space="preserve"><value>Private keys are not accepted. Provide public certificates only.</value></data>
+  <data name="Tool_RunIncomplete" xml:space="preserve"><value>The diagnostic was cancelled or reached its deadline; earlier observations are retained.</value></data>
+  <data name="Tool_TlsRunStopped" xml:space="preserve"><value>The run was cancelled or its time limit was reached. Collected observations are partial.</value></data>
+</root>

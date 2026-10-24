@@ -1,0 +1,17 @@
+@inject IStringLocalizer<SharedResource> L
+<div data-admin-root data-confirm-user="@L["Users_ConfirmRemove"]" data-confirm-invite="@L["Invites_ConfirmRevoke"]"
+     data-emailed="@L["Invites_Emailed"]" data-copy="@L["Invites_Copy"]" data-recovery="@L["Recovery_Created"]"
+     data-msg-last_admin="@L["Err_LastAdmin"]" data-msg-cannot_remove_self="@L["Err_CannotRemoveSelf"]" data-msg-cannot_reset_self="@L["Err_CannotResetSelf"]"
+     data-msg-email_exists="@L["Err_EmailExists"]" data-msg-invalid_email="@L["Err_InvalidEmail"]"
+     data-msg-invalid_role="@L["Err_InvalidRole"]" data-msg-not_found="@L["Err_NotFound"]"
+     data-msg-tenant_exists="@L["Err_TenantExists"]" data-msg-invalid_name="@L["Err_InvalidName"]"
+     data-msg-invalid_tier="@L["Err_InvalidTier"]" data-msg-invalid_limit="@L["Err_InvalidLimit"]" data-msg-confirm_mismatch="@L["Err_ConfirmMismatch"]"
+     data-msg-management_tenant="@L["Err_ManagementTenant"]" data-msg-user_limit="@L["Err_UserLimit"]" data-saved="@L["Alerts_Saved"]"
+     data-msg-forbidden="@L["Err_Forbidden"]" data-msg-failed="@L["Err_Failed"]">
+    @ChildContent
+    <p id="adm-error" class="error" role="alert" hidden></p>
+</div>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

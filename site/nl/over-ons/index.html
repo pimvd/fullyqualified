@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Over FullyQualified: open-source certificaat- en DNS-monitoring</title>
+<meta name="description" content="Waarom FullyQualified bestaat, hoe het is gebouwd, waar het voor staat en waar het nu staat.">
+<link rel="canonical" href="https://fullyqualified.eu/nl/over-ons/">
+<link rel="alternate" hreflang="en" href="https://fullyqualified.eu/about/">
+<link rel="alternate" hreflang="nl" href="https://fullyqualified.eu/nl/over-ons/">
+<link rel="alternate" hreflang="x-default" href="https://fullyqualified.eu/about/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FullyQualified">
+<meta property="og:title" content="Over FullyQualified: open-source certificaat- en DNS-monitoring">
+<meta property="og:description" content="Waarom FullyQualified bestaat, hoe het is gebouwd, waar het voor staat en waar het nu staat.">
+<meta property="og:url" content="https://fullyqualified.eu/nl/over-ons/">
+<meta property="og:locale" content="nl_NL">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:image" content="https://fullyqualified.eu/img/og-nl.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="FullyQualified: elk domein, fully qualified. Certificaten, DNS en NIS2.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0b5fff">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/style.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "AboutPage", "name": "Over FullyQualified: open-source certificaat- en DNS-monitoring", "url": "https://fullyqualified.eu/nl/over-ons/", "inLanguage": "nl", "description": "Waarom FullyQualified bestaat, hoe het is gebouwd, waar het voor staat en waar het nu staat."}</script>
+</head>
+<body>
+<a class="skip" href="#main">Naar de inhoud</a>
+<header class="site">
+<div class="wrap">
+<a class="brand" href="/nl/">Fully<span>Qualified</span></a>
+<nav aria-label="Hoofdmenu"><a href="/nl/">Home</a><a href="/nl/check/">Gratis check</a><a href="/nl/support/">Support</a><a href="/nl/over-ons/">Over ons</a></nav>
+<a class="lang" href="/about/" hreflang="en" lang="en">English</a>
+<a class="button ghost" href="https://github.com/pimvd/fullyqualified">GitHub</a>
+</div>
+</header>
+<main id="main">
+<article class="block page prose"><div class="wrap">
+<h1>Over FullyQualified</h1>
+<p class="lead">Een open-source tool die laat zien van welke certificaten en DNS-records je afhankelijk bent, en het bewijst.</p>
+
+
+<nav class="toc" aria-label="Op deze pagina"><ol><li><a href="#mission">Waarom het bestaat</a></li><li><a href="#name">Over de naam</a></li><li><a href="#built">Hoe het is gebouwd</a></li><li><a href="#principles">Waar het voor staat</a></li><li><a href="#status">Waar het nu staat</a></li><li><a href="#involved">Doe mee</a></li></ol></nav>
+<section id="mission"><h2>Waarom het bestaat</h2><p>Certificaten en DNS-records houden de websites, e-mail en logins van een bedrijf stilletjes bij elkaar. Ze worden ook als eerste vergeten: een certificaat dat op zondag verloopt, een MX-record dat iemand heeft aangepast, een subdomein dat nog wijst naar een dienst waar niemand meer eigenaar van is.</p><p>Grote enterprise-tools lossen dit op tegen een prijs en complexiteit die kleine en middelgrote Europese bedrijven niet kunnen rechtvaardigen, en eenvoudige scripts missen inventaris en context. FullyQualified zit daartussenin: alles zien, een melding krijgen als er iets verandert, en een auditor het bewijs geven.</p></section><section id="name"><h2>Over de naam</h2><p>Een fully qualified domain name (FQDN) is de volledige naam van een host, zoals www.example.com, inclusief elk onderdeel tot en met het topniveaudomein. Dat is precies het detailniveau waarop deze tool werkt: niet één certificaat of één record, maar elke naam die van jou is, volledig uitgeschreven.</p></section><section id="built"><h2>Hoe het is gebouwd</h2><p>FullyQualified is ontworpen en gebouwd door een klein team van AI-agents (Claude Code en Codex), elk met een vaste rol: architectuur, ontwikkeling, testen, review en content. Ze werken uitsluitend via GitHub-issues en pull requests.</p><p>Niets komt in de hoofdbranch zonder review door een ander model en goedkeuring door een mens, en de architectuur ligt vast in openbare beslisdocumenten. Je kunt alles nalezen in de repository.</p></section><section id="principles"><h2>Waar het voor staat</h2><div class="grid"><div class="card"><h3>Eerst kijken, dan handelen</h3><p>Monitoren en rapporteren gaan vóór elke geautomatiseerde wijziging. FullyQualified leest alleen: DNS-vragen, TLS-handshakes en openbare Certificate Transparency-logs.</p></div><div class="card"><h3>Bewijs boven dashboards</h3><p>Het gaat niet om nog een scherm. Het gaat om een rapport dat je aan een auditor of klant kunt geven.</p></div><div class="card"><h3>Europees en open</h3><p>Open source onder de AGPL-3.0, zelf te hosten, met een gehoste versie gepland in de EU.</p></div><div class="card"><h3>Klein en scherp</h3><p>Geen uitwaaiering naar uptimemonitoring, verwerking van DMARC-rapporten of het uitgeven van certificaten. Minder functies, goed gedaan.</p></div></div></section><section id="status"><h2>Waar het nu staat</h2><p>Vandaag kun je FullyQualified zelf draaien: certificaat- en DNS-controles, wijzigingsdetectie, alarmen, een NIS2-rapport als PDF en Excel, accounts met passkeys, rollen, single sign-on en gescheiden tenants.</p><ul><li>Gepland: een gehoste versie in de EU, cloudkoppelingen (te beginnen met Azure) en later geautomatiseerd vernieuwen.</li><li>Niet gepland: certificaten uitgeven, uptimemonitoring en verwerking van DMARC-rapporten.</li></ul></section><section id="involved"><h2>Doe mee</h2><p>Het project leeft op GitHub. Probeer het op je eigen domeinen en vertel ons wat er ontbreekt, meld bugs of stel een vraag. Externe pull requests worden nog niet geaccepteerd, omdat de agents de code schrijven; dat verandert zodra de community groeit.</p><p><a class="button" href="https://github.com/pimvd/fullyqualified">GitHub</a> <a class="button ghost" href="https://github.com/pimvd/fullyqualified/issues">Issues</a></p></section>
+</div></article>
+</main>
+<footer class="site"><div class="wrap"><span>FullyQualified is open source software onder de AGPL-3.0.</span><span><a href="/nl/support/">Support</a><a href="/nl/over-ons/">Over ons</a><a href="/nl/privacy/">Privacy</a><a href="/nl/voorwaarden/">Voorwaarden</a><a href="https://github.com/pimvd/fullyqualified">Broncode</a><a href="https://github.com/pimvd/fullyqualified/issues">Issues</a><a href="https://github.com/pimvd/fullyqualified/blob/master/LICENSE">Licentie</a></span></div></footer>
+</body>
+</html>

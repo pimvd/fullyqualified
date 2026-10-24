@@ -1,0 +1,296 @@
+@page "/"
+@inject AppDbContext Db
+@inject JobQueue Queue
+@inject PlanService Plans
+@inject IConfiguration Config
+@inject IStringLocalizer<SharedResource> L
+@inject NavigationManager Nav
+
+<PageTitle>FullyQualified</PageTitle>
+<h1>@L["Nav_Dashboard"]</h1>
+
+<section class="tiles">
+    <div class="tile"><b>@assets.Count</b><span>@L["Tile_Assets"]</span></div>
+    <div class="tile @(expiring > 0 ? "warn" : "")"><b>@expiring</b><span>@L["Tile_Expiring"]</span></div>
+    <div class="tile @(problems > 0 ? "bad" : "")"><b>@problems</b><span>@L["Tile_Problems"]</span></div>
+    <div class="tile"><b>@recentChanges</b><span>@L["Tile_Changes"]</span></div>
+</section>
+
+@if (canEdit)
+{
+    <section class="card">
+        <h2>@L["CheckAll_Title"]</h2>
+        <p class="muted">@L["CheckAll_Text", Cooldown]</p>
+        <form method="post" @onsubmit="CheckAllAsync" @formname="check-all"><AntiforgeryToken /><button>@L["CheckAll_Button"]</button></form>
+        @if (checkNotice is not null) { <p class="@(checkIsError ? "error" : "ok-text")" role="status">@checkNotice</p> }
+    </section>
+
+    <section class="card">
+        <h2>@L["Add_Title"]</h2>
+        <EditForm Model="Model!" FormName="add-asset" OnValidSubmit="AddAsync" method="post" class="inline">
+            <InputText @bind-Value="Model!.Name" placeholder="@L["Add_Placeholder"]" />
+            <button type="submit">@L["Add_Button"]</button>
+        </EditForm>
+        @if (error is not null) { <p class="error">@L[error]</p> }
+        @if (plan is not null)
+        {
+            <p class="muted"><small>@L["Plan_Domains"]: @Used(plan.Usage.Domains, plan.Limits.MaxDomains) · @L["Plan_Endpoints"]: @Used(plan.Usage.Endpoints, plan.Limits.MaxEndpoints) · <a href="/organization">@L["Plan_Title"]</a></small></p>
+        }
+    </section>
+}
+
+@if (pendingReview > 0)
+{
+    <section class="card review-banner">
+        <p>@L["Review_Banner", pendingReview]</p>
+        <a class="button" href="/review">@L["Review_BannerButton"]</a>
+    </section>
+}
+@if (Done is { Length: > 0 } done && done.Split(':') is [var what, var n])
+{
+    <p class="@(n == "0" ? "error" : "ok-text")" role="status">@(n == "0" ? L["Bulk_None"].Value : L[what == "pause" ? "Bulk_Paused" : "Bulk_Resumed", n].Value)</p>
+}
+@if (Deleted is { } gone)
+{
+    <p class="@(gone == 0 ? "error" : "ok-text")" role="status">@(gone == 0 ? L["Bulk_None"].Value : L["Bulk_Deleted", gone].Value)</p>
+}
+
+<section class="card">
+    @if (assets.Count == 0)
+    {
+        <p class="muted">@L["Empty_Assets"]</p>
+    }
+    else
+    {
+        <form method="get" action="/" class="filters">
+            <input type="search" name="q" value="@Q" placeholder="@L["Filter_Search"]" aria-label="@L["Filter_Search"]" />
+            <select name="source" aria-label="@L["Col_Origin"]">
+                <option value="">@L["Filter_AllOrigins"]</option>
+                <option value="added" selected="@(Source == "added")">@L["Origin_added"]</option>
+                <option value="discovered" selected="@(Source == "discovered")">@L["Origin_discovered"]</option>
+            </select>
+            <select name="type" aria-label="@L["Col_Type"]">
+                <option value="">@L["Filter_AllTypes"]</option>
+                <option value="domain" selected="@(Type == "domain")">@L["Kind_Domain"]</option>
+                <option value="endpoint" selected="@(Type == "endpoint")">@L["Kind_Endpoint"]</option>
+            </select>
+            <select name="status" aria-label="@L["Col_Status"]">
+                <option value="">@L["Filter_AllStatuses"]</option>
+                <option value="problems" selected="@(StatusFilter == "problems")">@L["Filter_Problems"]</option>
+                <option value="paused" selected="@(StatusFilter == "paused")">@L["Status_Paused"]</option>
+                @foreach (var st in new[] { "ok", "warning", "error", "critical", "pending" })
+                {
+                    <option value="@st" selected="@(StatusFilter == st)">@L["Status_" + char.ToUpperInvariant(st[0]) + st[1..]]</option>
+                }
+            </select>
+            <button type="submit">@L["Filter_Apply"]</button>
+            @if (filtering) { <a class="button secondary" href="/">@L["Filter_Reset"]</a> }
+        </form>
+        <p class="muted"><small>@L["Filter_Count", shown.Count, assets.Count]</small></p>
+
+        @if (shown.Count == 0)
+        {
+            <p class="muted">@L["Filter_None"]</p>
+        }
+        else
+        {
+            <form method="post" @onsubmit="BulkAsync" @formname="bulk-delete">
+            <AntiforgeryToken />
+            @if (canEdit)
+            {
+                <p class="actions bulk">
+                    <label class="check-row"><input type="checkbox" aria-label="@L["Bulk_SelectAll"]" onclick="document.querySelectorAll('input[name=ids]').forEach(c => c.checked = this.checked)" /> @L["Bulk_SelectAll"]</label>
+                    <button name="bulk" value="pause" class="secondary" onclick="if (!document.querySelector('input[name=ids]:checked')) return false;">@L["Bulk_Pause"]</button>
+                    <button name="bulk" value="resume" class="secondary" onclick="if (!document.querySelector('input[name=ids]:checked')) return false;">@L["Bulk_Resume"]</button>
+                    <button name="bulk" value="delete" class="danger" onclick="if (!document.querySelector('input[name=ids]:checked')) return false; return confirm('@L["Bulk_Confirm"]')">@L["Bulk_Delete"]</button>
+                    <small class="muted">@L["Bulk_Note"]</small>
+                </p>
+            }
+            <table class="assets">
+                <thead><tr>@if (canEdit) { <th class="pick"></th> }<th>@L["Col_Name"]</th><th>@L["Col_Type"]</th><th>@L["Col_Origin"]</th><th>@L["Col_Status"]</th><th>@L["Col_Why"]</th></tr></thead>
+                <tbody>
+                @foreach (var a in shown)
+                {
+                    var st = board[a.Id];
+                    <tr>
+                        @if (canEdit) { <td class="pick"><input type="checkbox" name="ids" value="@a.Id" aria-label="@a.Name" /></td> }
+                        <td class="name"><a href="/assets/@a.Id">@a.Name</a> <button type="button" class="dig-link" data-dig-name="@a.Name" title="@L["Dig_Open"]">dig</button></td>
+                        <td class="nowrap">@L["Kind_" + a.Kind]</td>
+                        <td class="nowrap origin-cell">
+                            <span class="badge origin @(a.Discovered ? "discovered" : "added")" title="@Discovery.Explain(L, a, Parent(a))">@L[a.Discovered ? "Origin_discovered" : "Origin_added"]</span>
+                            @if (a.Discovered)
+                            {
+                                <div class="muted"><small>@Discovery.Short(L, a, Parent(a))</small></div>
+                            }
+                        </td>
+                        <td class="nowrap"><StatusBadge Paused="st.Paused" Status="st.Worst ?? (st.Checks.Count > 0 ? CheckStatus.Ok : null)" /></td>
+                        <td class="why">
+                            @if (st.Paused)
+                            {
+                                <div class="reason paused-note"><b>@L["Status_Paused"]:</b> @PauseText(st.Asset)</div>
+                            }
+                            else if (st.MutedCount > 0)
+                            {
+                                <div class="reason muted-note">@L["Mute_Count", st.MutedCount]</div>
+                            }
+                            @foreach (var (check, text, status, code) in Reasons(st))
+                            {
+                                <div class="reason @status.ToString().ToLowerInvariant()"><b>@L["Check_" + check]:</b> @text
+                                    <a class="fix-link" href="/fix?asset=@a.Id&check=@check&code=@Uri.EscapeDataString(code)">@L["Fix_Link"]</a></div>
+                            }
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+            </form>
+        }
+    }
+</section>
+
+@code {
+    [CascadingParameter] HttpContext? Ctx { get; set; }
+    bool canEdit => Roles.CanEdit(Ctx?.User);
+    [SupplyParameterFromForm] AddModel? Model { get; set; }
+    [SupplyParameterFromQuery(Name = "deleted")] int? Deleted { get; set; }
+    [SupplyParameterFromQuery(Name = "done")] string? Done { get; set; }
+    [SupplyParameterFromQuery(Name = "q")] string? Q { get; set; }
+    [SupplyParameterFromQuery(Name = "source")] string? Source { get; set; }
+    [SupplyParameterFromQuery(Name = "type")] string? Type { get; set; }
+    [SupplyParameterFromQuery(Name = "status")] string? StatusFilter { get; set; }
+    bool filtering => !string.IsNullOrEmpty(Q) || !string.IsNullOrEmpty(Source) || !string.IsNullOrEmpty(Type) || !string.IsNullOrEmpty(StatusFilter);
+    List<Asset> shown = [];
+    List<Asset> assets = [];
+    Dictionary<Guid, AssetStatus> board = [];
+    int expiring, problems, recentChanges, pendingReview;
+    string? error;
+    string? checkNotice;
+    bool checkIsError;
+    string Cooldown => (plan?.Limits.ManualCooldownMinutes ?? Config.GetValue("Scanning:ManualCooldownMinutes", 5.0)).ToString("0.##");
+    Plan? plan;
+    string Used(int n, int? max) => max is null ? n.ToString() : $"{n} / {max}";
+    Guid? tenantId => Roles.TenantId(Ctx?.User);
+
+    class AddModel { public string Name { get; set; } = ""; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Model ??= new();
+        if (tenantId is { } t) plan = await Plans.ForAsync(t);
+        assets = await Db.Assets.OrderBy(a => a.Name).ToListAsync();
+        var now = DateTimeOffset.UtcNow;
+        board = await StatusBoard.LoadAsync(Db, now);
+        // Muted certificates and everything on paused assets stay out of the counts.
+        var pausedIds = board.Values.Where(b => b.Paused).Select(b => b.Asset.Id).ToList();
+        expiring = await Db.Certificates.CountAsync(c => c.Source == "endpoint" && !(c.Muted && (c.MutedUntil == null || c.MutedUntil > now)) && c.NotAfter <= now.AddDays(30) && !pausedIds.Contains(c.AssetId));
+        problems = board.Values.Count(b => b.NeedsAttention);
+        pendingReview = await Db.ReviewHosts.CountAsync(h => h.State == ReviewState.Pending);
+        recentChanges = await Db.Changes.CountAsync(c => c.DetectedAt >= now.AddDays(-7));
+        shown = Filter();
+    }
+
+    /// <summary>Everything that is not fine about an asset, from every check, so the dashboard says why a status is what it is.</summary>
+    List<(string Check, string Text, CheckStatus Status, string Code)> Reasons(AssetStatus st)
+    {
+        var list = new List<(string, string, CheckStatus, string)>();
+        if (st.Paused) return list;
+        foreach (var (r, e) in st.Checks.Where(c => c.Effective.Active.Count > 0))
+        {
+            if (r.CheckType == "dns") list.AddRange(e.Active.Select(code => (r.CheckType, ResourceText.IssueText(L, code), e.Status ?? r.Status, code)));
+            else list.Add((r.CheckType, ResourceText.Summary(L, r.Summary), e.Status ?? r.Status, e.Active[0]));
+        }
+        return list;
+    }
+
+    string PauseText(Asset a)
+    {
+        var until = a.PausedUntil is { } u ? L["Pause_Until", u.ToString("yyyy-MM-dd")].Value : L["Pause_Indefinitely"].Value;
+        return string.IsNullOrEmpty(a.PausedReason) ? until : $"{until} · {a.PausedReason}";
+    }
+
+    /// <summary>The asset whose certificate search found this one. Older rows did not record it, so fall back to the manually added domain that the name belongs to.</summary>
+    Asset? Parent(Asset a) => !a.Discovered ? null
+        : assets.FirstOrDefault(p => p.Id == a.DiscoveredFromId)
+          ?? assets.Where(p => !p.Discovered && p.Kind == AssetKind.Domain && a.Name.EndsWith("." + p.Name, StringComparison.Ordinal)).OrderByDescending(p => p.Name.Length).FirstOrDefault();
+
+    /// <summary>Most urgent first, then by name.</summary>
+    List<Asset> Filter()
+    {
+        CheckStatus? Worst(Asset a) => board[a.Id].Worst;
+        bool Paused(Asset a) => board[a.Id].Paused;
+        bool HasResults(Asset a) => board[a.Id].Checks.Count > 0;
+        var q = (Q ?? "").Trim();
+        return assets
+            .Where(a => q.Length == 0 || a.Name.Contains(q, StringComparison.OrdinalIgnoreCase))
+            .Where(a => Source switch { "added" => !a.Discovered, "discovered" => a.Discovered, _ => true })
+            .Where(a => Type switch { "domain" => a.Kind == AssetKind.Domain, "endpoint" => a.Kind == AssetKind.Endpoint, _ => true })
+            .Where(a => StatusFilter switch
+            {
+                "problems" => board[a.Id].NeedsAttention,
+                "paused" => Paused(a),
+                "pending" => !Paused(a) && !HasResults(a),
+                "ok" => !Paused(a) && HasResults(a) && (Worst(a) ?? CheckStatus.Ok) == CheckStatus.Ok,
+                "warning" => !Paused(a) && Worst(a) == CheckStatus.Warning,
+                "error" => !Paused(a) && Worst(a) == CheckStatus.Error,
+                "critical" => !Paused(a) && Worst(a) == CheckStatus.Critical,
+                _ => true,
+            })
+            .OrderByDescending(a => Paused(a) ? -2 : (int?)Worst(a) ?? -1).ThenBy(a => a.Name).ToList();
+    }
+
+    /// <summary>Acts on the assets ticked in the table: pause, resume or delete. The current filters stay.</summary>
+    async Task BulkAsync()
+    {
+        if (!canEdit || Ctx is null) return;
+        var action = Ctx.Request.Form["bulk"].ToString();
+        var ids = Ctx.Request.Form["ids"].Select(v => Guid.TryParse(v, out var g) ? g : (Guid?)null)
+            .Where(g => g is not null).Select(g => g!.Value).Distinct().ToList();
+        var rows = ids.Count == 0 ? [] : await Db.Assets.Where(a => ids.Contains(a.Id)).ToListAsync(); // the tenant filter drops anything that is not ours
+        var now = DateTimeOffset.UtcNow;
+        switch (action)
+        {
+            case "pause":
+                foreach (var a in rows.Where(a => !a.IsPaused(now))) { a.PausedAt = now; a.PausedUntil = null; a.PausedReason = null; }
+                await Db.Jobs.Where(j => ids.Contains(j.AssetId)).ExecuteDeleteAsync();
+                await Db.SaveChangesAsync();
+                Nav.NavigateTo(Nav.GetUriWithQueryParameter("done", $"pause:{rows.Count}"), forceLoad: true);
+                return;
+            case "resume":
+                foreach (var a in rows) { a.PausedAt = null; a.PausedUntil = null; a.PausedReason = null; }
+                await Db.SaveChangesAsync();
+                foreach (var a in rows) await Queue.EnqueueAsync(a);
+                Nav.NavigateTo(Nav.GetUriWithQueryParameter("done", $"resume:{rows.Count}"), forceLoad: true);
+                return;
+            default:
+                await ReviewHosts.IgnoreRemovedAsync(Db, rows, Ctx.User.Identity?.Name); // discovered hostnames that are deleted stay away
+                Db.Assets.RemoveRange(rows);
+                await Db.SaveChangesAsync();
+                Nav.NavigateTo(Nav.GetUriWithQueryParameter("deleted", rows.Count), forceLoad: true);
+                return;
+        }
+    }
+
+    async Task CheckAllAsync()
+    {
+        if (!canEdit || tenantId is not { } id) return;
+        var r = await Queue.EnqueueAllAsync(id, DateTimeOffset.UtcNow);
+        checkIsError = r.Wait is not null;
+        checkNotice = r.Wait is { } wait ? L["CheckAll_Cooldown", Math.Ceiling(wait.TotalMinutes)].Value
+            : r.Queued == 0 ? L["CheckAll_AlreadyQueued"].Value : L["CheckAll_Queued", r.Queued].Value;
+    }
+
+    async Task AddAsync()
+    {
+        if (!canEdit) return;
+        var name = HostName.Normalize(Model!.Name);
+        if (name is null) { error = "Add_Invalid"; return; }
+        if (await Db.Assets.AnyAsync(a => a.Name == name)) { error = "Add_Duplicate"; return; }
+        var kind = name.Contains(':') ? AssetKind.Endpoint : AssetKind.Domain;
+        if (await Plans.ForAsync(tenantId!.Value) is { } current && current.Blocks(kind) is { } blocked) { error = blocked; plan = current; return; }
+        var asset = new Asset { Name = name, Kind = kind };
+        Db.Assets.Add(asset);
+        await Db.SaveChangesAsync();
+        await Queue.EnqueueAsync(asset);
+        Nav.NavigateTo($"/assets/{asset.Id}");
+    }
+}

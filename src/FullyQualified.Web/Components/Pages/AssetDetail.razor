@@ -1,0 +1,308 @@
+@page "/assets/{Id:guid}"
+@inject AppDbContext Db
+@inject JobQueue Queue
+@inject IStringLocalizer<SharedResource> L
+@inject NavigationManager Nav
+
+@if (!loaded)
+{
+    // Blazor may render once between the first and the last query; the page is only drawn when everything is there.
+}
+else if (asset is null || status is null)
+{
+    <p>@L["Detail_NotFound"]</p>
+}
+else
+{
+    <PageTitle>@asset.Name</PageTitle>
+    <p><a href="/">← @L["Detail_Back"]</a></p>
+    <h1>@asset.Name <StatusBadge Paused="status!.Paused" Status="status.Worst ?? (status.Checks.Count > 0 ? CheckStatus.Ok : null)" /> <button type="button" class="dig-link" data-dig-name="@asset.Name" title="@L["Dig_Open"]">dig</button></h1>
+    @if (canEdit)
+    {
+        <div class="actions">
+            @if (!status.Paused) { <form method="post" @onsubmit="ScanAsync" @formname="scan"><AntiforgeryToken /><button>@L["Detail_ScanNow"]</button></form> }
+            <form method="post" @onsubmit="DeleteAsync" @formname="delete"><AntiforgeryToken />
+                <button class="danger" onclick="return confirm('@L["Detail_Confirm"]')">@L["Detail_Delete"]</button></form>
+        </div>
+    }
+
+    @if (status.Paused)
+    {
+        <section class="card paused-card">
+            <h2>⏸ @L["Status_Paused"]</h2>
+            <p>@(asset.PausedUntil is { } until ? L["Pause_UntilLong", until.ToString("yyyy-MM-dd")].Value : L["Pause_IndefinitelyLong"].Value)@(string.IsNullOrEmpty(asset.PausedReason) ? "" : " · " + asset.PausedReason)</p>
+            <p class="muted">@L["Pause_Effect"]</p>
+            @if (canEdit)
+            {
+                <form method="post" action="/assets/@asset.Id/resume"><AntiforgeryToken /><button>@L["Pause_Resume"]</button></form>
+            }
+        </section>
+    }
+    else if (canEdit)
+    {
+        <details class="howto pause-form">
+            <summary>⏸ @L["Pause_Title"]</summary>
+            <p class="muted">@L["Pause_Help"]</p>
+            <form method="post" action="/assets/@asset.Id/pause" class="inline">
+                <AntiforgeryToken />
+                <label>@L["Pause_UntilLabel"] <input type="date" name="until" min="@Tomorrow" /></label>
+                <input type="text" name="reason" maxlength="200" placeholder="@L["Pause_Reason"]" />
+                <button type="submit">@L["Pause_Button"]</button>
+            </form>
+        </details>
+    }
+
+    <p class="muted">@L["Col_Origin"]: @L[asset.Discovered ? "Origin_discovered" : "Origin_added"]</p>
+    @if (asset.Discovered)
+    {
+        <section class="card">
+            <h2>@L["Disc_Title"]</h2>
+            <p>@Discovery.Explain(L, asset, parent)</p>
+            @if (parent is not null) { <p><a href="/assets/@parent.Id">@parent.Name →</a></p> }
+        </section>
+    }
+
+    @if (asset.Kind == AssetKind.Domain && !asset.Discovered)
+    {
+        var ct = status.Checks.FirstOrDefault(c => c.Result.CheckType == "ct").Result;
+        <section class="card">
+            <h2>@L["Discover_Title"]</h2>
+            <p class="muted">@L["Discover_Help"]</p>
+            @if (ct is not null)
+            {
+                <p>@L["Discover_Last"]: @ct.ObservedAt.ToString("yyyy-MM-dd HH:mm") UTC · @ResourceText.Summary(L, ct.Summary)
+                    @if (ct.Status == CheckStatus.Error) { <a class="fix-link" href="@FixHref("ct", "CtError")">@L["Fix_Link"]</a> }</p>
+            }
+            @if (reviewCounts.Pending > 0) { <p><a href="/review?parent=@asset.Id">@L["Discover_Pending", reviewCounts.Pending] →</a></p> }
+            else if (reviewCounts.Total > 0) { <p><a href="/review?parent=@asset.Id&state=all">@L["Discover_Reviewed", reviewCounts.Total] →</a></p> }
+            @if (canEdit && !status.Paused)
+            {
+                <form method="post" action="/assets/@asset.Id/discover"><AntiforgeryToken />
+                    <button type="submit" disabled="@discoverQueued">@(discoverQueued ? L["Discover_Queued"].Value : L["Discover_Button"].Value)</button></form>
+            }
+        </section>
+    }
+
+    @if (asset.Kind == AssetKind.Domain && canEdit)
+    {
+        <section class="card">
+            <h2>@L["Dkim_Title"]</h2>
+            <p class="muted">@L["Dkim_Help"]</p>
+            <EditForm Model="Dkim!" FormName="dkim" OnValidSubmit="SaveDkimAsync" method="post" class="inline">
+                <InputText @bind-Value="Dkim!.Selectors" placeholder="@L["Dkim_Placeholder"]" maxlength="400" />
+                <button type="submit">@L["Dkim_Save"]</button>
+            </EditForm>
+            @if (dkimError) { <p class="error">@L["Dkim_Invalid"]</p> }
+        </section>
+    }
+
+    <section class="card">
+        <h2>@L["Detail_Checks"]</h2>
+        @if (results.Count == 0) { <p class="muted">@L["Empty_Generic"]</p> }
+        @foreach (var (r, e) in status.Checks)
+        {
+            <div class="check @(e.Optional ? "optional" : "")">
+                <div class="check-head"><b>@L["Check_" + r.CheckType]</b> <StatusBadge Status="ShownStatus(r, e)" />
+                    @if (e.Optional && r.CheckType != "ct") { <span class="badge optional">@L["Mute_OptionalBadge"]</span> }
+                    <span class="muted">@r.ObservedAt.ToString("yyyy-MM-dd HH:mm") UTC</span>
+                    @if (canEdit && r.CheckType != "ct")
+                    {
+                        @if (e.Optional) { @UnmuteForm(r.CheckType, CheckMute.WholeCheck, L["Mute_MakeRequired"]) }
+                        else { @MuteForm(r.CheckType, CheckMute.WholeCheck, L["Mute_MakeOptional"]) }
+                    }
+                    @if (e.Optional && MuteNote(r.CheckType, CheckMute.WholeCheck) is { } optionalNote) { <span class="muted"><small>@optionalNote</small></span> }
+                </div>
+                <div>@ResourceText.Summary(L, r.Summary)</div>
+                @foreach (var code in e.Active)
+                {
+                    <div class="issue">⚠ @FindingText(r, code)
+                        <a class="fix-link" href="@FixHref(r.CheckType, code)">@L["Fix_Link"]</a>
+                        @if (canEdit) { @MuteForm(r.CheckType, code, L["Mute_Button"]) }</div>
+                }
+                @if (!e.Optional)
+                {
+                    @foreach (var code in e.Silenced)
+                    {
+                        <div class="issue silenced">🔕 @FindingText(r, code) <a class="fix-link" href="@FixHref(r.CheckType, code)">@L["Fix_Link"]</a> <small>@(MuteNote(r.CheckType, code) ?? L["Mute_ByCert"].Value)</small>
+                            @if (canEdit && mutes.Any(m => m.CheckType == r.CheckType && m.Code == code)) { @UnmuteForm(r.CheckType, code, L["Mute_Unmute"]) }</div>
+                    }
+                }
+                @if (r.CheckType == "dns")
+                {
+                    <dl>
+                    @foreach (var kv in r.Values.Where(kv => !kv.Key.StartsWith('_') && kv.Value != ""))
+                    {
+                        <dt><DnsKey Key="@kv.Key" Asset="@asset.Name" /></dt>
+                        <dd>
+                            @if (kv.Key == "dkim")
+                            {
+                                // The selectors found by trying common names: each opens its own record.
+                                @foreach (var sel in kv.Value.Split(", ", StringSplitOptions.RemoveEmptyEntries))
+                                {
+                                    <button type="button" class="dig-key" data-dig-name="@($"{sel}._domainkey.{Targets.Parse(asset.Name).Host}")" data-dig-as="TXT" title="@L["Dig_LookUp", $"{sel}._domainkey.{Targets.Parse(asset.Name).Host}", "TXT"]">@sel</button>
+                                }
+                            }
+                            else { @kv.Value }
+                        </dd>
+                    }
+                    </dl>
+                }
+            </div>
+        }
+    </section>
+
+    <section class="card">
+        <h2>@L["Detail_Certs"]</h2>
+        @if (certs.Count == 0) { <p class="muted">@L["Empty_Generic"]</p> }
+        else
+        {
+            <table>
+                <thead><tr><th>@L["Col_Name"]</th><th>@L["Col_Issuer"]</th><th>@L["Col_Expires"]</th><th>@L["Col_Days"]</th><th>@L["Col_Source"]</th><th>@L["Col_Renewal"]</th>@if (canEdit) { <th></th> }</tr></thead>
+                <tbody>
+                @foreach (var c in certs)
+                {
+                    var certMuted = c.IsMuted(now);
+                    <tr class="@(certMuted ? "silenced-row" : "")"><td>@c.Host @if (certMuted) { <span class="badge optional" title="@c.MutedReason">@(c.MutedUntil is { } mu ? L["Mute_UntilShort", mu.ToString("yyyy-MM-dd")].Value : L["Mute_Muted"].Value)</span> }</td><td>@c.Issuer</td><td>@c.NotAfter.ToString("yyyy-MM-dd")</td>
+                        <td class="@(certMuted ? "" : c.DaysLeft <= 14 ? "bad-text" : c.DaysLeft <= 30 ? "warn-text" : "")">@c.DaysLeft</td>
+                        <td>@L["Source_" + c.Source]</td><td>@L["Renewal_" + c.Renewal]</td>
+                        @if (canEdit)
+                        {
+                            <td class="nowrap">
+                            @if (certMuted)
+                            {
+                                <form method="post" action="/certificates/@c.Id/unmute" class="mini"><AntiforgeryToken /><button class="chip">@L["Mute_Unmute"]</button></form>
+                            }
+                            else
+                            {
+                                @MuteDetails($"/certificates/{c.Id}/mute", L["Mute_Button"], null, null)
+                            }
+                            </td>
+                        }
+                    </tr>
+                }
+                </tbody>
+            </table>
+        }
+    </section>
+
+    <section class="card">
+        <h2>@L["Detail_Changes"]</h2>
+        @if (changes.Count == 0) { <p class="muted">@L["Empty_Generic"]</p> }
+        else
+        {
+            <table>
+                <thead><tr><th>@L["Col_Detected"]</th><th>@L["Col_Check"]</th><th>@L["Col_Change"]</th><th>@L["Col_Before"]</th><th>@L["Col_After"]</th></tr></thead>
+                <tbody>
+                @foreach (var c in changes)
+                {
+                    <tr><td>@c.DetectedAt.ToString("yyyy-MM-dd HH:mm")</td><td>@L["Check_" + c.CheckType]</td><td><DnsKey Key="@c.Key" Asset="@asset.Name" Check="@c.CheckType" /></td><td class="wrap">@c.Before</td><td class="wrap">@c.After</td></tr>
+                }
+                </tbody>
+            </table>
+        }
+    </section>
+}
+
+@code {
+    [CascadingParameter] HttpContext? Ctx { get; set; }
+    bool canEdit => Roles.CanEdit(Ctx?.User);
+    [Parameter] public Guid Id { get; set; }
+    [SupplyParameterFromForm] DkimModel? Dkim { get; set; }
+    bool dkimError;
+    class DkimModel { public string Selectors { get; set; } = ""; }
+    bool loaded;
+    (int Pending, int Total) reviewCounts;
+    bool discoverQueued;
+    Asset? asset;
+    Asset? parent;
+    List<CheckResult> results = [];
+    List<CheckMute> mutes = [];
+    AssetStatus? status;
+    readonly DateTimeOffset now = DateTimeOffset.UtcNow;
+    static string Tomorrow => DateTime.UtcNow.AddDays(1).ToString("yyyy-MM-dd");
+    List<CertificateRecord> certs = [];
+    List<Change> changes = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        try { await LoadAsync(); } finally { loaded = true; }
+    }
+
+    async Task LoadAsync()
+    {
+        asset = await Db.Assets.FirstOrDefaultAsync(a => a.Id == Id);
+        if (asset is null) return;
+        Dkim ??= new() { Selectors = asset.DkimSelectors ?? "" };
+        if (asset.Discovered)
+        {
+            parent = asset.DiscoveredFromId is { } from ? await Db.Assets.FirstOrDefaultAsync(a => a.Id == from) : null;
+            parent ??= (await Db.Assets.Where(a => !a.Discovered && a.Kind == AssetKind.Domain).ToListAsync())
+                .Where(a => asset.Name.EndsWith("." + a.Name, StringComparison.Ordinal)).OrderByDescending(a => a.Name.Length).FirstOrDefault();
+        }
+        results = (await Db.LatestResultsAsync()).Where(r => r.AssetId == Id).ToList();
+        certs = await Db.Certificates.Where(c => c.AssetId == Id).OrderBy(c => c.NotAfter).ToListAsync();
+        mutes = await Db.Mutes.Where(m => m.AssetId == Id).ToListAsync();
+        reviewCounts = (await Db.ReviewHosts.CountAsync(h => h.ParentAssetId == Id && h.State == ReviewState.Pending), await Db.ReviewHosts.CountAsync(h => h.ParentAssetId == Id));
+        discoverQueued = await Db.Jobs.AnyAsync(j => j.AssetId == Id && j.CheckType == "ct");
+        status = StatusBoard.Build([asset], results, mutes, certs, now)[asset.Id];
+        changes = await Db.Changes.Where(c => c.AssetId == Id).OrderByDescending(c => c.DetectedAt).Take(50).ToListAsync();
+    }
+
+    async Task ScanAsync()
+    {
+        if (asset is null || !canEdit) return;
+        await Queue.EnqueueAsync(asset);
+        Nav.NavigateTo(Nav.Uri, forceLoad: true);
+    }
+
+    async Task SaveDkimAsync()
+    {
+        if (asset is null || !canEdit || asset.Kind != AssetKind.Domain) return;
+        var selectors = FullyQualified.Web.Dkim.ParseSelectors(Dkim?.Selectors);
+        if (selectors is null) { dkimError = true; return; }
+        asset.DkimSelectors = selectors.Count == 0 ? null : string.Join(", ", selectors);
+        await Db.SaveChangesAsync();
+        await Queue.EnqueueAsync(asset);
+        Nav.NavigateTo(Nav.Uri, forceLoad: true);
+    }
+
+    async Task DeleteAsync()
+    {
+        if (asset is null || !canEdit) return;
+        await ReviewHosts.IgnoreRemovedAsync(Db, [asset], Ctx?.User.Identity?.Name); // a deleted discovered hostname stays away
+        Db.Assets.Remove(asset);
+        await Db.SaveChangesAsync();
+        Nav.NavigateTo("/");
+    }
+
+    /// <summary>The certificate-log search is optional and never judged, but a failed run should still look like one.</summary>
+    static CheckStatus ShownStatus(CheckResult r, EffectiveResult e) => r.CheckType == "ct" ? r.Status : e.Status ?? CheckStatus.Ok;
+
+    string FixHref(string check, string code) => $"/fix?asset={asset!.Id}&check={Uri.EscapeDataString(check)}&code={Uri.EscapeDataString(code)}";
+
+    string FindingText(CheckResult r, string code) => r.CheckType == "dns" ? ResourceText.IssueText(L, code) : L["Issue_" + code].Value;
+
+    /// <summary>"until 2026-12-01" for a mute with an end date, "muted" without one; null when there is no such mute.</summary>
+    string? MuteNote(string check, string code) =>
+        mutes.FirstOrDefault(m => m.CheckType == check && m.Code == code && m.IsActive(now)) is { } m
+            ? (m.Until is { } u ? L["Mute_UntilShort", u.ToString("yyyy-MM-dd")].Value : L["Mute_Muted"].Value) : null;
+
+    RenderFragment MuteForm(string check, string code, string label) => MuteDetails($"/assets/{asset!.Id}/mute", label, check, code);
+
+    /// <summary>A button that opens a small form with an optional end date: until then the finding or certificate is muted, after it, it counts again.</summary>
+    RenderFragment MuteDetails(string action, string label, string? check, string? code) => @<details class="mute-pop">
+        <summary class="chip">@label</summary>
+        <form method="post" action="@action">
+            <AntiforgeryToken />
+            @if (check is not null) { <input type="hidden" name="check" value="@check" /><input type="hidden" name="code" value="@(code)" /> }
+            <label>@L["Mute_UntilLabel"] <input type="date" name="until" min="@Tomorrow" /></label>
+            <button type="submit">@label</button>
+        </form>
+    </details>;
+
+    RenderFragment UnmuteForm(string check, string code, string label) => @<form method="post" action="/assets/@asset!.Id/unmute" class="mini">
+        <AntiforgeryToken />
+        <input type="hidden" name="check" value="@check" /><input type="hidden" name="code" value="@(code)" />
+        <button class="chip">@label</button>
+    </form>;
+}

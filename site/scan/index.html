@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Free certificate and DNS check: FullyQualified</title>
+<meta name="description" content="Check the TLS certificate and the DNS email and security records of any public domain for free. No account, nothing stored.">
+<link rel="canonical" href="https://fullyqualified.eu/scan/">
+<link rel="alternate" hreflang="en" href="https://fullyqualified.eu/scan/">
+<link rel="alternate" hreflang="nl" href="https://fullyqualified.eu/nl/check/">
+<link rel="alternate" hreflang="x-default" href="https://fullyqualified.eu/scan/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FullyQualified">
+<meta property="og:title" content="Free certificate and DNS check: FullyQualified">
+<meta property="og:description" content="Check the TLS certificate and the DNS email and security records of any public domain for free. No account, nothing stored.">
+<meta property="og:url" content="https://fullyqualified.eu/scan/">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="nl_NL">
+<meta property="og:image" content="https://fullyqualified.eu/img/og-en.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="FullyQualified: every domain, fully qualified. Certificates, DNS and NIS2.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0b5fff">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/style.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebPage", "name": "Free certificate and DNS check: FullyQualified", "url": "https://fullyqualified.eu/scan/", "inLanguage": "en", "description": "Check the TLS certificate and the DNS email and security records of any public domain for free. No account, nothing stored."}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="site">
+<div class="wrap">
+<a class="brand" href="/">Fully<span>Qualified</span></a>
+<nav aria-label="Main"><a href="/">Home</a><a href="/scan/">Free check</a><a href="/support/">Support</a><a href="/about/">About</a></nav>
+<a class="lang" href="/nl/check/" hreflang="nl" lang="nl">Nederlands</a>
+<a class="button ghost" href="https://github.com/pimvd/fullyqualified">GitHub</a>
+</div>
+</header>
+<main id="main">
+<article class="block page prose"><div class="wrap">
+<h1>Free certificate and DNS check</h1>
+<p class="lead">Type a public domain name and see in seconds what a visitor, a mail server and an auditor would see.</p>
+
+<section class="scan-box" id="check"><div class="wrap two">
+<div>
+<h2>Check a domain now</h2>
+<p>See the TLS certificate and the email and security records of any public domain in a few seconds. No account, nothing stored.</p>
+<p class="note"><a href="/scan/">How the free check works</a></p>
+</div>
+<form class="scan-form" method="get" action="https://app.fullyqualified.eu/scan">
+<label for="domain-check">Domain name</label>
+<div class="inline"><input id="domain-check" name="domain" placeholder="example.com" required maxlength="253" autocomplete="off" inputmode="url" spellcheck="false">
+<input type="hidden" name="culture" value="en"><input type="hidden" name="ui-culture" value="en">
+<button type="submit">Check</button></div>
+<p class="note">Public domains on port 443 only. A few checks per hour.</p>
+</form>
+</div></section>
+<nav class="toc" aria-label="On this page"><ol><li><a href="#what">What is checked</a></li><li><a href="#privacy">What happens to your domain</a></li><li><a href="#limits">Limits</a></li><li><a href="#next">After the check</a></li></ol></nav>
+<section id="what"><h2>What is checked</h2><ul><li>The TLS certificate on port 443: who issued it, when it expires, how many days are left, which protocol is used and whether it is trusted.</li><li>Email protection: SPF, DMARC and whether DKIM selectors are in use.</li><li>Certificate rules and signing: CAA records and DNSSEC.</li><li>Mail and name servers (MX and NS), and a dangling CNAME that could allow a subdomain takeover.</li></ul></section><section id="privacy"><h2>What happens to your domain</h2><p>The domain is used for this check only. Nothing is stored: no result, no history, no account. Your IP address is held in memory for up to an hour to limit how often one address can check, and is not written down.</p><p>The check runs from our server. It connects to the public site on port 443 and asks public DNS, so the owner of that domain may see a connection from us.</p></section><section id="limits"><h2>Limits</h2><ul><li>Public domain names only. IP addresses, local names and private networks are refused.</li><li>Port 443 only.</li><li>A few checks per hour per address. Please do not automate it.</li><li>It is a single look, not monitoring, and not legal advice or a NIS2 report.</li></ul></section><section id="next"><h2>After the check</h2><p>A single look tells you how a domain is today. FullyQualified keeps checking, tells you when a certificate is about to expire or a record changes, and turns it into a report. Run it yourself or follow the hosted version.</p><p><a class="button" href="https://github.com/pimvd/fullyqualified">GitHub</a> <a class="button ghost" href="/#selfhost">Self-host</a></p></section>
+</div></article>
+</main>
+<footer class="site"><div class="wrap"><span>FullyQualified is open source software under the AGPL-3.0.</span><span><a href="/support/">Support</a><a href="/about/">About</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="https://github.com/pimvd/fullyqualified">Source code</a><a href="https://github.com/pimvd/fullyqualified/issues">Issues</a><a href="https://github.com/pimvd/fullyqualified/blob/master/LICENSE">License</a></span></div></footer>
+</body>
+</html>

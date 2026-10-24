@@ -1,0 +1,34 @@
+@page "/login"
+@using Microsoft.AspNetCore.Authorization
+@attribute [AllowAnonymous]
+@inject IStringLocalizer<SharedResource> L
+@inject AppDbContext Db
+@inject NavigationManager Nav
+@inject IConfiguration Config
+
+<PageTitle>@L["Login_Title"]</PageTitle>
+<PasskeyRoot Return="@ReturnUrl">
+    <section class="card narrow">
+        <h1>@L["Login_Title"]</h1>
+        <p>@L["Login_Intro"]</p>
+        <button type="button" data-passkey="login">@L["Login_Button"]</button>
+        @if (SsoService.Enabled(Config))
+        {
+            <p class="muted">@L["Login_Or"]</p>
+            <a class="button" href="/auth/sso/start">@L["Login_Sso", Config["Sso:DisplayName"] ?? "SSO"]</a>
+        }
+        @if (Error is { Length: > 0 }) { <p class="error" role="alert">@L["Err_" + string.Concat(Error.Split('_').Select(w => char.ToUpperInvariant(w[0]) + w[1..]))]</p> }
+    </section>
+</PasskeyRoot>
+
+@code {
+    [CascadingParameter] HttpContext? Ctx { get; set; }
+    [SupplyParameterFromQuery] public string? ReturnUrl { get; set; }
+    [SupplyParameterFromQuery] public string? Error { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Ctx?.User.Identity?.IsAuthenticated == true) Nav.NavigateTo("/");
+        else if (!await Db.AcrossTenants<User>().AnyAsync()) Nav.NavigateTo("/setup");
+    }
+}

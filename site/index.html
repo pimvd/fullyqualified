@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FullyQualified: certificate and DNS monitoring with NIS2 reports</title>
+<meta name="description" content="Open-source monitoring of TLS certificates and DNS records for all your domains, with change alerts and a NIS2 report. Self-host it today.">
+<link rel="canonical" href="https://fullyqualified.eu/">
+<link rel="alternate" hreflang="en" href="https://fullyqualified.eu/">
+<link rel="alternate" hreflang="nl" href="https://fullyqualified.eu/nl/">
+<link rel="alternate" hreflang="x-default" href="https://fullyqualified.eu/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="FullyQualified">
+<meta property="og:title" content="FullyQualified: certificate and DNS monitoring with NIS2 reports">
+<meta property="og:description" content="Open-source monitoring of TLS certificates and DNS records for all your domains, with change alerts and a NIS2 report. Self-host it today.">
+<meta property="og:url" content="https://fullyqualified.eu/">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="nl_NL">
+<meta property="og:image" content="https://fullyqualified.eu/img/og-en.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="FullyQualified: every domain, fully qualified. Certificates, DNS and NIS2.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0b5fff">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/style.css">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "SoftwareApplication", "name": "FullyQualified", "applicationCategory": "SecurityApplication", "operatingSystem": "Linux, Docker", "description": "Open-source monitoring of TLS certificates and DNS records with change alerts and a NIS2 report.", "url": "https://fullyqualified.eu/", "inLanguage": "en", "license": "https://www.gnu.org/licenses/agpl-3.0.html", "codeRepository": "https://github.com/pimvd/fullyqualified", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "EUR", "description": "Self-hosted, open source"}}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "inLanguage": "en", "mainEntity": [{"@type": "Question", "name": "Does FullyQualified change anything in my environment?", "acceptedAnswer": {"@type": "Answer", "text": "No. It only reads: public DNS queries, TLS handshakes with the endpoints you add, and Certificate Transparency logs. Changing things, such as automated renewal, is a possible later step and would be opt-in."}}, {"@type": "Question", "name": "What does it check?", "acceptedAnswer": {"@type": "Answer", "text": "TLS certificates (expiry, issuer, trust) and DNS records: SPF, DKIM, DMARC, CAA, MX, NS, DNSSEC and dangling CNAMEs. It records every change against a baseline and alerts you through Slack, a webhook or email."}}, {"@type": "Question", "name": "Does the report make me NIS2 compliant?", "acceptedAnswer": {"@type": "Answer", "text": "No. It gives you evidence for the certificate and DNS part of your technical measures. NIS2 compliance is much broader and is your responsibility."}}, {"@type": "Question", "name": "Where does my data live?", "acceptedAnswer": {"@type": "Answer", "text": "When you self-host, on your own server in your own Postgres database. The planned hosted version runs in the EU on Scaleway."}}, {"@type": "Question", "name": "How do people sign in?", "acceptedAnswer": {"@type": "Answer", "text": "With passkeys, so there are no passwords to leak. Single sign-on through OpenID Connect is supported too, and there are three roles: viewer, member and admin. New people join through single-use invitations."}}, {"@type": "Question", "name": "Is it free?", "acceptedAnswer": {"@type": "Answer", "text": "Self-hosting is free and open source under the AGPL-3.0. A paid hosted version is planned; prices are not set yet."}}]}</script>
+</head>
+<body id="top">
+<a class="skip" href="#main">Skip to content</a>
+<header class="site">
+<div class="wrap">
+<a class="brand" href="/">Fully<span>Qualified</span></a>
+<nav aria-label="Main"><a href="#scan">Free check</a><a href="#why">Why now</a><a href="#checks">What it checks</a><a href="#selfhost">Self-host</a><a href="#pricing">Plans</a><a href="/support/">Support</a><a href="/about/">About</a></nav>
+<a class="lang" href="/nl/" hreflang="nl" lang="nl">Nederlands</a>
+<a class="button ghost" href="https://github.com/pimvd/fullyqualified">GitHub</a>
+</div>
+</header>
+<main id="main">
+<section class="hero">
+<div class="wrap">
+<div>
+<p class="eyebrow">Certificates · DNS · NIS2</p>
+<h1>Every domain, fully qualified.</h1>
+<p class="lead">FullyQualified watches the TLS certificates and DNS records of all your domains, tells you the moment something expires or drifts, and turns the results into a NIS2 report.</p>
+<div class="cta"><a class="button" href="https://github.com/pimvd/fullyqualified">View on GitHub</a><a class="button ghost" href="#selfhost">Run it yourself</a></div>
+<p class="note">Open source (AGPL-3.0). It only reads: nothing is ever changed in your environment.</p>
+</div>
+<div class="shot"><img src="/img/dashboard-en.png" width="1200" height="760" alt="The FullyQualified dashboard: seven monitored assets with status badges, two certificates expiring within 30 days and one expired certificate." fetchpriority="high"></div>
+</div>
+</section>
+<div class="trust"><div class="wrap"><ul><li>Open source, AGPL-3.0</li><li>Read-only: never changes your systems</li><li>Self-hosted today, EU-hosted version planned</li><li>Passkey sign-in, roles and single sign-on</li></ul></div></div>
+<section class="block" id="scan"><div class="wrap two">
+<div>
+<h2>Check a domain now</h2>
+<p>See the TLS certificate and the email and security records of any public domain in a few seconds. No account, nothing stored.</p>
+<p class="note"><a href="/scan/">How the free check works</a></p>
+</div>
+<form class="scan-form" method="get" action="https://app.fullyqualified.eu/scan">
+<label for="domain-scan">Domain name</label>
+<div class="inline"><input id="domain-scan" name="domain" placeholder="example.com" required maxlength="253" autocomplete="off" inputmode="url" spellcheck="false">
+<input type="hidden" name="culture" value="en"><input type="hidden" name="ui-culture" value="en">
+<button type="submit">Check</button></div>
+<p class="note">Public domains on port 443 only. A few checks per hour.</p>
+</form>
+</div></section>
+<section class="block" id="why"><div class="wrap">
+<h2>Certificates are getting shorter. Your spreadsheet is not keeping up.</h2>
+<p class="intro">Browsers and certificate authorities are cutting the maximum lifetime of public certificates. What was a yearly chore becomes a monthly one, and a forgotten certificate or a changed DNS record is an outage or a security hole.</p>
+<div class="grid"><div class="card"><p class="stat">100 days</p><p>Maximum certificate lifetime from 2027, down from a year.</p></div><div class="card"><p class="stat">47 days</p><p>Maximum certificate lifetime from 2029. Manual renewal stops being realistic.</p></div><div class="card"><p class="stat">NIS2</p><p>Requires demonstrable control, also from companies that are suppliers in someone else&#x27;s chain.</p></div></div>
+</div></section>
+<section class="block alt" id="checks"><div class="wrap">
+<h2>What it keeps an eye on</h2>
+<p class="intro">Add a domain or an endpoint and the checks start. Every value is stored as a baseline, so a change is noticed, recorded and alerted.</p>
+<div class="grid"><div class="card"><h3>Certificates</h3><ul><li>Found through Certificate Transparency logs and TLS endpoint scans</li><li>Expiry, issuer and whether renewal looks manual or automated</li><li>Untrusted, expired and soon-to-expire certificates flagged</li></ul></div><div class="card"><h3>DNS</h3><ul><li>SPF, DKIM, DMARC, CAA, MX, NS and DNSSEC</li><li>Dangling CNAMEs that allow subdomain takeover</li><li>Any change to a record is a recorded event</li></ul></div><div class="card"><h3>Alerts</h3><ul><li>Slack, a generic webhook (PagerDuty, Opsgenie) or email</li><li>Sent when a status changes or a record drifts</li><li>Dashboard and change history in English and Dutch</li></ul></div></div>
+</div></section>
+<section class="block" id="report"><div class="wrap two">
+<div>
+<h2>The report is the point</h2>
+<p>Auditors and customers do not want a dashboard; they want proof. FullyQualified turns the latest results into a NIS2 report as PDF and Excel: your certificate inventory, your DNS controls per domain, and what changed in the last 90 days.</p>
+<p class="note">A report is evidence for the technical part of NIS2, not a compliance certificate. NIS2 covers far more than certificates and DNS.</p>
+</div>
+<div class="shot"><img src="/img/certificates-en.png" width="1200" height="420" alt="The certificate inventory: host, issuer, expiry date, days left, source and renewal type, with an expired certificate in red." loading="lazy"></div>
+</div></section>
+<section class="block alt" id="how"><div class="wrap">
+<h2>From zero to first report in minutes</h2>
+<p class="intro">The goal is value within ten minutes of starting.</p>
+<ol class="steps"><li><h3>Add your domains</h3><p>Type a domain or host:port. Certificates are found by scanning. On request, the public CT logs list more hostnames for you to review.</p></li><li><h3>Read the results</h3><p>See what expires, what is untrusted and which DNS controls are missing.</p></li><li><h3>Hand over the report</h3><p>Download the NIS2 report as PDF or Excel, and let alerts catch what changes next.</p></li></ol>
+</div></section>
+<section class="block" id="selfhost"><div class="wrap two">
+<div>
+<h2>Self-host it in one command</h2>
+<p>FullyQualified is one .NET container and a Postgres database. Everything in the repository is open source under the AGPL-3.0, including accounts with passkeys, roles and single sign-on through OpenID Connect.</p>
+<p class="note">Then open http://localhost:8080 and create the first account. Cloud connectors, starting with Azure, are on the roadmap.</p>
+</div>
+<pre><code>git clone https://github.com/pimvd/fullyqualified
+cd fullyqualified
+docker compose up</code></pre>
+</div></section>
+<section class="block alt" id="pricing"><div class="wrap">
+<h2>Hosted plans are planned</h2>
+<p class="intro">Prefer not to run it yourself? A hosted version in the EU, on Scaleway, is planned. Plans are by number of domains. Prices are not set yet.</p>
+<div class="plans"><div class="plan"><span class="badge">Planned</span><h3>Free</h3><p class="domains">3 <small>domains</small></p><ul><li>Certificate and DNS checks</li><li>History: 1 month</li></ul></div><div class="plan"><span class="badge">Planned</span><h3>Starter</h3><p class="domains">25 <small>domains</small></p><ul><li>Everything in Free, plus the NIS2 report</li><li>History: 12 months</li></ul></div><div class="plan"><span class="badge">Planned</span><h3>Business</h3><p class="domains">100 <small>domains</small></p><ul><li>Everything in Starter, plus cloud connectors and SSO</li><li>History: 24 months</li></ul></div><div class="plan"><span class="badge">Planned</span><h3>Custom</h3><p class="domains">by agreement</p><ul><li>Limits agreed per customer</li></ul></div></div>
+<p class="note" style="margin-top:1rem">Self-hosting stays free with no domain limit.</p>
+</div></section>
+<section class="block" id="faq"><div class="wrap">
+<h2>Questions</h2>
+<details><summary>Does FullyQualified change anything in my environment?</summary><p>No. It only reads: public DNS queries, TLS handshakes with the endpoints you add, and Certificate Transparency logs. Changing things, such as automated renewal, is a possible later step and would be opt-in.</p></details><details><summary>What does it check?</summary><p>TLS certificates (expiry, issuer, trust) and DNS records: SPF, DKIM, DMARC, CAA, MX, NS, DNSSEC and dangling CNAMEs. It records every change against a baseline and alerts you through Slack, a webhook or email.</p></details><details><summary>Does the report make me NIS2 compliant?</summary><p>No. It gives you evidence for the certificate and DNS part of your technical measures. NIS2 compliance is much broader and is your responsibility.</p></details><details><summary>Where does my data live?</summary><p>When you self-host, on your own server in your own Postgres database. The planned hosted version runs in the EU on Scaleway.</p></details><details><summary>How do people sign in?</summary><p>With passkeys, so there are no passwords to leak. Single sign-on through OpenID Connect is supported too, and there are three roles: viewer, member and admin. New people join through single-use invitations.</p></details><details><summary>Is it free?</summary><p>Self-hosting is free and open source under the AGPL-3.0. A paid hosted version is planned; prices are not set yet.</p></details>
+</div></section>
+<section class="block alt final" id="start"><div class="wrap">
+<h2>Know what expires before it does.</h2>
+<p class="intro" style="margin-left:auto;margin-right:auto">Star the project, try it on your own domains, or tell us what is missing.</p>
+<div class="cta"><a class="button" href="https://github.com/pimvd/fullyqualified">View on GitHub</a><a class="button ghost" href="https://github.com/pimvd/fullyqualified/issues">Report an issue</a></div>
+</div></section>
+</main>
+<footer class="site"><div class="wrap"><span>FullyQualified is open source software under the AGPL-3.0.</span><span><a href="/support/">Support</a><a href="/about/">About</a><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="https://github.com/pimvd/fullyqualified">Source code</a><a href="https://github.com/pimvd/fullyqualified/issues">Issues</a><a href="https://github.com/pimvd/fullyqualified/blob/master/LICENSE">License</a></span></div></footer>
+</body>
+</html>

@@ -1,0 +1,37 @@
+@inject IStringLocalizer<SharedResource> L
+@inject DigService Dig
+<dialog id="dig" class="dig" aria-labelledby="dig-title"
+        data-l-querying="@L["Dig_Querying"]" data-l-nodata="@L["Dig_NoRecords"]" data-l-nxdomain="@L["Dig_NxDomain"]"
+        data-l-agree="@L["Dig_Agree"]" data-l-disagree="@L["Dig_Disagree"]" data-l-differs="@L["Dig_Differs"]"
+        data-l-copy="@L["Dig_Copy"]" data-l-copied="@L["Dig_Copied"]"
+        data-l-name="@L["Dig_Name"]" data-l-type="@L["Dig_Type"]" data-l-data="@L["Dig_Data"]" data-l-empty="@L["Dig_Empty"]"
+        data-l-err-invalid_name="@L["Dig_Err_invalid_name"]" data-l-err-invalid_type="@L["Dig_Err_invalid_type"]"
+        data-l-err-rate="@L["Dig_Err_rate"]" data-l-err-failed="@L["Dig_Err_failed"]" data-l-failed-resolver="@L["Dig_ResolverFailed"]">
+    <div class="dig-head">
+        <div>
+            <h2 id="dig-title">@L["Dig_Title"]</h2>
+            <p class="dig-sub">@L["Dig_Sub"]</p>
+        </div>
+        <button type="button" class="dig-x" data-dig-close aria-label="@L["Dig_Close"]">×</button>
+    </div>
+    <form id="dig-form" class="dig-form" autocomplete="off">
+        <input id="dig-name" type="text" placeholder="@L["Dig_Placeholder"]" spellcheck="false" autocapitalize="off" maxlength="253" aria-label="@L["Dig_Name"]" />
+        <select id="dig-resolver" aria-label="@L["Dig_Resolver"]">
+            <option value="all">@L["Dig_All"]</option>
+            @foreach (var r in Dig.Resolvers) { <option value="@r.Key">@r.Label</option> }
+        </select>
+        <button type="submit">@L["Dig_Go"]</button>
+    </form>
+    <div class="dig-chips" role="group" aria-label="@L["Dig_Type"]">
+        @foreach (var t in DigService.Types) { <button type="button" class="chip@(t == "A" ? " on" : "")" data-dig-type="@t" aria-pressed="@(t == "A" ? "true" : "false")">@t</button> }
+        <span class="dig-sep"></span>
+        <button type="button" class="chip alt" data-dig-preset="dmarc" title="_dmarc.&lt;@L["Dig_Name"]&gt; TXT">DMARC</button>
+    </div>
+    <div id="dig-out" class="dig-out" aria-live="polite"></div>
+    <div class="dig-foot">
+        <span class="dig-cmd-label">@L["Dig_Command"]</span>
+        <code id="dig-cmd"></code>
+        <button type="button" class="chip" data-dig-copy>@L["Dig_Copy"]</button>
+        <span class="dig-hint">@L["Dig_Hint"]</span>
+    </div>
+</dialog>

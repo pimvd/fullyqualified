@@ -1,0 +1,47 @@
+@page "/account"
+@inject IStringLocalizer<SharedResource> L
+@inject AppDbContext Db
+
+<PageTitle>@L["Account_Title"]</PageTitle>
+<h1>@L["Account_Title"]</h1>
+<p class="muted">@Ctx?.User.Identity?.Name · @L["Col_Role"]: @L["Role_" + (Ctx?.User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value ?? "Viewer")]</p>
+<PasskeyRoot>
+    <section class="card">
+        <h2>@L["Passkeys_Title"]</h2>
+        <p>@L["Passkeys_Intro"]</p>
+        <table>
+            <thead><tr><th>@L["Col_Name"]</th><th>@L["Col_Created"]</th><th>@L["Col_LastUsed"]</th><th></th></tr></thead>
+            <tbody>
+            @foreach (var p in passkeys)
+            {
+                <tr>
+                    <td>@p.Name</td>
+                    <td>@p.CreatedAt.ToString("yyyy-MM-dd")</td>
+                    <td>@(p.LastUsedAt?.ToString("yyyy-MM-dd HH:mm") ?? L["Passkeys_Never"].Value)</td>
+                    <td>
+                        @if (passkeys.Count > 1)
+                        {
+                            <button type="button" class="danger" data-passkey-remove="@p.Id" data-confirm="@L["Passkeys_ConfirmRemove"]">@L["Passkeys_Remove"]</button>
+                        }
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+        <p class="inline">
+            <input id="pk-label" maxlength="100" placeholder="@L["Passkeys_Label"]" />
+            <button type="button" data-passkey="add">@L["Passkeys_Add"]</button>
+        </p>
+    </section>
+</PasskeyRoot>
+
+@code {
+    [CascadingParameter] HttpContext? Ctx { get; set; }
+    List<Passkey> passkeys = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (Guid.TryParse(Ctx?.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value, out var id))
+            passkeys = await Db.Passkeys.Where(p => p.UserId == id).OrderBy(p => p.CreatedAt).ToListAsync();
+    }
+}

@@ -1,0 +1,28 @@
+@page "/certificates"
+@inject AppDbContext Db
+@inject IStringLocalizer<SharedResource> L
+
+<PageTitle>@L["Nav_Certificates"]</PageTitle>
+<h1>@L["Certificates_Title"]</h1>
+<section class="card">
+@if (certs.Count == 0) { <p class="muted">@L["Empty_Generic"]</p> }
+else
+{
+    <table>
+        <thead><tr><th>@L["Col_Name"]</th><th>@L["Col_Issuer"]</th><th>@L["Col_Expires"]</th><th>@L["Col_Days"]</th><th>@L["Col_Source"]</th><th>@L["Col_Renewal"]</th></tr></thead>
+        <tbody>
+        @foreach (var c in certs)
+        {
+            <tr><td><a href="/assets/@c.AssetId">@c.Host</a></td><td>@c.Issuer</td><td>@c.NotAfter.ToString("yyyy-MM-dd")</td>
+                <td class="@(c.DaysLeft <= 14 ? "bad-text" : c.DaysLeft <= 30 ? "warn-text" : "")">@c.DaysLeft</td>
+                <td>@L["Source_" + c.Source]</td><td>@L["Renewal_" + c.Renewal]</td></tr>
+        }
+        </tbody>
+    </table>
+}
+</section>
+
+@code {
+    List<CertificateRecord> certs = [];
+    protected override async Task OnInitializedAsync() => certs = await Db.Certificates.OrderBy(c => c.NotAfter).ToListAsync();
+}

@@ -1,0 +1,200 @@
+@page "/review"
+@inject AppDbContext Db
+@inject IStringLocalizer<SharedResource> L
+@inject NavigationManager Nav
+
+<PageTitle>@L["Review_Title"]</PageTitle>
+<h1>@L["Review_Title"]</h1>
+<p class="muted">@L["Review_Intro"]</p>
+
+@if (Done is { Length: > 0 } && Message() is { } message)
+{
+    <p class="ok-text" role="status">@message</p>
+}
+@if (Error == "reason") { <p class="error" role="alert">@L["Review_NeedReason"]</p> }
+
+<section class="card">
+    <nav class="tabs" aria-label="@L["Col_Status"]">
+        @foreach (var (key, label, n) in Tabs())
+        {
+            <a href="@Link(key)" class="@(key == Current ? "on" : "")">@label <span class="count">@n</span></a>
+        }
+    </nav>
+    <form method="get" action="/review" class="filters">
+        <input type="hidden" name="state" value="@Current" />
+        @if (ParentId is { } p) { <input type="hidden" name="parent" value="@p" /> }
+        <input type="search" name="q" value="@Q" placeholder="@L["Filter_Search"]" aria-label="@L["Filter_Search"]" />
+        <button type="submit">@L["Filter_Apply"]</button>
+        @if (!string.IsNullOrEmpty(Q) || ParentId is not null) { <a class="button secondary" href="@Link(Current, keepFilters: false)">@L["Filter_Reset"]</a> }
+    </form>
+    @if (canEdit)
+    {
+        <form method="post" action="/review/discover" class="inline discover-all">
+            <AntiforgeryToken />
+            <input type="hidden" name="back" value="@Back" />
+            <button class="secondary">@L["Review_DiscoverAll"]</button>
+            <small class="muted">@L["Discover_Help"]</small>
+        </form>
+    }
+</section>
+
+<section class="card">
+    @if (hosts.Count == 0)
+    {
+        <p class="muted">@L["Review_Nothing"]</p>
+    }
+    else
+    {
+        @if (canEdit)
+        {
+            <form method="post" id="review-bulk" class="actions bulk">
+                <AntiforgeryToken />
+                <input type="hidden" name="back" value="@Back" />
+                <label class="check-row"><input type="checkbox" aria-label="@L["Bulk_SelectAll"]" onclick="document.querySelectorAll('input[name=ids][form=review-bulk]').forEach(c => c.checked = this.checked)" /> @L["Bulk_SelectAll"]</label>
+                @if (Current is "pending" or "all")
+                {
+                    <button formaction="/review/add" type="submit" onclick="return !!document.querySelector('input[name=ids][form=review-bulk]:checked')">@L["Review_AddSelected"]</button>
+                    <input type="text" name="reason" maxlength="@ReviewHosts.MaxReason" placeholder="@L["Review_ReasonPlaceholder"]" aria-label="@L["Review_ReasonLabel"]" />
+                    <button formaction="/review/ignore" type="submit" class="secondary" onclick="return !!document.querySelector('input[name=ids][form=review-bulk]:checked')">@L["Review_IgnoreSelected"]</button>
+                }
+                @if (Current is "ignored" or "all")
+                {
+                    <button formaction="/review/restore" type="submit" class="secondary" onclick="return !!document.querySelector('input[name=ids][form=review-bulk]:checked')">@L["Review_RestoreSelected"]</button>
+                }
+            </form>
+        }
+        <table class="review">
+            <thead><tr>@if (canEdit) { <th class="pick"></th> }<th>@L["Col_Name"]</th><th>@L["Col_FoundVia"]</th><th>@L["Col_Status"]</th><th>@L["Col_Reason"]</th><th>@L["Col_Decided"]</th>@if (canEdit) { <th></th> }</tr></thead>
+            <tbody>
+            @foreach (var h in hosts)
+            {
+                <tr>
+                    @if (canEdit) { <td class="pick"><input type="checkbox" name="ids" value="@h.Id" form="review-bulk" aria-label="@h.Name" /></td> }
+                    <td class="name">
+                        @if (assetByName.TryGetValue(h.Name, out var assetId)) { <a href="/assets/@assetId">@h.Name</a> } else { @h.Name }
+                        <button type="button" class="dig-link" data-dig-name="@h.Name" title="@L["Dig_Open"]">dig</button>
+                    </td>
+                    <td class="muted"><small>@Found(h)</small></td>
+                    <td class="nowrap"><span class="badge review-@h.State.ToString().ToLowerInvariant()">@L["Review_State_" + h.State]</span></td>
+                    <td class="why">@ReasonText(h)</td>
+                    <td class="muted nowrap"><small>@Decided(h)</small></td>
+                    @if (canEdit)
+                    {
+                        <td class="nowrap">
+                            @if (h.State == ReviewState.Pending)
+                            {
+                                <button type="submit" form="f-@h.Id" formaction="/review/add" class="chip">@L["Review_Add"]</button>
+                                <details class="mute-pop">
+                                    <summary class="chip">@L["Review_Ignore"]</summary>
+                                    <div class="pop">
+                                        <input type="text" name="reason" form="f-@h.Id" required maxlength="@ReviewHosts.MaxReason" placeholder="@L["Review_ReasonPlaceholder"]" aria-label="@L["Review_ReasonLabel"]" />
+                                        <button type="submit" form="f-@h.Id" formaction="/review/ignore">@L["Review_Ignore"]</button>
+                                    </div>
+                                </details>
+                            }
+                            else if (h.State == ReviewState.Ignored)
+                            {
+                                <button type="submit" form="f-@h.Id" formaction="/review/restore" class="chip">@L["Review_Restore"]</button>
+                            }
+                        </td>
+                    }
+                </tr>
+            }
+            </tbody>
+        </table>
+        @if (more > 0) { <p class="muted"><small>@L["Review_More", MaxRows, more]</small></p> }
+        @if (canEdit)
+        {
+            // One small form per row, outside the table (forms cannot be nested), tied to the row's buttons by their form attribute.
+            @foreach (var h in hosts)
+            {
+                <form method="post" id="f-@h.Id" hidden><AntiforgeryToken /><input type="hidden" name="ids" value="@h.Id" /><input type="hidden" name="back" value="@Back" /></form>
+            }
+        }
+    }
+</section>
+
+@code {
+    const int MaxRows = 200;
+    [CascadingParameter] HttpContext? Ctx { get; set; }
+    bool canEdit => Roles.CanEdit(Ctx?.User);
+    [SupplyParameterFromQuery(Name = "state")] string? StateParam { get; set; }
+    [SupplyParameterFromQuery(Name = "q")] string? Q { get; set; }
+    [SupplyParameterFromQuery(Name = "parent")] Guid? ParentId { get; set; }
+    [SupplyParameterFromQuery(Name = "done")] string? Done { get; set; }
+    [SupplyParameterFromQuery(Name = "error")] string? Error { get; set; }
+
+    string Current => StateParam is "pending" or "added" or "ignored" or "all" ? StateParam : "pending";
+    List<ReviewHost> hosts = [];
+    Dictionary<Guid, string> parents = [];
+    Dictionary<string, Guid> assetByName = [];
+    Dictionary<string, int> counts = new() { ["pending"] = 0, ["added"] = 0, ["ignored"] = 0 };
+    int more;
+    string Back => Link(Current, includeMessage: false);
+
+    protected override async Task OnInitializedAsync()
+    {
+        var all = Db.ReviewHosts.AsQueryable();
+        if (ParentId is { } pid) all = all.Where(h => h.ParentAssetId == pid);
+        var byState = await all.GroupBy(h => h.State).Select(g => new { g.Key, N = g.Count() }).ToListAsync();
+        foreach (var g in byState) counts[g.Key.ToString().ToLowerInvariant()] = g.N;
+
+        var q = (Q ?? "").Trim();
+        var query = all.Where(h => q == "" || h.Name.Contains(q));
+        query = Current switch
+        {
+            "added" => query.Where(h => h.State == ReviewState.Added),
+            "ignored" => query.Where(h => h.State == ReviewState.Ignored),
+            "pending" => query.Where(h => h.State == ReviewState.Pending),
+            _ => query,
+        };
+        var total = await query.CountAsync();
+        hosts = await query.OrderBy(h => h.State).ThenBy(h => h.Name).Take(MaxRows).ToListAsync();
+        more = Math.Max(0, total - hosts.Count);
+        parents = await Db.Assets.Where(a => a.Kind == AssetKind.Domain).ToDictionaryAsync(a => a.Id, a => a.Name);
+        var names = hosts.Select(h => h.Name).ToList();
+        assetByName = await Db.Assets.Where(a => names.Contains(a.Name)).ToDictionaryAsync(a => a.Name, a => a.Id);
+    }
+
+    IEnumerable<(string Key, string Label, int N)> Tabs() =>
+    [
+        ("pending", L["Review_State_Pending"].Value, counts["pending"]), ("added", L["Review_State_Added"].Value, counts["added"]),
+        ("ignored", L["Review_State_Ignored"].Value, counts["ignored"]), ("all", L["Review_Filter_All"].Value, counts.Values.Sum()),
+    ];
+
+    /// <summary>This page with the given tab and the current search; the one-off messages are left out so they do not repeat.</summary>
+    string Link(string state, bool keepFilters = true, bool includeMessage = false)
+    {
+        var parts = new List<string> { $"state={state}" };
+        if (keepFilters && !string.IsNullOrEmpty(Q)) parts.Add($"q={Uri.EscapeDataString(Q)}");
+        if (keepFilters && ParentId is { } p) parts.Add($"parent={p}");
+        return "/review?" + string.Join("&", parts);
+    }
+
+    string Found(ReviewHost h)
+    {
+        var parent = h.ParentAssetId is { } id && parents.TryGetValue(id, out var name) ? name : L["Review_UnknownParent"].Value;
+        return h.Issuer is null || h.CertExpires is null
+            ? L["Review_FoundShort", parent, h.Service ?? "?"].Value
+            : L["Review_FoundFrom", parent, h.Service ?? "?", h.Issuer, h.CertExpires.Value.ToString("yyyy-MM-dd")].Value;
+    }
+
+    string ReasonText(ReviewHost h) => h.Reason == ReviewHost.RemovedReason ? L["Review_RemovedReason"].Value : h.Reason ?? "";
+
+    string Decided(ReviewHost h) => h.DecidedAt is not { } at ? "" :
+        $"{at:yyyy-MM-dd} · {(h.DecidedBy ?? (h.State == ReviewState.Added ? L["Review_Automatic"].Value : "—"))}";
+
+    string? Message()
+    {
+        var p = (Done ?? "").Split(':');
+        return p[0] switch
+        {
+            "add" when p.Length > 2 => p[2] != "0" ? L["Review_Done_addLimit", p[1], p[2]].Value : L["Review_Done_add", p[1]].Value,
+            "ignore" when p.Length > 1 => L["Review_Done_ignore", p[1]].Value,
+            "restore" when p.Length > 1 => L["Review_Done_restore", p[1]].Value,
+            "discover" when p.Length > 1 => L["Review_Done_discover", p[1]].Value,
+            "none" => L["Review_Select"].Value,
+            _ => null,
+        };
+    }
+}

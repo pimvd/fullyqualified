@@ -1,0 +1,170 @@
+@page "/log"
+@inject IStringLocalizer<SharedResource> L
+@inject LogQueries Queries
+@using System.Globalization
+
+<PageTitle>@L["Nav_Log"]</PageTitle>
+<h1>@L["Log_Title"]</h1>
+
+<form method="get" class="card filters">
+    <label>@L["Log_Range"]
+        <select name="days">
+            @foreach (var d in LogQueries.Ranges) { <option value="@d" selected="@(d == Days)">@L["Log_LastDays", d]</option> }
+        </select>
+    </label>
+    <label>@L["Log_Check"]
+        <select name="check">
+            <option value="">@L["Log_All"]</option>
+            @foreach (var c in new[] { "tls", "dns", "ct" }) { <option value="@c" selected="@(c == Check)">@L["Check_" + c]</option> }
+        </select>
+    </label>
+    <label>@L["Col_Status"]
+        <select name="status">
+            <option value="">@L["Log_All"]</option>
+            @foreach (var s in Statuses) { <option value="@s" selected="@(s.ToString() == Status)">@L["Status_" + s]</option> }
+        </select>
+    </label>
+    <label>@L["Col_Asset"] <input name="asset" value="@Asset" placeholder="example.com" /></label>
+    <button type="submit">@L["Log_Apply"]</button>
+</form>
+
+@if (model is not null)
+{
+    <section class="tiles">
+        <div class="tile"><b>@model.Total.ToString("N0")</b><span>@L["Log_Results"]</span></div>
+        <div class="tile"><b>@(model.Total == 0 ? "—" : $"{100.0 * model.Ok / model.Total:0.#}%")</b><span>@L["Log_OkShare"]</span></div>
+        <div class="tile @(model.AlertsFailed > 0 ? "bad" : "")"><b>@model.AlertsSent</b><span>@L["Log_AlertsSent"]@(model.AlertsFailed > 0 ? $" · {model.AlertsFailed} {L["Log_AlertsFailed"]}" : "")</span></div>
+        <div class="tile"><b>@model.ChangesPerDay.Values.Sum()</b><span>@L["Log_Changes"]</span></div>
+    </section>
+
+    <section class="card">
+        <h2>@L["Log_PerDay"]</h2>
+        <ul class="legend">
+            @foreach (var (s, i) in Series.Select((s, i) => (s, i)))
+            {
+                <li><svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true">@((MarkupString)Icon(s.Css))</svg> @s.Label <span class="muted">@StatusTotals[i].ToString("N0")</span></li>
+            }
+        </ul>
+        @((MarkupString)Charts.StackedColumns(DayColumns, Series, L["Log_PerDay"].Value))
+        <details>
+            <summary>@L["Log_TableView"]</summary>
+            <table>
+                <thead><tr><th>@L["Col_Date"]</th>@foreach (var s in Series) { <th>@s.Label</th> }</tr></thead>
+                <tbody>
+                @foreach (var c in DayColumns.Reverse<ChartColumn>().Where(c => c.Values.Sum() > 0))
+                {
+                    <tr><td>@c.Tip.Split(':')[0]</td>@foreach (var v in c.Values) { <td>@v</td> }</tr>
+                }
+                </tbody>
+            </table>
+        </details>
+    </section>
+
+    <section class="card">
+        <h2>@L["Log_ByCheck"]</h2>
+        @if (model.ByCheck.Count == 0) { <p class="muted">@L["Log_Empty"]</p> }
+        else { @((MarkupString)Charts.StackedBars(CheckRows, Series, L["Log_ByCheck"].Value)) }
+    </section>
+
+    <section class="card">
+        <h2>@L["Log_ChangesPerDay"]</h2>
+        @((MarkupString)Charts.StackedColumns(ChangeColumns, ChangeSeries, L["Log_ChangesPerDay"].Value))
+    </section>
+
+    <section class="card">
+        <h2>@L["Log_Entries"] <span class="muted">(@model.RowCount.ToString("N0"))</span></h2>
+        @if (model.Rows.Count == 0) { <p class="muted">@L["Log_Empty"]</p> }
+        else
+        {
+            <table>
+                <thead><tr><th>@L["Col_Time"]</th><th>@L["Col_Asset"]</th><th>@L["Col_Check"]</th><th>@L["Col_Status"]</th><th>@L["Col_Summary"]</th></tr></thead>
+                <tbody>
+                @foreach (var r in model.Rows)
+                {
+                    <tr>
+                        <td class="nowrap">@r.At.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td><a href="/assets/@r.AssetId">@r.Asset</a></td>
+                        <td>@L["Check_" + r.Check]</td>
+                        <td><StatusBadge Status="r.Status" /></td>
+                        <td class="muted">@ResourceText.Summary(L, r.Summary)</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+            <p class="pager">
+                @if (model.Filter.Page > 1) { <a href="@PageUrl(model.Filter.Page - 1)">← @L["Log_Newer"]</a> }
+                <span class="muted">@L["Log_Page", model.Filter.Page, Math.Max(1, (int)Math.Ceiling(model.RowCount / (double)model.PageSize))]</span>
+                @if (model.Filter.Page * model.PageSize < model.RowCount) { <a href="@PageUrl(model.Filter.Page + 1)">@L["Log_Older"] →</a> }
+            </p>
+        }
+    </section>
+
+    <section class="card">
+        <h2>@L["Log_AlertLog"]</h2>
+        @if (model.Alerts.Count == 0) { <p class="muted">@L["Log_NoAlerts"]</p> }
+        else
+        {
+            <table>
+                <thead><tr><th>@L["Col_Time"]</th><th>@L["Log_Channel"]</th><th>@L["Col_Subject"]</th><th>@L["Col_Status"]</th></tr></thead>
+                <tbody>
+                @foreach (var a in model.Alerts)
+                {
+                    <tr>
+                        <td class="nowrap">@a.At.ToString("yyyy-MM-dd HH:mm")</td>
+                        <td>@(a.Channel == EmailTestEndpoints.LogChannel ? L["EmailTest_Channel"].Value : a.Channel)</td>
+                        <td>@a.Subject</td>
+                        <td>@if (a.Success) { <span class="badge ok">@L[a.Channel == EmailTestEndpoints.LogChannel ? "EmailTest_Accepted" : "Log_Delivered"]</span> } else { <span class="badge error" title="@a.Error">@L["Log_Failed"]</span> }</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        }
+    </section>
+}
+
+@code {
+    static readonly CheckStatus[] Statuses = [CheckStatus.Ok, CheckStatus.Warning, CheckStatus.Error, CheckStatus.Critical];
+    [SupplyParameterFromQuery] public int Days { get; set; } = 30;
+    [SupplyParameterFromQuery] public string? Check { get; set; }
+    [SupplyParameterFromQuery] public string? Status { get; set; }
+    [SupplyParameterFromQuery] public string? Asset { get; set; }
+    [SupplyParameterFromQuery(Name = "page")] public int PageNo { get; set; } = 1;
+
+    LogModel? model;
+    List<ChartSeries> Series = [];
+    readonly List<ChartSeries> ChangeSeries = [new("changes", "", "s-accent")];
+    List<ChartColumn> DayColumns = [], ChangeColumns = [];
+    List<(string, string, int[])> CheckRows = [];
+    int[] StatusTotals = new int[4];
+
+    protected override async Task OnInitializedAsync()
+    {
+        Series = Statuses.Select(s => new ChartSeries(s.ToString(), L["Status_" + s].Value, "s-" + s.ToString().ToLowerInvariant())).ToList();
+        CheckStatus? status = Enum.TryParse<CheckStatus>(Status, out var parsed) ? parsed : null;
+        model = await Queries.LoadAsync(new LogFilter(Days, status, Check, Asset, PageNo));
+
+        var culture = CultureInfo.CurrentUICulture;
+        for (var d = model.From; d <= model.To; d = d.AddDays(1))
+        {
+            var v = model.ResultsPerDay.GetValueOrDefault(d, new int[4]);
+            var detail = string.Join(" · ", Series.Select((s, i) => $"{s.Label} {v[i]}"));
+            DayColumns.Add(new ChartColumn(d.ToString("d MMM", culture), $"{d:yyyy-MM-dd}: {detail}", v));
+            var n = model.ChangesPerDay.GetValueOrDefault(d);
+            ChangeColumns.Add(new ChartColumn(d.ToString("d MMM", culture), $"{d:yyyy-MM-dd}: {n} {L["Log_Changes"].Value.ToLowerInvariant()}", [n]));
+            for (var i = 0; i < 4; i++) StatusTotals[i] += v[i];
+        }
+        CheckRows = model.ByCheck.Select(kv => (L["Check_" + kv.Key].Value,
+            $"{L["Check_" + kv.Key].Value}: " + string.Join(" · ", Series.Select((s, i) => $"{s.Label} {kv.Value[i]}")), kv.Value)).ToList();
+    }
+
+    string PageUrl(int page) => $"/log?days={model!.Filter.Days}&check={Uri.EscapeDataString(Check ?? "")}&status={Uri.EscapeDataString(Status ?? "")}&asset={Uri.EscapeDataString(Asset ?? "")}&page={page}";
+
+    /// <summary>Each status has its own shape as well as its colour, so the legend never relies on colour alone.</summary>
+    static string Icon(string css) => css switch
+    {
+        "s-ok" => "<circle cx=\"6\" cy=\"6\" r=\"5.5\" class=\"s-ok\"/><path d=\"M3.2 6.2l2 2 3.6-4\" fill=\"none\" stroke=\"#fff\" stroke-width=\"1.5\"/>",
+        "s-warning" => "<path d=\"M6 .8l5.5 10.2h-11z\" class=\"s-warning\"/>",
+        "s-error" => "<rect x=\".5\" y=\".5\" width=\"11\" height=\"11\" rx=\"2\" class=\"s-error\"/>",
+        _ => "<path d=\"M6 .3l5.7 5.7-5.7 5.7-5.7-5.7z\" class=\"s-critical\"/>",
+    };
+}

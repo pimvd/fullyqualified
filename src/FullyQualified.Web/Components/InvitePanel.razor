@@ -1,0 +1,53 @@
+@inject IStringLocalizer<SharedResource> L
+@inject AppDbContext Db
+@inject DbGate Gate
+@inject IConfiguration Config
+
+<section class="card" id="adm-invite" data-tenant="@TenantId">
+    <h2>@L["Invites_Title"]</h2>
+    <p>@L["Invites_Intro"]</p>
+    <p class="inline">
+        <input id="adm-email" type="email" required maxlength="254" placeholder="@L["Invites_Email"]" autocomplete="off" />
+        <select id="adm-role">
+            @foreach (var r in Enum.GetValues<Role>())
+            {
+                <option value="@r" selected="@(r == Role.Member)">@L["Role_" + r]</option>
+            }
+        </select>
+        <button type="button" data-admin="invite">@L["Invites_Create"]</button>
+    </p>
+    <p class="muted"><small>@L[mailConfigured ? "Invites_MailOn" : "Invites_MailOff"]</small></p>
+    <p><input id="adm-link" readonly hidden style="width:100%" /></p>
+    <p id="adm-note" class="muted" hidden></p>
+</section>
+
+@if (invites.Count > 0)
+{
+    <section class="card">
+        <h2>@L["Invites_Pending"]</h2>
+        <table>
+            <thead><tr><th>@L["Col_Email"]</th><th>@L["Col_Role"]</th><th>@L["Col_Expires"]</th><th></th></tr></thead>
+            <tbody>
+            @foreach (var i in invites)
+            {
+                <tr>
+                    <td>@(i.Email ?? "—")</td>
+                    <td>@(i.RecoveryForUser is null ? L["Role_" + i.Role].Value : L["Recovery_Kind"].Value)</td>
+                    <td>@i.ExpiresAt.ToString("yyyy-MM-dd HH:mm")</td>
+                    <td><button type="button" class="danger" data-invite-revoke="@i.Id">@L["Invites_Revoke"]</button></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </section>
+}
+
+@code {
+    [Parameter] public Guid TenantId { get; set; }
+    List<FullyQualified.Web.Invite> invites = [];
+    bool mailConfigured => !string.IsNullOrWhiteSpace(Config["Alerts:Email:Host"]);
+
+    protected override Task OnInitializedAsync() => Gate.RunAsync(async () =>
+        invites = await Db.AcrossTenants<FullyQualified.Web.Invite>()
+            .Where(i => i.TenantId == TenantId && i.UsedAt == null && i.ExpiresAt > DateTimeOffset.UtcNow).OrderBy(i => i.ExpiresAt).ToListAsync());
+}

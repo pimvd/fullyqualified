@@ -1,0 +1,16 @@
+@page "/users"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Policy = Roles.Admin)]
+@inject IStringLocalizer<SharedResource> L
+
+<PageTitle>@L["Nav_Users"]</PageTitle>
+<h1>@L["Users_Title"]</h1>
+<AdminRoot>
+    <InvitePanel TenantId="tenant" />
+    <UsersPanel TenantId="tenant" Me="Roles.UserId(Ctx?.User)" />
+</AdminRoot>
+
+@code {
+    [CascadingParameter] HttpContext? Ctx { get; set; }
+    Guid tenant => Roles.TenantId(Ctx?.User) ?? Guid.Empty;
+}
