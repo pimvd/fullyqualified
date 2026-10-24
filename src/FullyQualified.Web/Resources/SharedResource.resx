@@ -74,6 +74,9 @@
   <data name="Issue_NoSpf" xml:space="preserve"><value>No SPF record</value></data>
   <data name="Issue_NoDmarc" xml:space="preserve"><value>No DMARC record</value></data>
   <data name="Issue_DmarcNone" xml:space="preserve"><value>DMARC policy is 'none'</value></data>
+  <data name="Issue_NoNullMx" xml:space="preserve"><value>No MX record: publish a null MX if this name sends no mail</value></data>
+  <data name="Issue_DmarcQuarantine" xml:space="preserve"><value>DMARC policy is 'quarantine' (reject is the goal)</value></data>
+  <data name="Issue_DmarcSubdomainNotReject" xml:space="preserve"><value>DMARC subdomain policy (sp) is not 'reject'</value></data>
   <data name="Issue_NoCaa" xml:space="preserve"><value>No CAA record</value></data>
   <data name="Issue_NoNs" xml:space="preserve"><value>No NS records found</value></data>
   <data name="Issue_DanglingCname" xml:space="preserve"><value>Dangling CNAME (subdomain takeover risk)</value></data>
@@ -568,6 +571,22 @@ Fix those senders: add them to SPF, or set up DKIM signing for them. Stop sender
 Change the policy to p=quarantine with pct=25, and raise pct to 100 over a few weeks.
 When nothing legitimate fails any more, move to p=reject. Add sp=reject if your subdomains do not send mail.
 If you deliberately stay in monitoring mode for now, mute this finding with an end date so it comes back.</value></data>
+  <data name="Fix_NoNullMx_What" xml:space="preserve"><value>{0} has no MX record and does not appear to send mail. Without an MX, mail servers fall back to the A record of the name and try to deliver there, and nothing states that the name is not meant for mail. A null MX (RFC 7505) says so explicitly, so senders stop retrying and spoofers have one less thing to use.</value></data>
+  <data name="Fix_NoNullMx_Steps" xml:space="preserve"><value>Check that nothing sends or receives mail as {0}. If it does, publish SPF and DMARC instead and ignore this finding.
+Publish one MX record with preference 0 and the exchange "." (a single dot).
+Also publish SPF as v=spf1 -all and a DMARC record with p=reject, if the name does not have them yet.
+Check the result with the command below, then scan again.</value></data>
+  <data name="Fix_DmarcQuarantine_What" xml:space="preserve"><value>The DMARC policy that applies to {0} is p=quarantine: mail that fails SPF and DKIM goes to the spam folder instead of being refused. That is a good step, but p=reject is the goal because it stops spoofed mail from arriving at all.</value></data>
+  <data name="Fix_DmarcQuarantine_Steps" xml:space="preserve"><value>Read your DMARC reports (the rua address) and check that nothing legitimate still fails SPF or DKIM.
+Raise pct to 100 if the policy still uses a lower percentage.
+Change the policy to p=reject. Add sp=reject if your subdomains do not send mail.
+If you deliberately stay on quarantine for now, mute this finding with an end date so it comes back.
+Check the result with the command below, then scan again.</value></data>
+  <data name="Fix_DmarcSubdomainNotReject_What" xml:space="preserve"><value>The DMARC record that covers {0} has an sp tag that is not reject. The sp tag is the policy for every subdomain, so a weak value lets anyone send spoofed mail as a subdomain that does not exist or does not send mail.</value></data>
+  <data name="Fix_DmarcSubdomainNotReject_Steps" xml:space="preserve"><value>List the subdomains that send mail. Each of them needs working SPF and DKIM, or its own DMARC record.
+Change sp= in the DMARC record of {0} to sp=reject, or remove the sp tag so that p applies to subdomains as well.
+Give a subdomain that must stay in monitoring mode its own _dmarc record with a weaker policy.
+Check the result with the command below, then scan again.</value></data>
   <data name="Fix_NoCaa_What" xml:space="preserve"><value>{0} has no CAA record. CAA limits which certificate authorities may issue certificates for the domain. Without it, any CA can, which makes mis-issuance harder to prevent.</value></data>
   <data name="Fix_NoCaa_Steps" xml:space="preserve"><value>Check which CAs issued your current certificates: see the Issuer column on the certificate list.
 Publish a CAA record for every CA you use, for example 0 issue "letsencrypt.org". Use issuewild for wildcard certificates.

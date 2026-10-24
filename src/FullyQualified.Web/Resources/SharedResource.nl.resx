@@ -74,6 +74,9 @@
   <data name="Issue_NoSpf" xml:space="preserve"><value>Geen SPF-record</value></data>
   <data name="Issue_NoDmarc" xml:space="preserve"><value>Geen DMARC-record</value></data>
   <data name="Issue_DmarcNone" xml:space="preserve"><value>DMARC-beleid is 'none'</value></data>
+  <data name="Issue_NoNullMx" xml:space="preserve"><value>Geen MX-record: publiceer een null-MX als deze naam geen mail verstuurt</value></data>
+  <data name="Issue_DmarcQuarantine" xml:space="preserve"><value>DMARC-beleid is 'quarantine' (reject is het doel)</value></data>
+  <data name="Issue_DmarcSubdomainNotReject" xml:space="preserve"><value>DMARC-beleid voor subdomeinen (sp) is niet 'reject'</value></data>
   <data name="Issue_NoCaa" xml:space="preserve"><value>Geen CAA-record</value></data>
   <data name="Issue_NoNs" xml:space="preserve"><value>Geen NS-records gevonden</value></data>
   <data name="Issue_DanglingCname" xml:space="preserve"><value>Hangende CNAME (risico op subdomain takeover)</value></data>
@@ -568,6 +571,22 @@ Herstel die verzenders: voeg ze toe aan SPF of stel DKIM-ondertekening voor ze i
 Zet het beleid op p=quarantine met pct=25 en verhoog pct in een paar weken naar 100.
 Faalt er niets legitiems meer, ga dan over op p=reject. Voeg sp=reject toe als je subdomeinen geen mail versturen.
 Blijf je bewust nog in bewakingsmodus, demp deze melding dan met een einddatum, zodat hij terugkomt.</value></data>
+  <data name="Fix_NoNullMx_What" xml:space="preserve"><value>{0} heeft geen MX-record en lijkt geen mail te versturen. Zonder MX vallen mailservers terug op het A-record van de naam en proberen daar af te leveren, en nergens staat dat de naam niet voor mail bedoeld is. Een null-MX (RFC 7505) zegt dat uitdrukkelijk, zodat afzenders stoppen met proberen en vervalsers een aanknopingspunt minder hebben.</value></data>
+  <data name="Fix_NoNullMx_Steps" xml:space="preserve"><value>Controleer dat er niets mail verstuurt of ontvangt als {0}. Doet het dat wel, publiceer dan SPF en DMARC en negeer deze melding.
+Publiceer een MX-record met voorkeur 0 en als exchange "." (een enkele punt).
+Publiceer ook SPF als v=spf1 -all en een DMARC-record met p=reject, als de naam die nog niet heeft.
+Controleer het resultaat met de opdracht hieronder en scan daarna opnieuw.</value></data>
+  <data name="Fix_DmarcQuarantine_What" xml:space="preserve"><value>Het DMARC-beleid dat voor {0} geldt is p=quarantine: mail die faalt op SPF en DKIM belandt in de spammap in plaats van geweigerd te worden. Dat is een goede stap, maar p=reject is het doel, omdat vervalste mail dan helemaal niet meer aankomt.</value></data>
+  <data name="Fix_DmarcQuarantine_Steps" xml:space="preserve"><value>Lees je DMARC-rapporten (het rua-adres) en controleer dat niets legitiems nog faalt op SPF of DKIM.
+Zet pct op 100 als het beleid nog een lager percentage gebruikt.
+Zet het beleid op p=reject. Voeg sp=reject toe als je subdomeinen geen mail versturen.
+Blijf je bewust op quarantine voor nu, demp deze melding dan met een einddatum zodat hij terugkomt.
+Controleer het resultaat met de opdracht hieronder en scan daarna opnieuw.</value></data>
+  <data name="Fix_DmarcSubdomainNotReject_What" xml:space="preserve"><value>Het DMARC-record dat {0} dekt heeft een sp-tag die niet reject is. De sp-tag is het beleid voor alle subdomeinen, dus met een zwakke waarde kan iedereen vervalste mail versturen als een subdomein dat niet bestaat of geen mail verstuurt.</value></data>
+  <data name="Fix_DmarcSubdomainNotReject_Steps" xml:space="preserve"><value>Maak een lijst van de subdomeinen die mail versturen. Elk daarvan heeft werkende SPF en DKIM nodig, of een eigen DMARC-record.
+Zet sp= in het DMARC-record van {0} op sp=reject, of haal de sp-tag weg zodat p ook voor subdomeinen geldt.
+Geef een subdomein dat in monitoringmodus moet blijven een eigen _dmarc-record met een zwakker beleid.
+Controleer het resultaat met de opdracht hieronder en scan daarna opnieuw.</value></data>
   <data name="Fix_NoCaa_What" xml:space="preserve"><value>{0} heeft geen CAA-record. CAA beperkt welke certificeringsinstanties certificaten voor het domein mogen uitgeven. Zonder CAA mag elke CA dat, waardoor foutieve uitgifte moeilijker te voorkomen is.</value></data>
   <data name="Fix_NoCaa_Steps" xml:space="preserve"><value>Kijk welke CA's je huidige certificaten hebben uitgegeven: zie de kolom Uitgever in de certificatenlijst.
 Publiceer een CAA-record voor elke CA die je gebruikt, bijvoorbeeld 0 issue "letsencrypt.org". Gebruik issuewild voor wildcardcertificaten.
