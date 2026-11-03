@@ -1,0 +1,10 @@
+- {name: ready, color: 0e8a16, description: Spec complete; a dev agent can start}
+- {name: needs-spec, color: fbca04, description: Acceptance criteria missing}
+- {name: agent-working, color: 1d76db, description: An agent is implementing this}
+- {name: agent, color: 5319e7, description: Pull request made by an agent}
+- {name: needs-human, color: d93f0b, description: Waiting for a maintainer decision}
+- {name: bug, color: d73a4a, description: Something is broken}
+- {name: feature, color: a2eeef, description: New functionality}
+- {name: docs, color: 0075ca, description: Documentation or site}
+- {name: tests, color: c5def5, description: Test coverage}
+- {name: security, color: b60205, description: Security issue}

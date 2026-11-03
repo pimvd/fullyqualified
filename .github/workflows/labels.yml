@@ -1,0 +1,30 @@
+name: labels
+on:
+  push:
+    branches: [master]
+    paths: [.github/labels.yml]
+  workflow_dispatch:
+permissions:
+  issues: write
+  contents: read
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            // labels.yml is flow-style YAML, one JSON-like object per line
+            const labels = fs.readFileSync('.github/labels.yml', 'utf8').split('\n')
+              .filter(l => l.startsWith('- {'))
+              .map(l => {
+                const m = l.match(/name: ([^,]+), color: ([^,]+), description: (.*)\}$/);
+                return { name: m[1], color: m[2], description: m[3] };
+              });
+            for (const l of labels) {
+              const p = { owner: context.repo.owner, repo: context.repo.repo, ...l };
+              try { await github.rest.issues.createLabel(p); }
+              catch (e) { if (e.status === 422) await github.rest.issues.updateLabel(p); else throw e; }
+            }
