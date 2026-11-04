@@ -1,0 +1,91 @@
+name: deploy-scaleway
+
+# Deploys the development environment on Scaleway Serverless Containers. Manual only: it costs money and changes a live environment.
+# Needs the GitHub environment "scaleway-dev" (add required reviewers there if you want an approval step), the repository variable
+# TF_STATE_BUCKET (printed by deploy/scaleway/bootstrap.sh) and the secrets listed in deploy/scaleway/README.md.
+on:
+  workflow_dispatch:
+    inputs:
+      scanning_enabled:
+        description: Run the background job runner (keeps the serverless database awake while the container is awake)
+        type: boolean
+        default: false
+
+concurrency:
+  group: deploy-scaleway
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  TF_IN_AUTOMATION: "1"
+  TF_DIR: deploy/scaleway/terraform
+  # Scaleway credentials for the provider, and the same keys under the names the S3 state backend reads.
+  SCW_ACCESS_KEY: ${{ secrets.SCW_ACCESS_KEY }}
+  SCW_SECRET_KEY: ${{ secrets.SCW_SECRET_KEY }}
+  SCW_DEFAULT_PROJECT_ID: ${{ secrets.SCW_DEFAULT_PROJECT_ID }}
+  SCW_DEFAULT_ORGANIZATION_ID: ${{ secrets.SCW_DEFAULT_ORGANIZATION_ID }}
+  AWS_ACCESS_KEY_ID: ${{ secrets.SCW_ACCESS_KEY }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.SCW_SECRET_KEY }}
+  TF_VAR_project_id: ${{ secrets.SCW_DEFAULT_PROJECT_ID }}
+  TF_VAR_setup_code: ${{ secrets.FQ_SETUP_CODE }}
+  TF_VAR_smtp_host: ${{ secrets.FQ_SMTP_HOST }}
+  TF_VAR_smtp_user: ${{ secrets.FQ_SMTP_USER }}
+  TF_VAR_smtp_password: ${{ secrets.FQ_SMTP_PASSWORD }}
+  TF_VAR_mail_from: ${{ secrets.FQ_MAIL_FROM }}
+  TF_VAR_scanning_enabled: ${{ inputs.scanning_enabled }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: scaleway-dev
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.17.1
+          terraform_wrapper: false
+
+      - name: Check the required settings are present
+        env:
+          STATE_BUCKET: ${{ vars.TF_STATE_BUCKET }}
+        run: |
+          for name in SCW_ACCESS_KEY SCW_SECRET_KEY SCW_DEFAULT_PROJECT_ID TF_VAR_setup_code STATE_BUCKET; do
+            [ -n "${!name}" ] || { echo "::error::$name is not set (see deploy/scaleway/README.md)"; exit 1; }
+          done
+
+      - name: Pick the image tag
+        run: echo "TF_VAR_image_tag=${GITHUB_SHA::12}" >> "$GITHUB_ENV"
+
+      - name: Terraform init
+        env:
+          STATE_BUCKET: ${{ vars.TF_STATE_BUCKET }}
+        run: terraform -chdir="$TF_DIR" init -input=false -backend-config=backend.hcl -backend-config="bucket=$STATE_BUCKET"
+
+      - name: Create the registry first, so there is somewhere to push the image
+        run: terraform -chdir="$TF_DIR" apply -input=false -auto-approve -target=scaleway_registry_namespace.main
+
+      - name: Build and push the image
+        run: |
+          registry=$(terraform -chdir="$TF_DIR" show -json | jq -r '.values.root_module.resources[] | select(.address == "scaleway_registry_namespace.main") | .values.endpoint')
+          [ -n "$registry" ] && [ "$registry" != "null" ] || { echo "::error::Could not read the registry endpoint from the Terraform state"; exit 1; }
+          image="$registry/fullyqualified:$TF_VAR_image_tag"
+          echo "$SCW_SECRET_KEY" | docker login "${registry%%/*}" --username nologin --password-stdin
+          docker build --tag "$image" .
+          docker push "$image"
+
+      - name: Terraform apply
+        run: terraform -chdir="$TF_DIR" apply -input=false -auto-approve
+
+      - name: Smoke test
+        run: |
+          url=$(terraform -chdir="$TF_DIR" output -raw url)
+          echo "Deployed to $url"
+          # A container that scaled to zero needs time to start and migrate the database.
+          for attempt in $(seq 1 24); do
+            if curl --fail --silent --show-error --max-time 20 "$url/health"; then echo; exit 0; fi
+            echo "Not ready yet (attempt $attempt)"; sleep 10
+          done
+          echo "::error::$url/health did not answer in time"; exit 1
