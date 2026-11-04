@@ -1,4 +1,4 @@
-# 11. Agent team with a human merge gate
+# 12. Agent team with a human merge gate
 
 Status: proposed. Builds on the workflow rule in AGENTS.md.
 
