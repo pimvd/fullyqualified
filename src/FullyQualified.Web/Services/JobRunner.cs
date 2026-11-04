@@ -1,7 +1,8 @@
 namespace FullyQualified.Web;
 
-public class JobRunner(IServiceProvider sp, IConfiguration cfg, ILogger<JobRunner> log) : BackgroundService
+public class JobRunner(IServiceProvider sp, IConfiguration cfg, ILogger<JobRunner> log, WorkerHeartbeat? heartbeat = null) : BackgroundService
 {
+    readonly WorkerHeartbeat beat = heartbeat ?? new WorkerHeartbeat(TimeProvider.System, WorkerHeartbeat.DefaultFile);
     volatile bool isScheduler;
     /// <summary>True while this process holds the scheduler lock.</summary>
     public bool IsScheduler => isScheduler;
@@ -10,11 +11,31 @@ public class JobRunner(IServiceProvider sp, IConfiguration cfg, ILogger<JobRunne
     {
         if (!cfg.GetValue("Scanning:Enabled", true)) return Task.CompletedTask;
         var workers = cfg.GetValue("Scanning:Workers", 4);
-        return Task.WhenAll(Enumerable.Range(0, workers).Select(i => Task.Run(async () =>
+        beat.Start(workers);
+        var loops = Enumerable.Range(0, workers).Select(i => Task.Run(async () =>
         {
-            try { await Loop(i == 0, ct); }
+            try { await Loop(i, ct); }
             finally { if (i == 0) isScheduler = false; } // the lock goes with the loop
-        }, ct)));
+        }, ct));
+        return Task.WhenAll(loops.Append(Task.Run(() => BeatLoop(ct), ct)));
+    }
+
+    async Task BeatLoop(CancellationToken ct)
+    {
+        using var timer = new PeriodicTimer(WorkerHeartbeat.Interval, TimeProvider.System);
+        do
+        {
+            try { await beat.BeatAsync(sp, isScheduler, ct); }
+            catch (OperationCanceledException) when (ct.IsCancellationRequested) { return; }
+            catch (Exception ex) { log.LogWarning(ex, "Heartbeat failed"); }
+        }
+        while (await WaitAsync(timer, ct));
+    }
+
+    static async Task<bool> WaitAsync(PeriodicTimer timer, CancellationToken ct)
+    {
+        try { return await timer.WaitForNextTickAsync(ct); }
+        catch (OperationCanceledException) { return false; }
     }
 
     async Task<bool> HoldAsync(SchedulerLock schedulerLock, CancellationToken ct)
@@ -23,13 +44,15 @@ public class JobRunner(IServiceProvider sp, IConfiguration cfg, ILogger<JobRunne
         catch { isScheduler = false; throw; }
     }
 
-    async Task Loop(bool scheduler, CancellationToken ct)
+    async Task Loop(int index, CancellationToken ct)
     {
+        var scheduler = index == 0;
         var nextSchedule = DateTimeOffset.MinValue;
         var nextRetention = DateTimeOffset.MinValue;
         await using var schedulerLock = scheduler ? new SchedulerLock(Hosting.ConnectionString(cfg)) : null;
         while (!ct.IsCancellationRequested)
         {
+            beat.Tick(index);
             try
             {
                 using var scope = sp.CreateScope();
@@ -45,6 +68,7 @@ public class JobRunner(IServiceProvider sp, IConfiguration cfg, ILogger<JobRunne
                 if (holds && DateTimeOffset.UtcNow >= nextRetention)
                 {
                     await scope.ServiceProvider.GetRequiredService<RetentionService>().RunAsync(DateTimeOffset.UtcNow, ct);
+                    await beat.PruneAsync(scope.ServiceProvider.GetRequiredService<AppDbContext>(), ct);
                     nextRetention = DateTimeOffset.UtcNow.AddHours(6);
                 }
                 if (await scope.ServiceProvider.GetRequiredService<CheckRunner>().RunNextAsync(ct)) continue;
