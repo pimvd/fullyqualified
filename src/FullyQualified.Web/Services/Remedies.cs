@@ -21,7 +21,7 @@ public static class Remedies
     /// <summary>Every finding the checks can report, as codes (with an example argument where the code carries one). A test holds the catalogue to this list.</summary>
     public static readonly string[] AllCodes =
     [
-        "NoSpf", "NoNullMx", "NoDmarc", "DmarcNone", "DmarcQuarantine", "DmarcSubdomainNotReject", "NoCaa", "NoNs", "DanglingCname", "ResolverMismatch:ns", "DkimMissing:s1", "DkimRevoked:s1", "DkimInvalid:s1", "DkimWeak:s1:512", "DnsError",
+        "NoSpf", "NoNullMx", "NoDmarc", "DmarcNone", "DmarcQuarantine", "DmarcSubdomainNotReject", "NoCaa", "DanglingCname", "ResolverMismatch:ns", "DkimMissing:s1", "DkimRevoked:s1", "DkimInvalid:s1", "DkimWeak:s1:512", "DnsError",
         "TlsExpired", "TlsExpiring", "TlsTrust", "TlsError", "CtError",
     ];
 
@@ -64,8 +64,6 @@ public static class Remedies
             case "NoCaa":
                 return new("NoCaa", [domain], [Steps("Fix_NoCaa_Steps")], [$"dig +short CAA {domain}"],
                     $"{domain}  CAA  0 issue \"letsencrypt.org\"\n{domain}  CAA  0 iodef \"mailto:security@{domain}\"", Dig((domain, "CAA")));
-            case "NoNs":
-                return new("NoNs", [domain], [Steps("Fix_NoNs_Steps")], [$"dig NS {domain} +trace", $"whois {domain}"], null, Dig((domain, "NS")));
             case "DanglingCname":
             {
                 var target = values.GetValueOrDefault("cname") ?? "";

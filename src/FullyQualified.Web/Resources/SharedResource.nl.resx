@@ -78,7 +78,6 @@
   <data name="Issue_DmarcQuarantine" xml:space="preserve"><value>DMARC-beleid is 'quarantine' (reject is het doel)</value></data>
   <data name="Issue_DmarcSubdomainNotReject" xml:space="preserve"><value>DMARC-beleid voor subdomeinen (sp) is niet 'reject'</value></data>
   <data name="Issue_NoCaa" xml:space="preserve"><value>Geen CAA-record</value></data>
-  <data name="Issue_NoNs" xml:space="preserve"><value>Geen NS-records gevonden</value></data>
   <data name="Issue_DanglingCname" xml:space="preserve"><value>Hangende CNAME (risico op subdomain takeover)</value></data>
   <data name="Rep_Title" xml:space="preserve"><value>NIS2-compliancerapport</value></data>
   <data name="Rep_Summary" xml:space="preserve"><value>Samenvatting</value></data>
@@ -593,12 +592,6 @@ Publiceer een CAA-record voor elke CA die je gebruikt, bijvoorbeeld 0 issue "let
 Voeg een iodef-record toe met een adres dat bericht moet krijgen over geweigerde aanvragen.
 Controleer of je DNS-provider CAA-records ondersteunt (de meeste doen dat) en dat je geen CA bent vergeten, anders mislukt de verlenging bij die CA.
 Controleer het resultaat met de opdracht hieronder en scan daarna opnieuw.</value></data>
-  <data name="Fix_NoNs_What" xml:space="preserve"><value>Voor {0} zijn geen nameserverrecords gevonden. De naam wordt niet opgelost, dus niets dat ervan afhangt (web, e-mail, certificaten) kan werken.</value></data>
-  <data name="Fix_NoNs_Steps" xml:space="preserve"><value>Controleer de spelling van de naam.
-Controleer of het domein geregistreerd is en niet is verlopen: voer whois uit en kijk naar de status en de verloopdatum.
-Controleer bij de registrar of het domein naar de juiste nameservers wijst en of die servers een zone voor {0} hebben.
-Voer dig NS {0} +trace uit om te zien waar de keten breekt.
-Is het domein uit gebruik, verwijder of pauzeer het asset dan.</value></data>
   <data name="Fix_DanglingCname_What" xml:space="preserve"><value>{0} is een CNAME die wijst naar {1}, en die naam bestaat niet. Wie {1} registreert of claimt (een verwijderde cloud-app, opslagbucket of naam van een gehoste dienst) kan inhoud serveren op {0}: een subdomain takeover.</value></data>
   <data name="Fix_DanglingCname_Steps" xml:space="preserve"><value>Zoek uit waarvoor {0} diende. Wordt het niet meer gebruikt, verwijder het CNAME-record dan meteen bij je DNS-provider. Daarmee is het risico weg.
 Is het nog nodig, herstel dan {1}: maak de app, bucket of eigen domeinnaam bij de provider opnieuw aan onder dezelfde naam, of laat de CNAME naar het nieuwe doel wijzen.

@@ -167,9 +167,41 @@ public class FixPageTests : IClassFixture<PgFactory>
         Assert.Contains("class=\"fix-link\"", await (await client.GetAsync("/")).Content.ReadAsStringAsync());
     }
 
+    [DbFact]
+    public async Task A_stored_result_with_the_retired_NoNs_finding_does_not_break_the_pages()
+    {
+        var probe = new Probe(factory);
+        var (mine, _) = await probe.Seed();
+        var legacy = await probe.SeedLegacyNoNs(mine);
+        var client = factory.As(mine.Admin);
+
+        foreach (var url in new[] { $"/assets/{legacy}", "/", "/changes", "/reports", "/reports/nis2.xlsx", $"/fix?asset={legacy}&check=dns&code=NoNs" })
+        {
+            var response = await client.GetAsync(url);
+            Assert.True(response.IsSuccessStatusCode, $"{url} returned {(int)response.StatusCode}");
+        }
+        Assert.Contains("There is no advice", await (await client.GetAsync($"/fix?asset={legacy}&check=dns&code=NoNs")).Content.ReadAsStringAsync());
+    }
+
     sealed class Probe(PgFactory factory) : OrgTestBase<PgFactory>(factory)
     {
         public record Mine(Guid Admin, Guid AssetId, Guid TlsAssetId, string Name);
+
+        public async Task<Guid> SeedLegacyNoNs(Mine mine)
+        {
+            using var scope = Scope();
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var tenant = (await db.Assets.IgnoreQueryFilters().SingleAsync(a => a.Id == mine.AssetId)).TenantId;
+            var asset = new Asset { TenantId = tenant, Name = $"legacy.{tenant:N}.test", Kind = AssetKind.Domain };
+            db.Assets.Add(asset);
+            var stored = new CheckResult { TenantId = tenant, AssetId = asset.Id, CheckType = "dns", Status = CheckStatus.Critical, Summary = "Sum_DnsIssues|1", ValuesJson = "{\"_issues\":\"NoNs\"}" };
+            db.Results.Add(stored);
+            await db.SaveChangesAsync();
+            // The change list shows the stored issue list as it was when the finding existed.
+            db.Changes.Add(new Change { TenantId = tenant, AssetId = asset.Id, CheckType = "dns", Key = "_issues", Before = "", After = "NoNs" });
+            await db.SaveChangesAsync();
+            return asset.Id;
+        }
 
         public async Task<(Mine, Guid)> Seed()
         {
