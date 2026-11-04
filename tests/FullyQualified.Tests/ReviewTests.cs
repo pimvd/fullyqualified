@@ -246,6 +246,31 @@ public class ReviewTests(PgFactory factory) : OrgTestBase<PgFactory>(factory), I
         Assert.Equal(3, model.Assets);
     }
 
+    [DbFact]
+    public async Task A_failed_dns_run_does_not_drop_a_domain_from_the_domain_controls()
+    {
+        var org = await NewOrg();
+        using (var scope = Scope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            var apex = new Asset { TenantId = org.Id, Name = $"flaky.{org.Id:N}.test" };
+            db.Assets.Add(apex);
+            CheckResult Dns(CheckStatus status, DateTimeOffset at, Dictionary<string, string> values) => new() { TenantId = org.Id, AssetId = apex.Id, CheckType = "dns", Status = status, Summary = status == CheckStatus.Error ? "Sum_Error|timeout" : "Sum_DnsOk", ObservedAt = at, ValuesJson = System.Text.Json.JsonSerializer.Serialize(values) };
+            db.Results.AddRange(
+                Dns(CheckStatus.Ok, DateTimeOffset.UtcNow.AddHours(-2), new() { ["spf"] = "v=spf1 -all", ["ns"] = "ns1.example", ["dnssec"] = "yes" }),
+                // The newest run failed before the zone part: it has no ns, spf or dnssec values.
+                Dns(CheckStatus.Error, DateTimeOffset.UtcNow.AddHours(-1), new() { ["a"] = "192.0.2.1" }));
+            await db.SaveChangesAsync();
+        }
+
+        using var read = Factory.Services.CreateScope();
+        read.ServiceProvider.GetRequiredService<TenantScope>().Id = org.Id;
+        var model = await read.ServiceProvider.GetRequiredService<ReportBuilder>().BuildAsync();
+        var row = Assert.Single(model.Domains);
+        Assert.Equal($"flaky.{org.Id:N}.test", row.Domain);
+        Assert.True(row.Spf); Assert.True(row.Dnssec);
+    }
+
     sealed class FakeCt(List<DiscoveredHost> found) : ICheck
     {
         public string Type => "ct";

@@ -32,8 +32,10 @@ public class ReportBuilder(AppDbContext db)
         var since = DateTimeOffset.UtcNow.AddDays(-90);
         var changes = await db.Changes.Where(c => c.DetectedAt >= since).OrderByDescending(c => c.DetectedAt).Take(500).ToListAsync();
 
-        // Only a zone apex has NS records, so the zone values in the latest DNS result pick out the domains.
-        var domains = assets.OrderBy(a => a.Name).Select(a => (a, v: latest.FirstOrDefault(r => r.AssetId == a.Id && r.CheckType == "dns")?.Values ?? []))
+        // Only a zone apex has NS records, so the zone values in the DNS result pick out the domains. A failed run stops before the zone part,
+        // so the newest run that did not fail is used; otherwise one DNS hiccup would drop a domain from the report.
+        var dns = await db.LatestGoodResultsAsync("dns");
+        var domains = assets.OrderBy(a => a.Name).Select(a => (a, v: dns.FirstOrDefault(r => r.AssetId == a.Id)?.Values ?? []))
             .Where(x => Has(x.v, "ns"))
             .Select(x => new DomainControl(x.a.Name, Has(x.v, "spf"), Has(x.v, "dmarc"), Has(x.v, "caa"), x.v.GetValueOrDefault("dnssec") == "yes")).ToList();
 
