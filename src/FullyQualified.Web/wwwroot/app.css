@@ -200,3 +200,43 @@ button.refresh:hover{border-color:var(--accent);background:color-mix(in srgb,var
 /* Keep authenticated navigation readable when the toolbox adds another destination. */
 header.top nav{flex-wrap:wrap;min-width:0}
 @media(max-width:600px){header.top nav{flex-basis:100%;order:2}}
+
+/* Signed-in shell: side navigation next to the page. Signed-out pages keep the plain top bar. */
+.shell{display:flex;flex-wrap:wrap;min-height:100vh}
+.shell>main{flex:999 1 640px;min-width:0;max-width:none;margin:0;padding:1.5rem 2rem}
+aside.side{flex:0 0 14.5rem;background:#0f1722;color:#c4cddc;padding:1.2rem .9rem;display:flex;flex-direction:column;gap:1.2rem}
+aside.side .brand{color:#fff;padding:0 .7rem}aside.side .brand span{color:#7aa5ff}
+aside.side nav{display:flex;flex-direction:column;flex:0 0 auto;gap:2px}
+aside.side nav a{color:#c4cddc;padding:.55rem .7rem;border-radius:8px}
+aside.side nav a:hover{background:#1b2636;color:#fff;text-decoration:none}
+aside.side nav a.on{background:#1b2636;color:#fff;font-weight:600}
+aside.side .side-bottom{margin-top:auto;border-top:1px solid #243247;padding-top:.8rem}
+aside.side .side-tools{display:flex;align-items:center;gap:.8rem;padding:.5rem .7rem;flex-wrap:wrap;font-size:.85rem}
+aside.side .side-tools a,aside.side .side-tools button.link{color:#c4cddc;padding:0;display:inline;background:none}
+aside.side .side-tools a:hover{color:#fff}
+aside.side button.refresh{color:#c4cddc;border-color:#2a384d}
+aside.side button.side-dig{display:flex;align-items:center;gap:.5rem;background:#1b2636;color:#c4cddc;border:1px solid #2a384d;border-radius:8px;padding:.6rem .7rem;font-size:.85rem;min-height:44px}
+aside.side button.side-dig span{flex:1;text-align:left}
+aside.side button.side-dig kbd{color:#c4cddc;border-color:#2a384d}
+@media(max-width:800px){aside.side{flex-basis:100%}aside.side nav{flex-direction:row;flex-wrap:wrap}aside.side .side-bottom{margin-top:0}}
+
+/* Dashboard: what needs attention, then what expires next. */
+p.lead{margin:-.6rem 0 1.2rem}
+.eyebrow{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0 0 .6rem}
+.attention{display:flex;flex-direction:column;gap:.6rem;margin-bottom:1.2rem}
+.attention .eyebrow{margin-bottom:0}.attention>p{margin:0}
+.attn{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:.8rem 1.1rem}
+.attn-body{flex:1 1 20rem;min-width:0;overflow-wrap:anywhere}
+.attn-name{font-weight:600}
+.attn .button{margin-left:auto}
+.timeline-card{margin-bottom:1.2rem}
+.timeline{position:relative;height:6rem;min-width:36rem}
+.tl-axis{position:absolute;left:0;right:0;top:3rem;height:4px;border-radius:4px;background:var(--line)}
+.tl-mark{position:absolute;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.35rem}
+.tl-mark.above{top:.4rem}.tl-mark.below{top:2.4rem;flex-direction:column-reverse}
+.tl-label{font-size:.75rem;color:var(--muted);white-space:nowrap}
+.tl-dot{width:14px;height:14px;background:var(--ok);border:2px solid var(--card);box-shadow:0 0 0 1px var(--ok)}
+.tl-dot.ok{border-radius:50%}.tl-dot.warn{border-radius:2px;background:var(--warn);box-shadow:0 0 0 1px var(--warn)}
+.tl-dot.bad{border-radius:0;background:var(--bad);box-shadow:0 0 0 1px var(--bad);transform:rotate(45deg)}
+.tl-scale{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted);min-width:36rem}
+.timeline-card{overflow-x:auto}

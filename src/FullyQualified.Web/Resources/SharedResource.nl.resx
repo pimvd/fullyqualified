@@ -1000,4 +1000,16 @@ Je hebt deze zoekopdracht niet nodig om een domein te monitoren: ze helpt alleen
   <data name="Tool_Error_private_key" xml:space="preserve"><value>Privésleutels worden niet geaccepteerd. Voer alleen openbare certificaten in.</value></data>
   <data name="Tool_RunIncomplete" xml:space="preserve"><value>De diagnose is geannuleerd of heeft de tijdslimiet bereikt; eerdere waarnemingen blijven zichtbaar.</value></data>
   <data name="Tool_TlsRunStopped" xml:space="preserve"><value>De uitvoering is geannuleerd of de tijdslimiet is bereikt. De verzamelde waarnemingen zijn onvolledig.</value></data>
+  <data name="Attn_Title" xml:space="preserve"><value>{0} assets hebben aandacht nodig</value></data>
+  <data name="Attn_TitleNone" xml:space="preserve"><value>Alles is in orde</value></data>
+  <data name="Attn_Sub" xml:space="preserve"><value>De overige {0} assets zijn in orde.</value></data>
+  <data name="Attn_SubNone" xml:space="preserve"><value>Alle {0} assets doorstaan hun controles.</value></data>
+  <data name="Attn_Heading" xml:space="preserve"><value>Aandacht nodig</value></data>
+  <data name="Attn_More" xml:space="preserve"><value>Toon alle {0} assets met problemen</value></data>
+  <data name="Attn_Open" xml:space="preserve"><value>Openen</value></data>
+  <data name="Timeline_Title" xml:space="preserve"><value>Komende 90 dagen</value></data>
+  <data name="Timeline_None" xml:space="preserve"><value>Er verloopt geen certificaat in de komende 90 dagen.</value></data>
+  <data name="Timeline_Today" xml:space="preserve"><value>Vandaag</value></data>
+  <data name="Timeline_Plus" xml:space="preserve"><value>+{0} dagen</value></data>
+  <data name="Timeline_Left" xml:space="preserve"><value>nog {0} dagen</value></data>
 </root>
