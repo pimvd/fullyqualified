@@ -29,8 +29,8 @@ public class BulkDeleteTests(PgFactory factory) : IClassFixture<PgFactory>
         var admin = new User { TenantId = mine.Id, Name = "Bea", Role = Role.Admin, Email = $"bea@{mine.Id:N}.test" };
         var viewer = new User { TenantId = mine.Id, Name = "Vic", Role = Role.Viewer, Email = $"vic@{mine.Id:N}.test" };
         db.Users.AddRange(admin, viewer);
-        var assets = Enumerable.Range(0, 3).Select(i => new Asset { TenantId = mine.Id, Name = $"a{i}.{mine.Id:N}.test", Kind = AssetKind.Endpoint, Discovered = i > 0 }).ToArray();
-        var theirs = new Asset { TenantId = other.Id, Name = $"theirs.{other.Id:N}.test", Kind = AssetKind.Domain };
+        var assets = Enumerable.Range(0, 3).Select(i => new Asset { TenantId = mine.Id, Name = $"a{i}.{mine.Id:N}.test", Discovered = i > 0 }).ToArray();
+        var theirs = new Asset { TenantId = other.Id, Name = $"theirs.{other.Id:N}.test" };
         db.Assets.AddRange(assets);
         db.Assets.Add(theirs);
         db.Results.Add(new CheckResult { TenantId = mine.Id, AssetId = assets[0].Id, CheckType = "tls", Status = CheckStatus.Ok, Summary = "Sum_DnsOk" });

@@ -112,9 +112,9 @@ public class TenancyTests : IClassFixture<PgFactory>
                             U(globex, "Gus", Role.Admin, "gus@globex.test"), U(globex, "Gia", Role.Viewer, "gia@globex.test") };
         db.Users.AddRange(users);
 
-        Asset A(Tenant t, string name, AssetKind k) => new() { TenantId = t.Id, Name = name, Kind = k };
-        var a1 = A(acme, "acme.example", AssetKind.Domain); var a2 = A(acme, "shop.acme.example:443", AssetKind.Endpoint);
-        var g1 = A(globex, "globex.example", AssetKind.Domain);
+        Asset A(Tenant t, string name) => new() { TenantId = t.Id, Name = name };
+        var a1 = A(acme, "acme.example"); var a2 = A(acme, "shop.acme.example:443");
+        var g1 = A(globex, "globex.example");
         db.Assets.AddRange(a1, a2, g1);
         CheckResult R(Asset a, string type, CheckStatus s, int hoursAgo) => new() { TenantId = a.TenantId, AssetId = a.Id, CheckType = type, Status = s, Summary = "Sum_DnsOk", ObservedAt = DateTimeOffset.UtcNow.AddHours(-hoursAgo) };
         db.Results.AddRange(R(a1, "dns", CheckStatus.Ok, 30), R(a1, "dns", CheckStatus.Warning, 2), R(a2, "tls", CheckStatus.Ok, 3), R(a2, "tls", CheckStatus.Critical, 1), R(g1, "dns", CheckStatus.Error, 1));
@@ -179,12 +179,12 @@ public class TenancyTests : IClassFixture<PgFactory>
         using var scope = Scope(factory.Services, w.Globex);
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-        var mine = new Asset { Name = "stamped.globex.example", Kind = AssetKind.Domain };
+        var mine = new Asset { Name = "stamped.globex.example" };
         db.Assets.Add(mine);
         await db.SaveChangesAsync();
         Assert.Equal(w.Globex, mine.TenantId);
 
-        db.Assets.Add(new Asset { TenantId = w.Acme, Name = "smuggled.example", Kind = AssetKind.Domain });
+        db.Assets.Add(new Asset { TenantId = w.Acme, Name = "smuggled.example" });
         await Assert.ThrowsAsync<InvalidOperationException>(() => db.SaveChangesAsync());
     }
 
@@ -194,7 +194,7 @@ public class TenancyTests : IClassFixture<PgFactory>
         await W();
         using var scope = factory.Services.CreateScope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        db.Assets.Add(new Asset { Name = "orphan.example", Kind = AssetKind.Domain });
+        db.Assets.Add(new Asset { Name = "orphan.example" });
         await Assert.ThrowsAsync<InvalidOperationException>(() => db.SaveChangesAsync());
     }
 

@@ -63,7 +63,7 @@ public class PublicScanService(IConfiguration cfg, ScanThrottle throttle, ILogge
 
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
         cts.CancelAfter(TimeSpan.FromSeconds(30));
-        var asset = new Asset { Name = domain, Kind = AssetKind.Domain };
+        var asset = new Asset { Name = domain };
         var tls = Guarded(new TlsCheck(HostGuard.Strict()), asset, cts.Token);
         var dns = Guarded(new DnsCheck(cfg), asset, cts.Token);
         await Task.WhenAll(tls, dns);

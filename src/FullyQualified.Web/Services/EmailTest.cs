@@ -34,7 +34,7 @@ public static class EmailTestEndpoints
     static async Task<bool> OwnsDomain(AppDbContext db, string fromHost, CancellationToken ct)
     {
         var host = fromHost.ToLowerInvariant();
-        var domains = await db.Assets.Where(a => a.Kind == AssetKind.Domain).Select(a => a.Name).ToListAsync(ct);
+        var domains = await db.Assets.Where(a => !a.Discovered && !a.Name.Contains(":")).Select(a => a.Name).ToListAsync(ct);
         return domains.Any(d => host == d.ToLowerInvariant() || host.EndsWith("." + d.ToLowerInvariant(), StringComparison.Ordinal));
     }
 

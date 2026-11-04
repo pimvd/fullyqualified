@@ -35,7 +35,7 @@ public class CtLogCheckTests
     public async Task Falls_back_to_Cert_Spotter_when_crt_sh_fails(HttpStatusCode crtShStatus)
     {
         var handler = new Handler(u => u.Host == "crt.sh" ? new HttpResponseMessage(crtShStatus) : Json(CertSpotterBody));
-        var outcome = await new CtLogCheck(new Factory(handler)).RunAsync(new Asset { Name = "example.com", Kind = AssetKind.Domain }, default);
+        var outcome = await new CtLogCheck(new Factory(handler)).RunAsync(new Asset { Name = "example.com" }, default);
 
         Assert.Equal(["crt.sh", "api.certspotter.com"], handler.Hosts);
         Assert.Equal(CheckStatus.Ok, outcome.Status);
@@ -52,7 +52,7 @@ public class CtLogCheckTests
     public async Task Does_not_contact_Cert_Spotter_when_crt_sh_works()
     {
         var handler = new Handler(_ => Json("[]"));
-        var outcome = await new CtLogCheck(new Factory(handler)).RunAsync(new Asset { Name = "example.com", Kind = AssetKind.Domain }, default);
+        var outcome = await new CtLogCheck(new Factory(handler)).RunAsync(new Asset { Name = "example.com" }, default);
         Assert.Equal(["crt.sh"], handler.Hosts);
         Assert.Equal(CheckStatus.Ok, outcome.Status);
     }
@@ -61,7 +61,7 @@ public class CtLogCheckTests
     public async Task Reports_an_error_naming_both_services_when_both_fail()
     {
         var handler = new Handler(_ => new HttpResponseMessage(HttpStatusCode.BadGateway));
-        var outcome = await new CtLogCheck(new Factory(handler)).RunAsync(new Asset { Name = "example.com", Kind = AssetKind.Domain }, default);
+        var outcome = await new CtLogCheck(new Factory(handler)).RunAsync(new Asset { Name = "example.com" }, default);
         Assert.Equal(CheckStatus.Error, outcome.Status);
         Assert.StartsWith("Sum_Error|crt.sh:", outcome.Summary);
         Assert.Contains("Cert Spotter:", outcome.Summary);

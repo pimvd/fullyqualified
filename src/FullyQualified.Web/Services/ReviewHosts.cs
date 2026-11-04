@@ -52,7 +52,7 @@ public static class ReviewHosts
         g.MapPost("/review/discover", async (HttpContext ctx, AppDbContext db, JobQueue queue, [FromForm] string? back) =>
         {
             var queued = 0;
-            foreach (var asset in await db.Assets.Where(a => a.Kind == AssetKind.Domain && !a.Discovered).ToListAsync())
+            foreach (var asset in await db.Assets.Where(a => !a.Discovered && !a.Name.Contains(":")).ToListAsync())
                 if (await queue.EnqueueManualAsync(asset, "ct")) queued++;
             return Results.Redirect($"{Back(back, "/review")}{(Back(back, "/review").Contains('?') ? "&" : "?")}done=discover:{queued}");
         });

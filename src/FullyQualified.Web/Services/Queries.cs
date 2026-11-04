@@ -9,6 +9,12 @@ public static class Queries
             .Where(x => x.AssetId == r.AssetId && x.CheckType == r.CheckType).Max(x => x.ObservedAt))
             .ToListAsync();
 
+    /// <summary>The newest result of a check type per asset that did not end in an error. A failed run only holds the values gathered before it failed, so reports that need the full picture use this.</summary>
+    public static Task<List<CheckResult>> LatestGoodResultsAsync(this AppDbContext db, string checkType) =>
+        db.Results.Where(r => r.CheckType == checkType && r.Status != CheckStatus.Error && r.ObservedAt == db.Results
+            .Where(x => x.AssetId == r.AssetId && x.CheckType == checkType && x.Status != CheckStatus.Error).Max(x => x.ObservedAt))
+            .ToListAsync();
+
     public static CheckStatus? WorstStatus(this IEnumerable<CheckResult> results) =>
         results.Select(r => (CheckStatus?)r.Status).DefaultIfEmpty(null).Max();
 }
