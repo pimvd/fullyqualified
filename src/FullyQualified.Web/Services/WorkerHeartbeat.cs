@@ -6,12 +6,19 @@ namespace FullyQualified.Web;
 /// The liveness signal of a process that runs a <see cref="JobRunner"/> (ADR 0010). It beats only while every loop has finished a tick
 /// recently, so a stuck loop stops the beat. A beat upserts a <c>worker_heartbeats</c> row and touches a file the compose healthcheck reads.
 /// </summary>
-public sealed class WorkerHeartbeat(TimeProvider clock, string filePath)
+public sealed class WorkerHeartbeat(TimeProvider clock, string filePath, TimeSpan maxTickAge)
 {
     public const string DefaultFile = "/tmp/fq-worker-alive";
     public static readonly TimeSpan Interval = TimeSpan.FromSeconds(15);
-    public static readonly TimeSpan MaxTickAge = TimeSpan.FromSeconds(60);
+    /// <summary>How long a job may run (<c>Scanning:JobTimeoutSeconds</c>, default 90).</summary>
+    public static TimeSpan JobTimeout(IConfiguration cfg) => TimeSpan.FromSeconds(Math.Max(1, cfg.GetValue("Scanning:JobTimeoutSeconds", 90)));
+    /// <summary>A loop that has not started a pass for the job cap plus this long is stuck.</summary>
+    public static readonly TimeSpan TickSlack = TimeSpan.FromSeconds(60);
+    /// <summary>The window in which a loop must have started a pass: the job cap plus <see cref="TickSlack"/> (150 s by default).</summary>
+    public static TimeSpan WindowFor(IConfiguration cfg) => JobTimeout(cfg) + TickSlack;
     public static readonly TimeSpan RowLifetime = TimeSpan.FromDays(1);
+
+    public TimeSpan MaxTickAge { get; } = maxTickAge;
 
     public Guid WorkerId { get; } = Guid.NewGuid();
     readonly DateTimeOffset startedAt = clock.GetUtcNow();

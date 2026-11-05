@@ -27,7 +27,16 @@ public class CheckRunner(AppDbContext db, JobQueue queue, IEnumerable<ICheck> ch
     public async Task ExecuteAsync(Asset asset, ICheck check, CancellationToken ct)
     {
         CheckOutcome outcome;
-        try { outcome = await check.RunAsync(asset, ct); }
+        // One job may not run forever: it would stall its loop and, with it, the worker heartbeat (ADR 0010). The check gets the linked token,
+        // so the cap also bounds a response body that never ends. The filters below keep the outer token: a shutdown still propagates.
+        var cap = WorkerHeartbeat.JobTimeout(cfg);
+        using var limit = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        limit.CancelAfter(cap);
+        try { outcome = await check.RunAsync(asset, limit.Token); }
+        catch (OperationCanceledException) when (!ct.IsCancellationRequested && limit.IsCancellationRequested)
+        {
+            outcome = new(CheckStatus.Error, $"Sum_Error|Check timed out after {cap.TotalSeconds:0} s", []);
+        }
         catch (Exception ex) when (!ct.IsCancellationRequested)
         {
             outcome = new(CheckStatus.Error, $"Sum_Error|{ex.Message.Replace('|', '/')}", []);

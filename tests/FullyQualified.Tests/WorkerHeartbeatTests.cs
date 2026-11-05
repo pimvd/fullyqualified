@@ -20,7 +20,7 @@ public class WorkerHeartbeatTests
     public void A_loop_that_has_not_ticked_for_over_a_minute_makes_the_process_unhealthy()
     {
         var clock = new FakeClock(T0);
-        var hb = new WorkerHeartbeat(clock, Path.GetTempFileName());
+        var hb = new WorkerHeartbeat(clock, Path.GetTempFileName(), TimeSpan.FromSeconds(60));
         hb.Start(2);
         Assert.True(hb.Healthy);
 
@@ -41,7 +41,7 @@ public class WorkerHeartbeatTests
     {
         var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
         var clock = new FakeClock(T0);
-        var hb = new WorkerHeartbeat(clock, path);
+        var hb = new WorkerHeartbeat(clock, path, TimeSpan.FromSeconds(60));
         hb.Start(1);
         clock.Now = T0.AddSeconds(61);
         Assert.False(await hb.BeatAsync(null!, false, default)); // returns before touching the file or the database
@@ -54,7 +54,7 @@ public class WorkerHeartbeatTests
         using var f = new PgFactory();
         var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
         var clock = new FakeClock(DateTimeOffset.UtcNow);
-        var hb = new WorkerHeartbeat(clock, path);
+        var hb = new WorkerHeartbeat(clock, path, TimeSpan.FromSeconds(60));
         hb.Start(1);
         Assert.True(await hb.BeatAsync(f.Services, false, default));
         clock.Now = clock.Now.AddSeconds(15);
@@ -85,7 +85,7 @@ public class WorkerHeartbeatTests
             ["ConnectionStrings:Default"] = f.Services.GetRequiredService<IConfiguration>().GetConnectionString("Default"), ["Scanning:Workers"] = "2",
         }).Build();
         var path = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N"));
-        var hb = new WorkerHeartbeat(TimeProvider.System, path);
+        var hb = new WorkerHeartbeat(TimeProvider.System, path, TimeSpan.FromSeconds(60));
         using var runner = new JobRunner(f.Services, cfg, NullLogger<JobRunner>.Instance, hb);
         await runner.StartAsync(default);
         try
@@ -105,5 +105,61 @@ public class WorkerHeartbeatTests
     {
         using var scope = f.Services.CreateScope();
         return await scope.ServiceProvider.GetRequiredService<AppDbContext>().WorkerHeartbeats.AsNoTracking().SingleOrDefaultAsync(x => x.WorkerId == hb.WorkerId);
+    }
+}
+
+public class JobTimeoutHeartbeatTests
+{
+    sealed class FakeClock(DateTimeOffset now) : TimeProvider
+    {
+        public DateTimeOffset Now = now;
+        public override DateTimeOffset GetUtcNow() => Now;
+    }
+
+    static readonly DateTimeOffset T0 = new(2026, 11, 5, 12, 0, 0, TimeSpan.Zero);
+
+    static IConfiguration Config(string? cap) => new ConfigurationBuilder().AddInMemoryCollection(
+        cap is null ? [] : new Dictionary<string, string?> { ["Scanning:JobTimeoutSeconds"] = cap }).Build();
+
+    [Fact]
+    public void The_job_cap_defaults_to_90_seconds_and_the_heartbeat_window_is_the_cap_plus_60()
+    {
+        Assert.Equal(TimeSpan.FromSeconds(90), WorkerHeartbeat.JobTimeout(Config(null)));
+        Assert.Equal(TimeSpan.FromSeconds(150), WorkerHeartbeat.WindowFor(Config(null)));
+        Assert.Equal(TimeSpan.FromSeconds(61), WorkerHeartbeat.WindowFor(Config("1")));
+        Assert.Equal(TimeSpan.FromSeconds(300), WorkerHeartbeat.WindowFor(Config("240")));
+    }
+
+    [Theory]
+    [InlineData("1")]
+    [InlineData("90")]
+    public void The_process_stays_healthy_during_a_job_that_runs_up_to_the_cap_and_the_beat_resumes_after_it_hits_the_cap(string cap)
+    {
+        var cfg = Config(cap);
+        var c = (int)WorkerHeartbeat.JobTimeout(cfg).TotalSeconds;
+        var clock = new FakeClock(T0);
+        var hb = new WorkerHeartbeat(clock, Path.GetTempFileName(), WorkerHeartbeat.WindowFor(cfg));
+        hb.Start(2);
+
+        // loop 1 starts a job and does not tick again until it is done; loop 0 keeps ticking
+        clock.Now = T0.AddSeconds(c - 1);
+        hb.Tick(0);
+        Assert.True(hb.Healthy);
+
+        // the job hits the cap and is cancelled; the process is still healthy
+        clock.Now = T0.AddSeconds(c);
+        hb.Tick(0);
+        Assert.True(hb.Healthy);
+        clock.Now = T0.AddSeconds(c + 59);
+        hb.Tick(0);
+        Assert.True(hb.Healthy);
+
+        // a loop that is stuck beyond the cap plus 60 seconds still stops the beat
+        clock.Now = T0.AddSeconds(c + 61);
+        hb.Tick(0);
+        Assert.False(hb.Healthy);
+
+        hb.Tick(1); // the capped job is done and the loop takes its next pass
+        Assert.True(hb.Healthy);
     }
 }
