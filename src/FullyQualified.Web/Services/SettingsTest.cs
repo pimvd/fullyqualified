@@ -73,8 +73,7 @@ public class SettingsTestService(AppDbContext db, PlanService plans, AlertServic
         var plan = (await plans.ForAsync(tenantId, ct))!;
         var full = new List<string>();
         void Check(string name, int used, int? max) { if (max is { } m && used >= m) full.Add($"{name} {used}/{m}"); }
-        Check(L["Plan_Domains"], plan.Usage.Domains, plan.Limits.MaxDomains);
-        Check(L["Plan_Endpoints"], plan.Usage.Endpoints, plan.Limits.MaxEndpoints);
+        Check(L["Plan_Assets"], plan.Usage.Assets, plan.Limits.MaxAssets);
         Check(L["Plan_Users"], plan.Usage.Users + plan.Usage.PendingInvites, plan.Limits.MaxUsers);
         var summary = L["Diag_PlanIs", plan.Tier.Name].Value;
         return [full.Count == 0

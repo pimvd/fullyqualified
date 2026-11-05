@@ -323,7 +323,7 @@ public class SiteTests(SiteFixture site) : IClassFixture<SiteFixture>
             Assert.Equal("Custom", Text(cards[3].QuerySelector("h3")!));
         }
         foreach (var (name, domains, months) in tiers)
-            Assert.Equal((int.Parse(domains), months), (Tiers.Defaults.Single(t => t.Name == name).MaxDomains, Tiers.Defaults.Single(t => t.Name == name).RetentionMonths));
+            Assert.Equal((int.Parse(domains), months), (Tiers.Defaults.Single(t => t.Name == name).MaxAssets, Tiers.Defaults.Single(t => t.Name == name).RetentionMonths));
     }
 
     [Fact]

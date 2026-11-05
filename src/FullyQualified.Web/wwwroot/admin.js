@@ -99,7 +99,7 @@
     const row = root.querySelector(`[data-tier-row="${button.getAttribute('data-tier')}"]`);
     const f = name => row.querySelector(`[data-f=${name}]`);
     await send('PUT', `/platform/tiers/${button.getAttribute('data-tier')}`, {
-      maxDomains: f('domains').value, maxEndpoints: f('endpoints').value, maxUsers: f('users').value,
+      maxAssets: f('assets').value, maxUsers: f('users').value,
       reportsEnabled: f('reports').checked, retentionMonths: f('retention').value, scanIntervalMinutes: f('interval').value, manualCooldownMinutes: f('cooldown').value });
     const note = document.getElementById('tier-note');
     note.textContent = root.getAttribute('data-saved'); note.hidden = false;
@@ -108,7 +108,7 @@
   root.querySelector('[data-admin=plan-save]')?.addEventListener('click', () => run(async () => {
     const editor = document.getElementById('plan-editor'), v = id => document.getElementById(id).value;
     await send('PUT', `/platform/tenants/${editor.getAttribute('data-tenant')}/plan`, {
-      tier: v('pl-tier'), maxDomains: v('pl-domains'), maxEndpoints: v('pl-endpoints'), maxUsers: v('pl-users'), reports: v('pl-reports'), retentionMonths: v('pl-retention'), scanIntervalMinutes: v('pl-interval'), manualCooldownMinutes: v('pl-cooldown') });
+      tier: v('pl-tier'), maxAssets: v('pl-assets'), maxUsers: v('pl-users'), reports: v('pl-reports'), retentionMonths: v('pl-retention'), scanIntervalMinutes: v('pl-interval'), manualCooldownMinutes: v('pl-cooldown') });
     const note = document.getElementById('pl-note');
     note.textContent = root.getAttribute('data-saved'); note.hidden = false;
     setTimeout(() => location.reload(), 600);

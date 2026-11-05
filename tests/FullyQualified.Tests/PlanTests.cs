@@ -13,21 +13,21 @@ namespace FullyQualified.Tests;
 
 public class PlanLogicTests
 {
-    static Tier Tier(int? domains = 3, int? endpoints = 10, int? users = 2, bool reports = false, int? months = 1) =>
-        new() { Key = "t", Name = "T", MaxDomains = domains, MaxEndpoints = endpoints, MaxUsers = users, ReportsEnabled = reports, RetentionMonths = months };
+    static Tier Tier(int? assets = 5, int? users = 2, bool reports = false, int? months = 1) =>
+        new() { Key = "t", Name = "T", MaxAssets = assets, MaxUsers = users, ReportsEnabled = reports, RetentionMonths = months };
 
     [Fact]
     public void A_tenant_follows_its_tier_unless_it_overrides()
     {
         var tenant = new Tenant { Name = "x" };
-        Assert.Equal(new PlanLimits(3, 10, 2, false, 1, null), PlanLimits.Resolve(Tier(), tenant));
+        Assert.Equal(new PlanLimits(5, 2, false, 1, null), PlanLimits.Resolve(Tier(), tenant));
 
-        tenant.OverrideMaxDomains = 7; tenant.OverrideReports = true; tenant.OverrideRetentionMonths = 6;
-        Assert.Equal(new PlanLimits(7, 10, 2, true, 6), PlanLimits.Resolve(Tier(), tenant));
+        tenant.OverrideMaxAssets = 7; tenant.OverrideReports = true; tenant.OverrideRetentionMonths = 6;
+        Assert.Equal(new PlanLimits(7, 2, true, 6), PlanLimits.Resolve(Tier(), tenant));
 
-        tenant.OverrideMaxUsers = -1; tenant.OverrideMaxEndpoints = 0;       // -1 lifts the limit, 0 is a real limit
+        tenant.OverrideMaxUsers = -1; tenant.OverrideMaxAssets = 0;       // -1 lifts the limit, 0 is a real limit
         tenant.OverrideRetentionMonths = -1;                                  // keep everything
-        Assert.Equal(new PlanLimits(7, 0, null, true, null), PlanLimits.Resolve(Tier(), tenant));
+        Assert.Equal(new PlanLimits(0, null, true, null), PlanLimits.Resolve(Tier(), tenant));
 
         tenant.OverrideReports = false;                                       // an override can also take something away
         Assert.False(PlanLimits.Resolve(Tier(reports: true), tenant).ReportsEnabled);
@@ -67,31 +67,33 @@ public class PlanLogicTests
     [Fact]
     public void A_tier_with_no_numbers_is_unlimited()
     {
-        var limits = PlanLimits.Resolve(Tier(null, null, null, true, null), new Tenant { Name = "x" });
-        Assert.Equal(new PlanLimits(null, null, null, true, null), limits);
+        var limits = PlanLimits.Resolve(Tier(null, null, true, null), new Tenant { Name = "x" });
+        Assert.Equal(new PlanLimits(null, null, true, null), limits);
     }
 
     static Plan PlanWith(PlanLimits limits, PlanUsage usage) => new(new Tenant { Name = "x" }, Tier(), limits, usage);
 
     [Fact]
-    public void Adding_an_asset_is_refused_at_the_limit_and_only_for_that_kind()
+    public void Adding_an_asset_is_refused_at_the_limit_and_over_it_but_not_below_or_when_unlimited()
     {
-        var plan = PlanWith(new(3, 10, 5, false, 1), new(3, 4, 1, 0));
-        Assert.Equal("Limit_Domains", plan.Blocks(AssetKind.Domain));
-        Assert.Null(plan.Blocks(AssetKind.Endpoint));
-        Assert.Equal(6, plan.EndpointsLeft);
-        Assert.Null(PlanWith(new(null, null, null, false, null), new(500, 500, 500, 0)).Blocks(AssetKind.Domain));
-        Assert.Null(PlanWith(new(null, null, null, false, null), new(0, 0, 0, 0)).EndpointsLeft);
+        Assert.Equal("Limit_Assets", PlanWith(new(5, 5, false, 1), new(5, 1, 0)).Blocks());
+        Assert.Equal("Limit_Assets", PlanWith(new(5, 5, false, 1), new(7, 1, 0)).Blocks());   // over the limit: still refused, nothing is removed
+        var below = PlanWith(new(5, 5, false, 1), new(4, 1, 0));
+        Assert.Null(below.Blocks());
+        Assert.Equal(1, below.AssetsLeft);
+        Assert.Equal(0, PlanWith(new(5, 5, false, 1), new(7, 1, 0)).AssetsLeft);
+        Assert.Null(PlanWith(new(null, null, false, null), new(500, 500, 0)).Blocks());
+        Assert.Null(PlanWith(new(null, null, false, null), new(0, 0, 0)).AssetsLeft);
     }
 
     [Fact]
     public void Open_invitations_count_towards_the_user_limit_but_redeeming_one_does_not_count_it_twice()
     {
-        var plan = PlanWith(new(1, 1, 3, false, 1), new(0, 0, 2, 1));
+        var plan = PlanWith(new(1, 3, false, 1), new(0, 2, 1));
         Assert.False(plan.HasRoomForUser());                       // 2 users + 1 invitation = 3 of 3
         Assert.True(plan.HasRoomForUser(redeemingInvite: true));   // the invitation being redeemed is that third seat
-        Assert.True(PlanWith(new(1, 1, 3, false, 1), new(0, 0, 2, 0)).HasRoomForUser());
-        Assert.False(PlanWith(new(1, 1, 2, false, 1), new(0, 0, 2, 0)).HasRoomForUser(redeemingInvite: true));
+        Assert.True(PlanWith(new(1, 3, false, 1), new(0, 2, 0)).HasRoomForUser());
+        Assert.False(PlanWith(new(1, 2, false, 1), new(0, 2, 0)).HasRoomForUser(redeemingInvite: true));
     }
 
     [Fact]
@@ -103,10 +105,10 @@ public class PlanLogicTests
         foreach (var m in Regex.Matches(plan, @"^\| (Free|Starter|Business) \| (\d+) \| (\d+) months? \|", RegexOptions.Multiline).Cast<Match>())
         {
             var tier = Tiers.Defaults.Single(t => t.Name == m.Groups[1].Value);
-            Assert.Equal((int.Parse(m.Groups[2].Value), int.Parse(m.Groups[3].Value)), (tier.MaxDomains, tier.RetentionMonths));
+            Assert.Equal((int.Parse(m.Groups[2].Value), int.Parse(m.Groups[3].Value)), (tier.MaxAssets, tier.RetentionMonths));
         }
         Assert.Equal(3, Regex.Matches(plan, @"^\| (Free|Starter|Business) \| \d+ \| \d+ months? \|", RegexOptions.Multiline).Count);
-        Assert.True(Tiers.Defaults.Single(t => t.Key == "custom") is { MaxDomains: null, MaxUsers: null, RetentionMonths: null });
+        Assert.True(Tiers.Defaults.Single(t => t.Key == "custom") is { MaxAssets: null, MaxUsers: null, RetentionMonths: null });
         Assert.False(Tiers.Defaults.Single(t => t.Key == "free").ReportsEnabled);
         Assert.True(Tiers.Defaults.Where(t => t.Key != "free").All(t => t.ReportsEnabled));
     }
@@ -142,16 +144,13 @@ public class PlanLogicTests
     }
 
     [Fact]
-    public void The_migration_seeds_the_same_values_as_the_code()
+    public void The_max_assets_migration_sets_the_same_values_as_the_code()
     {
-        var sql = Directory.GetFiles(Path.Combine(new SiteFixture().Root, "src", "FullyQualified.Web", "Data", "Migrations"), "*_Plans.cs").Select(File.ReadAllText).Single();
-        foreach (var t in Tiers.Defaults)
-        {
-            string N(int? n) => n?.ToString() ?? "NULL";
-            var row = $"('{t.Key}',";
-            Assert.Contains(row, sql);
-            Assert.Matches($@"\('{t.Key}',\s*'{t.Name}',\s*{t.SortOrder},\s*{N(t.MaxDomains)},\s*{N(t.MaxEndpoints)},\s*{N(t.MaxUsers)},\s*{t.ReportsEnabled.ToString().ToLowerInvariant()},\s*{N(t.RetentionMonths)},", sql);
-        }
+        var sql = Directory.GetFiles(Path.Combine(new SiteFixture().Root, "src", "FullyQualified.Web", "Data", "Migrations"), "*_MaxAssets.cs").Select(File.ReadAllText).Single();
+        foreach (var t in Tiers.Defaults.Where(t => t.MaxAssets is not null))
+            Assert.Contains($"WHEN '{t.Key}' THEN {t.MaxAssets}", sql);
+        Assert.Equal([5, 25, 100, null], Tiers.Defaults.OrderBy(t => t.SortOrder).Select(t => t.MaxAssets));
+        Assert.Contains("ELSE NULL", sql);                       // Custom, and any other tier row, is unlimited
     }
 }
 

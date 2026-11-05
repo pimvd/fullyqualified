@@ -11,8 +11,7 @@
     <table class="plan-table">
         <thead><tr><th>@L["Plan_Resource"]</th><th>@L["Plan_Used"]</th><th>@L["Plan_TierValue"]</th><th>@L["Plan_Override"]</th></tr></thead>
         <tbody>
-            <tr><td>@L["Plan_Domains"]</td><td>@Plan.Usage.Domains</td><td>@Show(Plan.Tier.MaxDomains)</td><td><input id="pl-domains" value="@Text(Plan.Tenant.OverrideMaxDomains)" placeholder="@L["Plan_Follow"]" /></td></tr>
-            <tr><td>@L["Plan_Endpoints"]</td><td>@Plan.Usage.Endpoints</td><td>@Show(Plan.Tier.MaxEndpoints)</td><td><input id="pl-endpoints" value="@Text(Plan.Tenant.OverrideMaxEndpoints)" placeholder="@L["Plan_Follow"]" /></td></tr>
+            <tr><td>@L["Plan_Assets"]</td><td>@Plan.Usage.Assets</td><td>@Show(Plan.Tier.MaxAssets)</td><td><input id="pl-assets" value="@Text(Plan.Tenant.OverrideMaxAssets)" placeholder="@L["Plan_Follow"]" /></td></tr>
             <tr><td>@L["Plan_Users"]</td><td>@Plan.Usage.Users</td><td>@Show(Plan.Tier.MaxUsers)</td><td><input id="pl-users" value="@Text(Plan.Tenant.OverrideMaxUsers)" placeholder="@L["Plan_Follow"]" /></td></tr>
             <tr><td>@L["Plan_Reports"]</td><td></td><td>@(Plan.Tier.ReportsEnabled ? L["Rep_Yes"].Value : L["Rep_No"].Value)</td>
                 <td><select id="pl-reports">

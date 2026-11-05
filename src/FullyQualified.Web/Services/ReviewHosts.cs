@@ -70,10 +70,10 @@ public static class ReviewHosts
                 if (!await db.Assets.AnyAsync(a => a.Name == host.Name))
                 {
                     // Hostnames from the logs are endpoints, so they stop at the plan's limit like anything added by hand.
-                    if (await plans.ForAsync(tenant) is { } plan && plan.Blocks(AssetKind.Endpoint) is not null) { blocked++; continue; }
+                    if (await plans.ForAsync(tenant) is { } plan && plan.Blocks() is not null) { blocked++; continue; }
                     var asset = new Asset
                     {
-                        Kind = AssetKind.Endpoint, Name = host.Name, Discovered = true, DiscoveredVia = host.Service, DiscoveredFromId = host.ParentAssetId,
+                        Name = host.Name, Discovered = true, DiscoveredVia = host.Service, DiscoveredFromId = host.ParentAssetId,
                         DiscoveredIssuer = host.Issuer, DiscoveredCertExpires = host.CertExpires,
                     };
                     db.Assets.Add(asset);
