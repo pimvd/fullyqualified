@@ -1000,16 +1000,17 @@ You do not need this search to monitor a domain: it only helps to find hostnames
   <data name="Tool_Error_private_key" xml:space="preserve"><value>Private keys are not accepted. Provide public certificates only.</value></data>
   <data name="Tool_RunIncomplete" xml:space="preserve"><value>The diagnostic was cancelled or reached its deadline; earlier observations are retained.</value></data>
   <data name="Tool_TlsRunStopped" xml:space="preserve"><value>The run was cancelled or its time limit was reached. Collected observations are partial.</value></data>
-  <data name="Attn_Title" xml:space="preserve"><value>{0} assets need your attention</value></data>
+  <data name="Attn_Title" xml:space="preserve"><value>Assets that need your attention: {0}</value></data>
   <data name="Attn_TitleNone" xml:space="preserve"><value>Everything is fine</value></data>
-  <data name="Attn_Sub" xml:space="preserve"><value>The other {0} assets are fine.</value></data>
-  <data name="Attn_SubNone" xml:space="preserve"><value>All {0} assets pass their checks.</value></data>
+  <data name="Attn_Sub" xml:space="preserve"><value>Assets that are fine: {0}</value></data>
+  <data name="Attn_SubNone" xml:space="preserve"><value>Assets that pass their checks: {0}</value></data>
   <data name="Attn_Heading" xml:space="preserve"><value>Needs attention</value></data>
-  <data name="Attn_More" xml:space="preserve"><value>Show all {0} assets with issues</value></data>
+  <data name="Attn_More" xml:space="preserve"><value>Show all assets with issues ({0})</value></data>
   <data name="Attn_Open" xml:space="preserve"><value>Open</value></data>
   <data name="Timeline_Title" xml:space="preserve"><value>Next 90 days</value></data>
   <data name="Timeline_None" xml:space="preserve"><value>No certificates expire in the next 90 days.</value></data>
   <data name="Timeline_Today" xml:space="preserve"><value>Today</value></data>
   <data name="Timeline_Plus" xml:space="preserve"><value>+{0} days</value></data>
-  <data name="Timeline_Left" xml:space="preserve"><value>{0} days left</value></data>
+  <data name="Timeline_Left" xml:space="preserve"><value>Days left: {0}</value></data>
+  <data name="Timeline_Expired" xml:space="preserve"><value>Expired</value></data>
 </root>

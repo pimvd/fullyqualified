@@ -201,23 +201,25 @@ button.refresh:hover{border-color:var(--accent);background:color-mix(in srgb,var
 header.top nav{flex-wrap:wrap;min-width:0}
 @media(max-width:600px){header.top nav{flex-basis:100%;order:2}}
 
+/* The side navigation is dark in both themes on purpose; its colours live in these variables. */
+:root{--side-bg:#0f1722;--side-fg:#c4cddc;--side-hover:#1b2636;--side-line:#243247;--side-edge:#2a384d;--side-brand:#7aa5ff}
 /* Signed-in shell: side navigation next to the page. Signed-out pages keep the plain top bar. */
 .shell{display:flex;flex-wrap:wrap;min-height:100vh}
 .shell>main{flex:999 1 640px;min-width:0;max-width:none;margin:0;padding:1.5rem 2rem}
-aside.side{flex:0 0 14.5rem;background:#0f1722;color:#c4cddc;padding:1.2rem .9rem;display:flex;flex-direction:column;gap:1.2rem}
-aside.side .brand{color:#fff;padding:0 .7rem}aside.side .brand span{color:#7aa5ff}
+aside.side{flex:0 0 14.5rem;background:var(--side-bg);color:var(--side-fg);padding:1.2rem .9rem;display:flex;flex-direction:column;gap:1.2rem}
+aside.side .brand{color:#fff;padding:0 .7rem}aside.side .brand span{color:var(--side-brand)}
 aside.side nav{display:flex;flex-direction:column;flex:0 0 auto;gap:2px}
-aside.side nav a{color:#c4cddc;padding:.55rem .7rem;border-radius:8px}
-aside.side nav a:hover{background:#1b2636;color:#fff;text-decoration:none}
-aside.side nav a.on{background:#1b2636;color:#fff;font-weight:600}
-aside.side .side-bottom{margin-top:auto;border-top:1px solid #243247;padding-top:.8rem}
+aside.side nav a{color:var(--side-fg);padding:.55rem .7rem;border-radius:8px}
+aside.side nav a:hover{background:var(--side-hover);color:#fff;text-decoration:none}
+aside.side nav a.on{background:var(--side-hover);color:#fff;font-weight:600}
+aside.side .side-bottom{margin-top:auto;border-top:1px solid var(--side-line);padding-top:.8rem}
 aside.side .side-tools{display:flex;align-items:center;gap:.8rem;padding:.5rem .7rem;flex-wrap:wrap;font-size:.85rem}
-aside.side .side-tools a,aside.side .side-tools button.link{color:#c4cddc;padding:0;display:inline;background:none}
+aside.side .side-tools a,aside.side .side-tools button.link{color:var(--side-fg);padding:0;display:inline;background:none}
 aside.side .side-tools a:hover{color:#fff}
-aside.side button.refresh{color:#c4cddc;border-color:#2a384d}
-aside.side button.side-dig{display:flex;align-items:center;gap:.5rem;background:#1b2636;color:#c4cddc;border:1px solid #2a384d;border-radius:8px;padding:.6rem .7rem;font-size:.85rem;min-height:44px}
+aside.side button.refresh{color:var(--side-fg);border-color:var(--side-edge)}
+aside.side button.side-dig{display:flex;align-items:center;gap:.5rem;background:var(--side-hover);color:var(--side-fg);border:1px solid var(--side-edge);border-radius:8px;padding:.6rem .7rem;font-size:.85rem;min-height:44px}
 aside.side button.side-dig span{flex:1;text-align:left}
-aside.side button.side-dig kbd{color:#c4cddc;border-color:#2a384d}
+aside.side button.side-dig kbd{color:var(--side-fg);border-color:var(--side-edge)}
 @media(max-width:800px){aside.side{flex-basis:100%}aside.side nav{flex-direction:row;flex-wrap:wrap}aside.side .side-bottom{margin-top:0}}
 
 /* Dashboard: what needs attention, then what expires next. */

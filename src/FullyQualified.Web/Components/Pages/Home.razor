@@ -7,7 +7,7 @@
 @inject NavigationManager Nav
 
 <PageTitle>FullyQualified</PageTitle>
-<h1>@(attention.Count == 0 ? L["Attn_TitleNone"].Value : L["Attn_Title", problems].Value)</h1>
+<h1>@(assets.Count == 0 ? L["Nav_Dashboard"].Value : attention.Count == 0 ? L["Attn_TitleNone"].Value : L["Attn_Title", problems].Value)</h1>
 @if (assets.Count > 0)
 {
     <p class="lead muted">@(attention.Count == 0 ? L["Attn_SubNone", assets.Count].Value : L["Attn_Sub", Math.Max(0, assets.Count - problems)].Value)</p>
@@ -58,7 +58,7 @@
             {
                 <div class="tl-mark @(m.Above ? "above" : "below")" style="left:@m.Left.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)%">
                     <span class="tl-label">@m.Host</span>
-                    <span class="tl-dot @m.Class" title="@m.Host · @m.NotAfter.ToString("yyyy-MM-dd") · @L["Timeline_Left", m.Days]"></span>
+                    <span class="tl-dot @m.Class" title="@m.Host · @m.NotAfter.ToString("yyyy-MM-dd") · @(m.Days < 0 ? L["Timeline_Expired"].Value : L["Timeline_Left", m.Days].Value)"></span>
                 </div>
             }
         </div>
@@ -215,7 +215,6 @@
     int expiring, problems, recentChanges, pendingReview;
     List<AssetStatus> attention = [];
     List<TimelineMark> timeline = [];
-    const int TimelineDays = 90;
     record TimelineMark(string Host, DateTimeOffset NotAfter, int Days, double Left, string Class, bool Above);
     string? error;
     string? checkNotice;
@@ -240,14 +239,14 @@
         problems = board.Values.Count(b => b.NeedsAttention);
         // Worst first, then by name; the full list is one click away through the problems filter.
         attention = board.Values.Where(b => b.NeedsAttention).OrderByDescending(b => b.Worst).ThenBy(b => b.Asset.Name).Take(5).ToList();
-        var horizon = now.AddDays(TimelineDays);
+        var horizon = now.AddDays(ExpiryTimeline.Days);
         var upcoming = await Db.Certificates
-            .Where(c => c.Source == "endpoint" && c.NotAfter <= horizon && !pausedIds.Contains(c.AssetId))
-            .OrderBy(c => c.NotAfter).Take(40).ToListAsync();
-        timeline = upcoming.Where(c => !c.IsMuted(now)).Take(12).Select((c, i) =>
+            .Where(c => c.Source == "endpoint" && !(c.Muted && (c.MutedUntil == null || c.MutedUntil > now)) && c.NotAfter <= horizon && !pausedIds.Contains(c.AssetId))
+            .OrderBy(c => c.NotAfter).Take(12).ToListAsync();
+        timeline = upcoming.Select((c, i) =>
         {
             var days = (int)Math.Floor((c.NotAfter - now).TotalDays);
-            return new TimelineMark(c.Host, c.NotAfter, days, Math.Clamp(days, 0, TimelineDays) * 100.0 / TimelineDays * 0.94 + 3, days <= 7 ? "bad" : days <= 30 ? "warn" : "ok", i % 2 == 0);
+            return new TimelineMark(c.Host, c.NotAfter, days, ExpiryTimeline.Position(days), ExpiryTimeline.Severity(days), i % 2 == 0);
         }).ToList();
         pendingReview = await Db.ReviewHosts.CountAsync(h => h.State == ReviewState.Pending);
         recentChanges = await Db.Changes.CountAsync(c => c.DetectedAt >= now.AddDays(-7));
