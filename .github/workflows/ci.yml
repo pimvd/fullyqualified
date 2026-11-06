@@ -23,7 +23,10 @@ jobs:
           dotnet-version: 10.0.x
       - name: Build and test
         run: |
-          if ls *.sln *.slnx >/dev/null 2>&1; then
+          # nullglob: without it an unmatched *.sln stays literal, ls fails, and CI silently skips build and tests
+          shopt -s nullglob
+          solutions=(*.sln *.slnx)
+          if [ ${#solutions[@]} -gt 0 ]; then
             dotnet build --nologo && dotnet test --nologo --no-build
           else
             echo "No solution yet"

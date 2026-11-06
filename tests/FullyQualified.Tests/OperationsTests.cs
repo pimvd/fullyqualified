@@ -357,10 +357,10 @@ public class SettingsTestTests(PgScanFactory factory) : OrgTestBase<PgScanFactor
     {
         var org = await NewOrg(Tiers.Free, tweak: t => t.OverrideMaxUsers = 5);   // two users on Free would already be full
         Assert.Equal("ok", StatusOf(await Run(Factory.As(org.Admin)), "Plan and limits"));
-        for (var i = 0; i < 3; i++) await AddAsset(org.Id, $"d{i}.{org.Id:N}.test.com");
+        for (var i = 0; i < 5; i++) await AddAsset(org.Id, $"d{i}.{org.Id:N}.test.com");   // Free allows five assets
         var items = await Run(Factory.As(org.Admin));
         Assert.Equal("warning", StatusOf(items, "Plan and limits"));
-        Assert.Contains("Domains 3/3", DetailOf(items, "Plan and limits"));
+        Assert.Contains("Assets 5/5", DetailOf(items, "Plan and limits"));
         Assert.Contains("Free plan", DetailOf(items, "Plan and limits"));
     }
 

@@ -130,7 +130,7 @@ public class PlanDbTests : IClassFixture<PgFactory>
         var owner = await Owner();
         var org = await NewOrg();
         var mia = factory.As(owner);
-        var put = await mia.PutAsJsonAsync($"/platform/tenants/{org.Id}/plan", new { tier = "custom", maxAssets = "7", maxUsers = "", reports = "no", retentionMonths = "6" });
+        var put = await mia.PutAsJsonAsync($"/platform/tenants/{org.Id}/plan", new { tier = "custom", maxAssets = "7", maxUsers = "unlimited", reports = "no", retentionMonths = "6" });
         Assert.Equal(HttpStatusCode.NoContent, put.StatusCode);
         var plan = await PlanOf(org.Id);
         Assert.Equal(("custom", new PlanLimits(7, null, false, 6, null)), (plan.Tier.Key, plan.Limits));
