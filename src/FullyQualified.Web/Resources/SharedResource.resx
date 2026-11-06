@@ -352,7 +352,6 @@ The link works once and expires in {2} hours. Setting up a new passkey removes y
   <data name="Diag_FromServer" xml:space="preserve"><value>server default</value></data>
   <data name="Diag_FromPlan" xml:space="preserve"><value>from your plan</value></data>
   <data name="Diag_ScannerOn" xml:space="preserve"><value>Scanner</value></data>
-  <data name="Diag_ScannerOff" xml:space="preserve"><value>Scanning is switched off on this server (Scanning:Enabled), so nothing is checked on a schedule. Ask whoever runs the server.</value></data>
   <data name="Diag_Fresh" xml:space="preserve"><value>Results are fresh</value></data>
   <data name="Diag_NoAssets" xml:space="preserve"><value>No assets yet. Add a domain on the dashboard.</value></data>
   <data name="Diag_FreshOk" xml:space="preserve"><value>All {0} assets have recent results.</value></data>
@@ -1011,4 +1010,10 @@ You do not need this search to monitor a domain: it only helps to find hostnames
   <data name="Timeline_Plus" xml:space="preserve"><value>+{0} days</value></data>
   <data name="Timeline_Left" xml:space="preserve"><value>Days left: {0}</value></data>
   <data name="Timeline_Expired" xml:space="preserve"><value>Expired</value></data>
+  <data name="Diag_NoWorker" xml:space="preserve"><value>Scans are not running: no scanner has reported in recently, so nothing is checked on a schedule and the results below get older. The rest of FullyQualified keeps working. Ask whoever runs the server.</value></data>
+  <data name="Diag_SchedulerTitle" xml:space="preserve"><value>Scheduler</value></data>
+  <data name="Diag_NoScheduler" xml:space="preserve"><value>Scans are running, but nothing schedules new checks. Existing queued checks are still done. Ask whoever runs the server.</value></data>
+  <data name="Diag_Workers" xml:space="preserve"><value>Scan processes</value></data>
+  <data name="Diag_WorkersNone" xml:space="preserve"><value>No process has reported in as a scanner within the last few minutes.</value></data>
+  <data name="Diag_WorkersAlive" xml:space="preserve"><value>{0} scan process(es) alive. The one that schedules checks: {1}.</value></data>
 </root>

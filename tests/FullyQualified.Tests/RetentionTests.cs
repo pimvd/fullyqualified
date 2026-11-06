@@ -26,7 +26,7 @@ public class RetentionTests : IClassFixture<PgFactory>
         await db.Database.MigrateAsync();
         var t = new Tenant { Name = "Ret " + Guid.NewGuid().ToString("N")[..8], TierKey = tier, OverrideRetentionMonths = overrideMonths };
         db.Tenants.Add(t);
-        var asset = new Asset { TenantId = t.Id, Name = $"r.{t.Id:N}.test.com", Kind = AssetKind.Domain };
+        var asset = new Asset { TenantId = t.Id, Name = $"r.{t.Id:N}.test.com" };
         db.Assets.Add(asset);
         await db.SaveChangesAsync();
         return new Org(t.Id, asset.Id);

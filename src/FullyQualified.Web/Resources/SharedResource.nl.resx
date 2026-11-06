@@ -352,7 +352,6 @@ De link werkt één keer en verloopt na {2} uur. Een nieuwe passkey instellen ve
   <data name="Diag_FromServer" xml:space="preserve"><value>serverstandaard</value></data>
   <data name="Diag_FromPlan" xml:space="preserve"><value>uit je pakket</value></data>
   <data name="Diag_ScannerOn" xml:space="preserve"><value>Scanner</value></data>
-  <data name="Diag_ScannerOff" xml:space="preserve"><value>Scannen staat uit op deze server (Scanning:Enabled), dus er wordt niets volgens schema gecontroleerd. Vraag het degene die de server beheert.</value></data>
   <data name="Diag_Fresh" xml:space="preserve"><value>Resultaten zijn recent</value></data>
   <data name="Diag_NoAssets" xml:space="preserve"><value>Nog geen assets. Voeg een domein toe op het dashboard.</value></data>
   <data name="Diag_FreshOk" xml:space="preserve"><value>Alle {0} assets hebben recente resultaten.</value></data>
@@ -1011,4 +1010,10 @@ Je hebt deze zoekopdracht niet nodig om een domein te monitoren: ze helpt alleen
   <data name="Timeline_Plus" xml:space="preserve"><value>+{0} dagen</value></data>
   <data name="Timeline_Left" xml:space="preserve"><value>Resterende dagen: {0}</value></data>
   <data name="Timeline_Expired" xml:space="preserve"><value>Verlopen</value></data>
+  <data name="Diag_NoWorker" xml:space="preserve"><value>Er wordt niet gescand: er heeft recent geen scanner van zich laten horen, dus er wordt niets volgens schema gecontroleerd en de onderstaande resultaten worden ouder. De rest van FullyQualified blijft werken. Vraag het degene die de server beheert.</value></data>
+  <data name="Diag_SchedulerTitle" xml:space="preserve"><value>Planner</value></data>
+  <data name="Diag_NoScheduler" xml:space="preserve"><value>Er wordt gescand, maar niets plant nieuwe controles in. Controles die al in de wachtrij staan worden nog uitgevoerd. Vraag het degene die de server beheert.</value></data>
+  <data name="Diag_Workers" xml:space="preserve"><value>Scanprocessen</value></data>
+  <data name="Diag_WorkersNone" xml:space="preserve"><value>Er heeft de afgelopen minuten geen proces van zich laten horen als scanner.</value></data>
+  <data name="Diag_WorkersAlive" xml:space="preserve"><value>{0} scanproces(sen) actief. Het proces dat controles inplant: {1}.</value></data>
 </root>

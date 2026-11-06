@@ -89,11 +89,15 @@ public class SettingsTestService(AppDbContext db, PlanService plans, AlertServic
         var minutes = plan.Limits.ScanIntervalMinutes ?? (int)(cfg.GetValue("Scanning:IntervalHours", 6.0) * 60);
         items.Add(new(g, L["Diag_Interval"].Value, Finding.Info, L["Diag_IntervalIs", ResourceText.Interval(L, minutes), plan.Limits.ScanIntervalMinutes is null ? L["Diag_FromServer"].Value : L["Diag_FromPlan"].Value].Value));
 
-        if (!cfg.GetValue("Scanning:Enabled", true))
+        // Scanning is judged by whether a process says it is scanning (ADR 0010), not by this process's own flag: the web side may run no scanner at all.
+        var live = await LiveWorkers(ct);
+        if (live.Count == 0)
         {
-            items.Add(new(g, L["Diag_ScannerOn"].Value, Finding.Fail, L["Diag_ScannerOff"].Value));
+            items.Add(new(g, L["Diag_ScannerOn"].Value, Finding.Fail, L["Diag_NoWorker"].Value));
             return items;
         }
+        if (!live.Any(w => w.IsScheduler))
+            items.Add(new(g, L["Diag_SchedulerTitle"].Value, Finding.Warning, L["Diag_NoScheduler"].Value));
 
         var assets = await db.Assets.ToListAsync(ct);
         if (assets.Count == 0) { items.Add(new(g, L["Diag_Fresh"].Value, Finding.Info, L["Diag_NoAssets"].Value)); return items; }
@@ -116,6 +120,13 @@ public class SettingsTestService(AppDbContext db, PlanService plans, AlertServic
             ? new(g, L["Diag_Fresh"].Value, Finding.Ok, L["Diag_FreshOk", assets.Count].Value)
             : new(g, L["Diag_Fresh"].Value, Finding.Warning, L["Diag_Stale", stale.Count, string.Join(", ", names) + (stale.Distinct().Count() > names.Count ? "…" : "")].Value));
         return items;
+    }
+
+    /// <summary>The processes whose last beat is within the heartbeat window (job cap plus 60 seconds).</summary>
+    async Task<List<WorkerHeartbeatRow>> LiveWorkers(CancellationToken ct)
+    {
+        var since = DateTimeOffset.UtcNow - WorkerHeartbeat.WindowFor(cfg);
+        return await db.WorkerHeartbeats.Where(w => w.BeatAt >= since).OrderBy(w => w.StartedAt).ToListAsync(ct);
     }
 
     async Task<List<TestItem>> AlarmItems(Guid tenantId, bool sendAlarm, CancellationToken ct)
@@ -211,6 +222,9 @@ public class SettingsTestService(AppDbContext db, PlanService plans, AlertServic
         var ctError = await probes.HttpAsync("https://crt.sh/", ct);
         items.Add(ctError is null ? new(g, L["Diag_Ct"].Value, Finding.Ok, L["Diag_CtOk"].Value) : new(g, L["Diag_Ct"].Value, Finding.Warning, L["Diag_CtDown", ctError].Value));
 
+        var live = await LiveWorkers(ct);
+        items.Add(live.Count == 0 ? new(g, L["Diag_Workers"].Value, Finding.Fail, L["Diag_WorkersNone"].Value)
+            : new(g, L["Diag_Workers"].Value, Finding.Info, L["Diag_WorkersAlive", live.Count, live.FirstOrDefault(w => w.IsScheduler)?.WorkerId.ToString("N")[..8] ?? "-"].Value));
         items.Add(new(g, L["Diag_PrivateScans"].Value, Finding.Info, cfg.GetValue("Scanning:AllowPrivateAddresses", true) ? L["Diag_PrivateAllowed"].Value : L["Diag_PrivateBlocked"].Value));
         items.Add(new(g, L["Diag_PublicCheck"].Value, Finding.Info, cfg.GetValue("PublicScan:Enabled", false) ? L["Diag_PublicOn", cfg.GetValue("PublicScan:PerHour", 10)].Value : L["Diag_PublicOff"].Value));
         return items;
