@@ -23,15 +23,25 @@ Install Docker with the Docker Compose plugin. From the repository root, build a
 docker compose up --build -d
 ```
 
-Open http://localhost:8080. On a fresh database, follow `/setup` to create the first administrator with a passkey. Migrations are applied on startup; database and mail queue data are kept in Docker volumes.
+This starts four services: `app` (web UI), `worker` (scans, scheduling, retention and alarms), `db` and `postfix`. `app` and `worker` are the same image started with a different `Hosting__Role`. Open http://localhost:8080. On a fresh database, follow `/setup` to create the first administrator with a passkey. Migrations are applied on startup; database and mail queue data are kept in Docker volumes.
 
 Check the services, follow application logs, or stop the stack while keeping its data:
 
 ```sh
 docker compose ps
-docker compose logs -f app
+docker compose logs -f app worker
 docker compose down
 ```
+
+### Scanning in its own container
+
+The `worker` service runs every scan, the scheduler (once a minute), retention and the alarms, so a heavy scan never slows the web UI. It publishes no port; compose checks that it is alive through a file it touches (`/tmp/fq-worker-alive`). If the worker stops, the UI keeps working but no scans run, and **Test settings** says so. Scale it with `docker compose up -d --scale worker=2`: every replica runs jobs, and exactly one of them schedules (a Postgres advisory lock; another takes over within seconds if it dies).
+
+The worker needs the same database as `app` (stored alert secrets are encrypted with keys kept there) and the settings that decide what a check does: `Scanning__*`, `Dns__*` and `Alerts__*`. `docker-compose.yml` shares them between both services in one `x-scanning` block, so edit them there. The worker gets no `Sso__*`, `Auth__*` or `PublicScan__*`. `Hosting__Role=worker` must be an environment variable or command-line argument, not an `appsettings.json` value. Only the web role runs migrations unless you set `Database__AutoMigrate=true` on the worker.
+
+### One container instead
+
+Self-hosters who want a single container delete the `worker` service and the `Hosting__Role: web` line from `app` in `docker-compose.yml`. With `Hosting:Role` unset (it defaults to `all`) one process serves the UI, runs the scans and takes the scheduler role, exactly as before. `dotnet run` without Docker works the same way.
 
 The marketing website runs separately. With Python 3 installed, start it in another terminal from the repository root:
 
@@ -102,6 +112,9 @@ Environment variables (use `__` for `:`):
 | `Sso:AllowedDomains` | unset | Comma-separated e-mail domains that may use SSO. Required for Entra ID, which does not send `email_verified`; without it only verified addresses are accepted. |
 | `Sso:AutoProvision`, `Sso:DefaultRole` | false, Viewer | Create an account on first SSO sign-in instead of requiring an invitation. Never creates admins. |
 | `PublicScan:Enabled`, `PublicScan:PerHour`, `PublicScan:Concurrent` | false, 10, 8 | The free public check at `/scan`, see above |
+| `Hosting:Role` | `all` | `all` (UI and scans in one process), `web` (UI only) or `worker` (scans only, no port). `worker` is read from environment variables or the command line only. See "Scanning in its own container". |
+| `Scanning:Enabled` | true | Kill switch for the job runner in any role. The settings test no longer reads it: it asks whether a scanner process is alive. |
+| `Scanning:Workers`, `Scanning:JobTimeoutSeconds` | 4, 90 | Parallel job loops per process; seconds before one check is cancelled and stored as an error |
 | `Scanning:IntervalHours` | 6 | Rescan interval for plans without one of their own |
 | `Scanning:ManualCooldownMinutes` | 5 | Minimum time between two uses of "check everything now" per tenant |
 | `Scanning:AllowPrivateAddresses` | true | Set false on a shared install to block scans of private networks |

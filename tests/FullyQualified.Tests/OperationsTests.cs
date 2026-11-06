@@ -4,6 +4,7 @@ using System.Text.Json;
 using FullyQualified.Web;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FullyQualified.Tests;
@@ -367,6 +368,7 @@ public class SettingsTestTests(PgScanFactory factory) : OrgTestBase<PgScanFactor
     public async Task The_checks_check_that_results_are_fresh_for_the_plans_interval()
     {
         var org = await NewOrg(Tiers.Starter);                                     // six hours: fresh means within about 12 hours
+        await Beats((5, true));                                                    // a scanner is alive, so the freshness checks run
         Assert.Equal("info", StatusOf(await Run(Factory.As(org.Admin)), "Results are fresh"));  // no assets yet
         await AddAsset(org.Id, $"fresh.{org.Id:N}.test.com", resultAgeMinutes: 60);
         var recentOnly = await Run(Factory.As(org.Admin));
@@ -418,32 +420,61 @@ public class SettingsTestTests(PgScanFactory factory) : OrgTestBase<PgScanFactor
         Assert.DoesNotContain(quiet, i => i.GetProperty("title").GetString() is "Slack" or "Webhook");
     }
 
-    [DbFact]
-    public async Task The_scanner_being_switched_off_is_reported_to_the_admin_and_the_rest_still_runs()
+    /// <summary>Replaces every heartbeat row: a process per entry, beating this many seconds ago.</summary>
+    async Task Beats(params (int AgoSeconds, bool Scheduler)[] processes)
     {
-        // This factory has the scanner flag on; the base factory (Scanning:Enabled=false) is the other case.
-        var org = await NewOrg();
-        Assert.DoesNotContain(await Run(Factory.As(org.Admin)), i => i.GetProperty("title").GetString() == "Scanner");
-        await using var off = new PgFactory();
-        var other = await NewOrgOn(off);
-        var items = (await Json(await off.As(other).PostAsJsonAsync("/admin/diagnostics", new { sendAlarm = false }))).GetProperty("items").EnumerateArray().ToList();
-        Assert.Equal("fail", StatusOf(items, "Scanner"));
-        Assert.Contains("switched off", DetailOf(items, "Scanner"));
-        Assert.Contains(items, i => i.GetProperty("title").GetString() == "Plan and limits");
+        using var scope = Scope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        db.WorkerHeartbeats.RemoveRange(await db.WorkerHeartbeats.ToListAsync());
+        foreach (var (ago, scheduler) in processes)
+            db.WorkerHeartbeats.Add(new WorkerHeartbeatRow { WorkerId = Guid.NewGuid(), StartedAt = DateTimeOffset.UtcNow.AddHours(-1), BeatAt = DateTimeOffset.UtcNow.AddSeconds(-ago), IsScheduler = scheduler });
+        await db.SaveChangesAsync();
     }
 
-    async Task<Guid> NewOrgOn(PgFactory other)
+    [DbFact]
+    public async Task With_a_live_scheduling_process_the_scanner_passes_without_warning_whatever_the_web_flag_says()
     {
-        using var scope = other.Services.CreateScope();
-        scope.ServiceProvider.GetRequiredService<TenantScope>().All = true;
-        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-        await db.Database.MigrateAsync();
-        var t = new Tenant { Name = "Solo", IsManagement = true, TierKey = Tiers.Custom };
-        db.Tenants.Add(t);
-        var u = new User { TenantId = t.Id, Name = "Solo admin", Role = Role.Admin };
-        db.Users.Add(u);
-        await db.SaveChangesAsync();
-        return u.Id;
+        var org = await NewOrg();
+        await Beats((10, true));
+        var items = await Run(Factory.As(org.Admin));
+        Assert.DoesNotContain(items, i => i.GetProperty("title").GetString() is "Scanner" or "Scheduler");
+    }
+
+    [DbFact]
+    public async Task With_no_live_process_the_admin_is_told_scans_are_not_running_and_the_rest_still_runs()
+    {
+        var org = await NewOrg();
+        await Beats();                    // no worker at all, as in the web role with the worker stopped
+        var items = await Run(Factory.As(org.Admin));
+        Assert.Equal("fail", StatusOf(items, "Scanner"));
+        Assert.Contains("Scans are not running", DetailOf(items, "Scanner"));
+        Assert.Contains(items, i => i.GetProperty("title").GetString() == "Plan and limits");
+
+        await Beats(((int)WorkerHeartbeat.WindowFor(Factory.Services.GetRequiredService<IConfiguration>()).TotalSeconds + 600, true)); // a beat that is too old does not count
+        Assert.Equal("fail", StatusOf(await Run(Factory.As(org.Admin)), "Scanner"));
+    }
+
+    [DbFact]
+    public async Task A_live_process_without_a_scheduler_is_a_warning_and_the_tenant_admin_sees_no_server_details()
+    {
+        var org = await NewOrg();
+        await Beats((10, false), (20, false));
+        var items = await Run(Factory.As(org.Admin));
+        Assert.Equal("warning", StatusOf(items, "Scheduler"));
+        Assert.Contains("nothing schedules", DetailOf(items, "Scheduler"));
+        Assert.DoesNotContain(items, i => i.GetProperty("title").GetString() is "Scanner" or "Scan processes");
+    }
+
+    [DbFact]
+    public async Task The_platform_owner_sees_how_many_scan_processes_are_alive_and_which_one_schedules()
+    {
+        var owner = await EnsureOwner();
+        await Beats((5, true), (8, false));
+        var items = await Run(Factory.As(owner));
+        Assert.Equal("info", StatusOf(items, "Scan processes"));
+        Assert.Contains("2 scan process", DetailOf(items, "Scan processes"));
+        await Beats();
+        Assert.Equal("fail", StatusOf(await Run(Factory.As(owner)), "Scan processes"));
     }
 }
 

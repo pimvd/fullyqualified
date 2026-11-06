@@ -1,27 +1,60 @@
+# Settings that decide what a check does or how an alarm is sent. The web side reports them in the settings test and the
+# worker acts on them, so both services take them from here and cannot drift apart (ADR 0010).
+x-scanning: &scanning
+  ConnectionStrings__Default: Host=db;Database=fullyqualified;Username=postgres;Password=${POSTGRES_PASSWORD:-postgres}
+  Scanning__IntervalHours: ${FQ_SCAN_INTERVAL_HOURS:-6}
+  Scanning__AllowPrivateAddresses: ${FQ_SCAN_PRIVATE:-true}
+  Dns__Server: ${FQ_DNS_SERVER:-}
+  Dns__CompareResolvers: ${FQ_DNS_COMPARE:-1.1.1.1,9.9.9.9,8.8.8.8}
+  Alerts__Email__Host: ${FQ_SMTP_HOST:-postfix}
+  Alerts__Email__Port: ${FQ_SMTP_PORT:-25}
+  Alerts__Email__Ssl: ${FQ_SMTP_SSL:-false}
+  Alerts__Email__User: ${FQ_SMTP_USER:-}
+  Alerts__Email__Password: ${FQ_SMTP_PASSWORD:-}
+  Alerts__Email__From: ${FQ_MAIL_FROM:-fullyqualified@fullyqualified.invalid}
+
 services:
+  # Serves the web UI and runs migrations. It runs no scans: the worker does.
   app:
     build: .
     restart: unless-stopped
     ports: ["8080:8080"]
     environment:
-      ConnectionStrings__Default: Host=db;Database=fullyqualified;Username=postgres;Password=${POSTGRES_PASSWORD:-postgres}
+      <<: *scanning
+      Hosting__Role: web
       Auth__SetupCode: ${FQ_SETUP_CODE:-}
       Sso__Authority: ${FQ_SSO_AUTHORITY:-}
       Sso__ClientId: ${FQ_SSO_CLIENT_ID:-}
       Sso__ClientSecret: ${FQ_SSO_CLIENT_SECRET:-}
       Sso__AllowedDomains: ${FQ_SSO_DOMAINS:-}
-      Alerts__Email__Host: ${FQ_SMTP_HOST:-postfix}
-      Alerts__Email__Port: ${FQ_SMTP_PORT:-25}
-      Alerts__Email__Ssl: ${FQ_SMTP_SSL:-false}
-      Alerts__Email__User: ${FQ_SMTP_USER:-}
-      Alerts__Email__Password: ${FQ_SMTP_PASSWORD:-}
-      Alerts__Email__From: ${FQ_MAIL_FROM:-fullyqualified@fullyqualified.invalid}
     depends_on:
       db:
         condition: service_started
       postfix:
         condition: service_healthy
     networks: [default, mail]
+  # Runs the scans, the scheduler and retention, and sends alarms. Same image as app, no port, no UI.
+  # Scale it with `docker compose up -d --scale worker=2`: one replica schedules, all of them run jobs.
+  # It must use the same database (and so the same data protection keys) as app, to read stored alert secrets.
+  # To run one container instead, delete this service and the Hosting__Role line of app (see README).
+  worker:
+    build: .
+    restart: unless-stopped
+    environment:
+      <<: *scanning
+      Hosting__Role: worker
+    depends_on:
+      db:
+        condition: service_started
+      postfix:
+        condition: service_healthy
+    networks: [default, mail]
+    healthcheck:
+      test: [CMD, find, /tmp/fq-worker-alive, -mmin, "-2"]
+      interval: 30s
+      timeout: 5s
+      start_period: 60s
+      retries: 3
   db:
     image: postgres:17
     restart: unless-stopped
