@@ -1122,4 +1122,6 @@ You do not need this search to monitor a domain: it only helps to find hostnames
   <data name="Err_InvalidNumber" xml:space="preserve"><value>Enter a number within the allowed range.</value></data>
   <data name="Err_InvalidChoice" xml:space="preserve"><value>Choose one of the listed options.</value></data>
   <data name="Err_TooLong" xml:space="preserve"><value>This value is too long.</value></data>
+  <data name="EmailTest_Domain" xml:space="preserve"><value>Domain</value></data>
+  <data name="EmailTest_NoDomains" xml:space="preserve"><value>Add a domain you monitor first: the From address must be on a domain you monitor.</value></data>
 </root>

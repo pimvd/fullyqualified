@@ -1122,4 +1122,6 @@ Je hebt deze zoekopdracht niet nodig om een domein te monitoren: ze helpt alleen
   <data name="Err_InvalidNumber" xml:space="preserve"><value>Vul een getal in binnen het toegestane bereik.</value></data>
   <data name="Err_InvalidChoice" xml:space="preserve"><value>Kies een van de getoonde opties.</value></data>
   <data name="Err_TooLong" xml:space="preserve"><value>Deze waarde is te lang.</value></data>
+  <data name="EmailTest_Domain" xml:space="preserve"><value>Domein</value></data>
+  <data name="EmailTest_NoDomains" xml:space="preserve"><value>Voeg eerst een domein toe dat je monitort: het Van-adres moet op een gemonitord domein staan.</value></data>
 </root>

@@ -9,6 +9,13 @@
   window.addEventListener('pagehide', clear);
   window.addEventListener('pageshow', event => { if (event.persisted) clear(); });
   form.setAttribute('autocomplete', 'off');
+  // The page asks for the part before the @ and a domain; the server still gets, and checks, one address.
+  const payload = () => {
+    const data = Object.fromEntries(new FormData(form));
+    data.from = `${(data.fromLocal ?? '').trim()}@${data.fromDomain ?? ''}`;
+    delete data.fromLocal; delete data.fromDomain;
+    return data;
+  };
   form.addEventListener('submit', async event => {
     event.preventDefault();
     const button = form.querySelector('button[type=submit]');
@@ -21,7 +28,7 @@
     try {
       const response = await fetch('/admin/email-test', {
         method: 'POST', signal: controller.signal, credentials: 'same-origin', cache: 'no-store', headers: { 'Content-Type': 'application/json', 'RequestVerificationToken': form.querySelector('input[name=__RequestVerificationToken]').value },
-        body: JSON.stringify(Object.fromEntries(new FormData(form)))
+        body: JSON.stringify(payload())
       });
       const result = await response.json().catch(() => null);
       if (ticket !== generation) return;
