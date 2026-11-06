@@ -67,3 +67,51 @@ public class CtLogCheckTests
         Assert.Contains("Cert Spotter:", outcome.Summary);
     }
 }
+
+public class CtLogCheckCapTests
+{
+    /// <summary>A body whose bytes never arrive: it only ends when the token is cancelled.</summary>
+    sealed class StalledStream : Stream
+    {
+        public override bool CanRead => true;
+        public override bool CanSeek => false;
+        public override bool CanWrite => false;
+        public override long Length => throw new NotSupportedException();
+        public override long Position { get => throw new NotSupportedException(); set => throw new NotSupportedException(); }
+        public override void Flush() { }
+        public override int Read(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+        public override void SetLength(long value) => throw new NotSupportedException();
+        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+        public override async ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken ct = default)
+        {
+            await Task.Delay(Timeout.Infinite, ct);
+            return 0;
+        }
+    }
+
+    class Handler : HttpMessageHandler
+    {
+        public int Calls;
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
+        {
+            Interlocked.Increment(ref Calls);
+            return Task.FromResult(new HttpResponseMessage(HttpStatusCode.OK) { Content = new StreamContent(new StalledStream()) });
+        }
+    }
+
+    class Factory(Handler h) : IHttpClientFactory
+    {
+        public HttpClient CreateClient(string name) => new(h, disposeHandler: false);
+    }
+
+    [Fact]
+    public async Task A_response_body_that_never_finishes_is_cut_off_by_the_job_cap_and_does_not_fall_back_to_Cert_Spotter()
+    {
+        var handler = new Handler();
+        using var cap = new CancellationTokenSource(TimeSpan.FromMilliseconds(300));
+        var run = new CtLogCheck(new Factory(handler)).RunAsync(new Asset { Name = "example.com" }, cap.Token);
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => run.WaitAsync(TimeSpan.FromSeconds(20)));
+        Assert.Equal(1, handler.Calls); // the cap is the job's, not a fetch error: no second request
+    }
+}
