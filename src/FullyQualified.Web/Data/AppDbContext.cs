@@ -38,6 +38,8 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, TenantScope sc
     public DbSet<AlertSettings> AlertSettings => Set<AlertSettings>();
     public DbSet<AlertLogEntry> AlertLog => Set<AlertLogEntry>();
     public DbSet<AlertRule> AlertRules => Set<AlertRule>();
+    /// <summary>Server settings (ADR 0013). Platform state, so it has no tenant id.</summary>
+    public DbSet<AppSetting> AppSettings => Set<AppSetting>();
 
     public DbSet<Asset> Assets => Set<Asset>();
     public DbSet<CheckResult> Results => Set<CheckResult>();
@@ -177,6 +179,13 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, TenantScope sc
             e.Property(x => x.CheckType).HasMaxLength(20);
             e.Property(x => x.Key).HasMaxLength(40);
             e.HasOne<Asset>().WithMany().HasForeignKey(x => x.AssetId).OnDelete(DeleteBehavior.Cascade);
+        });
+        b.Entity<AppSetting>(e =>
+        {
+            e.ToTable("app_settings");
+            e.HasKey(x => x.Key);
+            e.Property(x => x.Key).HasMaxLength(100);
+            e.Property(x => x.UpdatedBy).HasMaxLength(100);
         });
         b.Entity<AlertLogEntry>(e =>
         {

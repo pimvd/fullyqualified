@@ -21,6 +21,7 @@ public static class Hosting
     public static HostApplicationBuilder CreateWorkerBuilder(string[] args)
     {
         var builder = Host.CreateApplicationBuilder(args);
+        builder.Services.AddSingleton(DbSettings.Add(builder.Configuration));      // the worker follows the same database settings as the web side
         builder.Services.AddFullyQualified(builder.Configuration, HostingRole.Worker);
         return builder;
     }
@@ -65,6 +66,7 @@ public static class Hosting
         services.AddScoped<LogQueries>();
         services.AddScoped<AlertSettingsService>();
         services.AddScoped<AlertRuleService>();
+        services.AddScoped<AppSettingsService>();
         services.AddScoped<SsoService>();
         services.AddMemoryCache();
         // Keys live in the database so cookies survive restarts and redeploys, and so the worker can read the secrets the web side stored.

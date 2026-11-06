@@ -13,6 +13,7 @@ var role = Hosting.RoleOf(new ConfigurationBuilder().AddEnvironmentVariables().A
 if (role == HostingRole.Worker)
 {
     using var worker = Hosting.CreateWorkerBuilder(args).Build();
+    worker.Services.GetRequiredService<DbSettings>().Attach(worker.Services.GetRequiredService<IDataProtectionProvider>());
     // Migrations belong to the web role. The loop retries until the schema exists, so the worker needs no start order.
     if (worker.Services.GetRequiredService<IConfiguration>().GetValue("Database:AutoMigrate", false))
         using (var scope = worker.Services.CreateScope()) scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.Migrate();
@@ -24,6 +25,8 @@ var builder = WebApplication.CreateBuilder(args);
 role = Hosting.RoleOf(builder.Configuration); // also honors settings that only the web builder knows, such as test overrides
 if (role == HostingRole.Worker) throw new InvalidOperationException("Hosting:Role=worker must come from the environment or the command line.");
 
+// Server settings kept in the database override the environment from here on (ADR 0013).
+builder.Services.AddSingleton(DbSettings.Add(builder.Configuration));
 builder.Services.AddFullyQualified(builder.Configuration, role);
 
 // Accounts sign in with passkeys only.
@@ -69,6 +72,9 @@ if (app.Configuration.GetValue("Database:AutoMigrate", true))
     using var scope = app.Services.CreateScope();
     scope.ServiceProvider.GetRequiredService<AppDbContext>().Database.Migrate();
 }
+
+// Secrets in the database can be read now that data protection works.
+app.Services.GetRequiredService<DbSettings>().Attach(app.Services.GetRequiredService<IDataProtectionProvider>());
 
 // Operator command: dotnet FullyQualified.Web.dll recover <e-mail or name> [--url https://host]
 if (args is ["recover", var who, ..])
@@ -155,6 +161,7 @@ app.MapAssetControls();
 app.MapReview();
 app.MapAdmin();
 app.MapAlerts();
+app.MapAppSettings();
 app.MapEmailTests();
 app.MapToolbox();
 app.MapPlans();
