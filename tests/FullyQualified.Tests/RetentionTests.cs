@@ -126,7 +126,7 @@ public class RetentionTests : IClassFixture<PgFactory>
         {
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             await Add(db,
-                // dns: the good result at 60 is the baseline for the newer errors, so it stays; the old errors before it go
+                // dns: the newest result (2) and the newest good one (60, the baseline) stay; every other old error goes, before and after the good one
                 R(org, "dns", CheckStatus.Error, 120), R(org, "dns", CheckStatus.Ok, 60), R(org, "dns", CheckStatus.Error, 50), R(org, "dns", CheckStatus.Error, 2),
                 // tls: only errors; the newest error stays (newest overall), the older ones go
                 R(org, "tls", CheckStatus.Error, 100), R(org, "tls", CheckStatus.Error, 50),
@@ -134,7 +134,7 @@ public class RetentionTests : IClassFixture<PgFactory>
                 R(org, "ct", CheckStatus.Error, 70), R(org, "ct", CheckStatus.Warning, 45));
         }
         await Run();
-        Assert.Equal([("ct", 45), ("dns", 2), ("dns", 50), ("dns", 60), ("tls", 50)], await Kept(org.Id));
+        Assert.Equal([("ct", 45), ("dns", 2), ("dns", 60), ("tls", 50)], await Kept(org.Id));
     }
 
     [DbFact]

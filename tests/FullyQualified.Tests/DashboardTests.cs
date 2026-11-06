@@ -55,6 +55,10 @@ public class DashboardTests : IClassFixture<PgFactory>
         return dee.Id;
     }
 
+    /// <summary>The page without the needs-attention list, which summarizes the whole organization and ignores the filters.</summary>
+    async Task<string> Table(string query) =>
+        System.Text.RegularExpressions.Regex.Replace(await Page(query), "<section class=\"attention\".*?</section>", "", System.Text.RegularExpressions.RegexOptions.Singleline);
+
     async Task<string> Page(string query) => await (await factory.As(await admin).GetAsync("/" + query)).Content.ReadAsStringAsync();
 
     [DbFact]
@@ -74,12 +78,12 @@ public class DashboardTests : IClassFixture<PgFactory>
     [DbFact]
     public async Task The_origin_filter_separates_manual_from_discovered_assets()
     {
-        var added = await Page("?source=added");
+        var added = await Table("?source=added");
         Assert.Contains("dash.example</a>", added);
         Assert.DoesNotContain("api.dash.example", added);
         Assert.Contains("Showing 1 of 4", added);
 
-        var discovered = await Page("?source=discovered");
+        var discovered = await Table("?source=discovered");
         Assert.DoesNotContain(">dash.example</a>", discovered);
         Assert.Contains("api.dash.example", discovered);
         Assert.Contains("Showing 3 of 4", discovered);
