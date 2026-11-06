@@ -221,6 +221,20 @@ public class AlertRule : ITenantOwned
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
 }
 
+/// <summary>
+/// One server setting kept in the database (ADR 0013). It overrides the same key from the environment or appsettings.json; a missing row means
+/// "not set here". Platform state, so it has no tenant id, like <see cref="Tier"/>. Secrets are stored protected.
+/// </summary>
+public class AppSetting
+{
+    /// <summary>The configuration key, for example "Alerts:Email:Host".</summary>
+    public required string Key { get; set; }
+    public string? Value { get; set; }
+    public bool IsSecret { get; set; }
+    public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
+    public string? UpdatedBy { get; set; }
+}
+
 /// <summary>One delivery attempt to one channel; feeds the log screen.</summary>
 public class AlertLogEntry : ITenantOwned
 {

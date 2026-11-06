@@ -125,6 +125,10 @@ Environment variables (use `__` for `:`):
 | `Alerts:Webhook` | unset | Generic JSON webhook |
 | `Alerts:Email:Host/Port/Ssl/User/Password/From/To` | unset | SMTP |
 
+### Settings in the database
+
+The platform owner can change the server settings on the **Settings** page (`/settings`): email (SMTP), the server-wide alarm channels, passkey and sign-in options, SSO, scanning, DNS resolvers, the free public check, the toolbox limits and the theme (`default` or `christmas`). They are stored in the database and apply to every container, the web side and all workers, within about 15 seconds. A value saved there overrides the same setting from the environment or `appsettings.json` (the tables above and the compose file remain the defaults); ticking *remove the database value* brings the environment value back. Each setting shows where its current value comes from, and the ones read once at startup (SSO, the number of scan loops, DNS clients) say that a restart is needed. Secrets are stored encrypted and never shown again. The database connection (`ConnectionStrings__Default`), `Hosting__Role` and `Database__AutoMigrate` stay in the environment. See [ADR 0013](docs/adr/0013-server-settings-in-the-database.md).
+
 ## Organizations (tenants)
 
 Every account belongs to a tenant, which owns its own assets, results, users and alarm settings; tenants cannot see each other's data. The first tenant created, during `/setup`, is the **management tenant**. Its admins get a Tenants screen with every tenant (users, assets, certificates, expiring certificates, problems, last scan, last sign-in), can create new tenants and invite their first admin, and can help users in any tenant. A self-hosted install for one company simply has one tenant.

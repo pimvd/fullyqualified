@@ -1048,4 +1048,78 @@ You do not need this search to monitor a domain: it only helps to find hostnames
   <data name="RuleKey_dnssec" xml:space="preserve"><value>DNSSEC</value></data>
   <data name="RuleKey_issuer" xml:space="preserve"><value>Certificate issuer</value></data>
   <data name="RuleKey_protocol" xml:space="preserve"><value>TLS protocol</value></data>
+  <data name="SettingGroup_Appearance" xml:space="preserve"><value>Appearance</value></data>
+  <data name="SettingGroup_Email" xml:space="preserve"><value>Email (SMTP)</value></data>
+  <data name="SettingGroup_Alarms" xml:space="preserve"><value>Server-wide alarm channels</value></data>
+  <data name="SettingGroup_Access" xml:space="preserve"><value>Sign-in and passkeys</value></data>
+  <data name="SettingGroup_Sso" xml:space="preserve"><value>Single sign-on (SSO)</value></data>
+  <data name="SettingGroup_Scanning" xml:space="preserve"><value>Scanning</value></data>
+  <data name="SettingGroup_Dns" xml:space="preserve"><value>DNS resolvers</value></data>
+  <data name="SettingGroup_PublicCheck" xml:space="preserve"><value>Free public check</value></data>
+  <data name="SettingGroup_Toolbox" xml:space="preserve"><value>Toolbox limits</value></data>
+  <data name="Setting_Appearance_Theme" xml:space="preserve"><value>Theme</value></data>
+  <data name="SettingChoice_Appearance_Theme_default" xml:space="preserve"><value>Default</value></data>
+  <data name="SettingChoice_Appearance_Theme_christmas" xml:space="preserve"><value>Christmas</value></data>
+  <data name="Setting_Alerts_Email_Host" xml:space="preserve"><value>SMTP host</value></data>
+  <data name="Setting_Alerts_Email_Port" xml:space="preserve"><value>SMTP port</value></data>
+  <data name="Setting_Alerts_Email_Ssl" xml:space="preserve"><value>Use SSL/TLS</value></data>
+  <data name="Setting_Alerts_Email_User" xml:space="preserve"><value>SMTP user name</value></data>
+  <data name="Setting_Alerts_Email_Password" xml:space="preserve"><value>SMTP password</value></data>
+  <data name="Setting_Alerts_Email_From" xml:space="preserve"><value>Sender address</value></data>
+  <data name="Setting_Alerts_Email_To" xml:space="preserve"><value>Default alarm recipients</value></data>
+  <data name="Setting_Alerts_SlackWebhook" xml:space="preserve"><value>Slack webhook (default for organizations without their own)</value></data>
+  <data name="Setting_Alerts_Webhook" xml:space="preserve"><value>Generic webhook (default)</value></data>
+  <data name="Setting_Alerts_Telegram_BotToken" xml:space="preserve"><value>Telegram bot token (default)</value></data>
+  <data name="Setting_Alerts_Telegram_ChatId" xml:space="preserve"><value>Telegram chat (default)</value></data>
+  <data name="Setting_Auth_Origin" xml:space="preserve"><value>Public address (origin) for passkeys</value></data>
+  <data name="Setting_Auth_RpId" xml:space="preserve"><value>Passkey relying-party domain</value></data>
+  <data name="Setting_Auth_SetupCode" xml:space="preserve"><value>Code needed to set up or register</value></data>
+  <data name="Setting_Sso_Authority" xml:space="preserve"><value>Identity provider address (authority)</value></data>
+  <data name="Setting_Sso_ClientId" xml:space="preserve"><value>Client ID</value></data>
+  <data name="Setting_Sso_ClientSecret" xml:space="preserve"><value>Client secret</value></data>
+  <data name="Setting_Sso_DisplayName" xml:space="preserve"><value>Name on the sign-in button</value></data>
+  <data name="Setting_Sso_AllowedDomains" xml:space="preserve"><value>Allowed e-mail domains (comma-separated)</value></data>
+  <data name="Setting_Sso_AutoProvision" xml:space="preserve"><value>Create accounts on first sign-in</value></data>
+  <data name="Setting_Sso_DefaultRole" xml:space="preserve"><value>Role of automatically created accounts</value></data>
+  <data name="Setting_Sso_RequireHttpsMetadata" xml:space="preserve"><value>Require https for provider metadata</value></data>
+  <data name="Setting_Scanning_Enabled" xml:space="preserve"><value>Run scans (kill switch)</value></data>
+  <data name="Setting_Scanning_Workers" xml:space="preserve"><value>Parallel scan loops per process</value></data>
+  <data name="Setting_Scanning_IntervalHours" xml:space="preserve"><value>Default scan interval (hours, for plans without one)</value></data>
+  <data name="Setting_Scanning_ManualCooldownMinutes" xml:space="preserve"><value>Default wait between "check everything now" (minutes)</value></data>
+  <data name="Setting_Scanning_JobTimeoutSeconds" xml:space="preserve"><value>Seconds before one check is cancelled</value></data>
+  <data name="Setting_Scanning_AllowPrivateAddresses" xml:space="preserve"><value>Allow scans of private networks</value></data>
+  <data name="Setting_Dns_Server" xml:space="preserve"><value>DNS server for checks (blank: system resolver)</value></data>
+  <data name="Setting_Dns_CompareResolvers" xml:space="preserve"><value>Public resolvers to cross-check against (blank: off)</value></data>
+  <data name="Setting_PublicScan_Enabled" xml:space="preserve"><value>Enable the free public check at /scan</value></data>
+  <data name="Setting_PublicScan_PerHour" xml:space="preserve"><value>Checks per client address per hour</value></data>
+  <data name="Setting_PublicScan_Concurrent" xml:space="preserve"><value>Public checks running at once</value></data>
+  <data name="Setting_Toolbox_RequestsPerMinute" xml:space="preserve"><value>Requests per user per minute</value></data>
+  <data name="Setting_Toolbox_ConcurrentPerUser" xml:space="preserve"><value>Tools running at once per user</value></data>
+  <data name="Setting_Toolbox_Concurrent" xml:space="preserve"><value>Tools running at once in total</value></data>
+  <data name="Setting_Toolbox_RunSeconds" xml:space="preserve"><value>Seconds a tool may run</value></data>
+  <data name="Setting_Toolbox_ConnectionSeconds" xml:space="preserve"><value>Seconds per network connection</value></data>
+  <data name="Setting_Toolbox_MaxAddresses" xml:space="preserve"><value>Addresses tried per name</value></data>
+  <data name="Setting_Toolbox_MaxMxHosts" xml:space="preserve"><value>Mail servers tried per domain</value></data>
+  <data name="Setting_Toolbox_MaxPolicyBytes" xml:space="preserve"><value>Largest policy file read (bytes)</value></data>
+  <data name="SettingChoice_Sso_DefaultRole_Viewer" xml:space="preserve"><value>Viewer</value></data>
+  <data name="SettingChoice_Sso_DefaultRole_Member" xml:space="preserve"><value>Member</value></data>
+  <data name="Nav_Settings" xml:space="preserve"><value>Settings</value></data>
+  <data name="Settings_Title" xml:space="preserve"><value>Server settings</value></data>
+  <data name="Settings_Intro" xml:space="preserve"><value>Everything that configures this installation lives here, in the database, and applies to every container (web and workers). A value set here overrides the same setting from the environment; ticking reset removes it again.</value></data>
+  <data name="Settings_Note" xml:space="preserve"><value>Changes reach the other containers within about 15 seconds. The database connection, the hosting role and automatic migrations stay in the environment: they are needed before the database can be read. Secrets are stored encrypted and are never shown again.</value></data>
+  <data name="Settings_Source_Database" xml:space="preserve"><value>database</value></data>
+  <data name="Settings_Source_Environment" xml:space="preserve"><value>environment</value></data>
+  <data name="Settings_Source_Default" xml:space="preserve"><value>default</value></data>
+  <data name="Settings_Restart" xml:space="preserve"><value>restart needed</value></data>
+  <data name="Settings_RestartHelp" xml:space="preserve"><value>This value is read once at startup, so a change applies after the next restart.</value></data>
+  <data name="Settings_On" xml:space="preserve"><value>On</value></data>
+  <data name="Settings_SecretSet" xml:space="preserve"><value>Set (hidden). Type to replace.</value></data>
+  <data name="Settings_Default" xml:space="preserve"><value>Default: {0}</value></data>
+  <data name="Settings_Changed" xml:space="preserve"><value>changed {0} by {1}</value></data>
+  <data name="Settings_Reset" xml:space="preserve"><value>Remove the database value (use the environment or default again)</value></data>
+  <data name="Err_UnknownSetting" xml:space="preserve"><value>This setting does not exist.</value></data>
+  <data name="Err_InvalidValue" xml:space="preserve"><value>This value is not valid.</value></data>
+  <data name="Err_InvalidNumber" xml:space="preserve"><value>Enter a number within the allowed range.</value></data>
+  <data name="Err_InvalidChoice" xml:space="preserve"><value>Choose one of the listed options.</value></data>
+  <data name="Err_TooLong" xml:space="preserve"><value>This value is too long.</value></data>
 </root>

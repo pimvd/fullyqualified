@@ -1048,4 +1048,78 @@ Je hebt deze zoekopdracht niet nodig om een domein te monitoren: ze helpt alleen
   <data name="RuleKey_dnssec" xml:space="preserve"><value>DNSSEC</value></data>
   <data name="RuleKey_issuer" xml:space="preserve"><value>Uitgever van het certificaat</value></data>
   <data name="RuleKey_protocol" xml:space="preserve"><value>TLS-protocol</value></data>
+  <data name="SettingGroup_Appearance" xml:space="preserve"><value>Uiterlijk</value></data>
+  <data name="SettingGroup_Email" xml:space="preserve"><value>E-mail (SMTP)</value></data>
+  <data name="SettingGroup_Alarms" xml:space="preserve"><value>Alarmkanalen voor de hele server</value></data>
+  <data name="SettingGroup_Access" xml:space="preserve"><value>Inloggen en passkeys</value></data>
+  <data name="SettingGroup_Sso" xml:space="preserve"><value>Single sign-on (SSO)</value></data>
+  <data name="SettingGroup_Scanning" xml:space="preserve"><value>Scannen</value></data>
+  <data name="SettingGroup_Dns" xml:space="preserve"><value>DNS-resolvers</value></data>
+  <data name="SettingGroup_PublicCheck" xml:space="preserve"><value>Gratis openbare check</value></data>
+  <data name="SettingGroup_Toolbox" xml:space="preserve"><value>Limieten van de toolbox</value></data>
+  <data name="Setting_Appearance_Theme" xml:space="preserve"><value>Thema</value></data>
+  <data name="SettingChoice_Appearance_Theme_default" xml:space="preserve"><value>Standaard</value></data>
+  <data name="SettingChoice_Appearance_Theme_christmas" xml:space="preserve"><value>Kerst</value></data>
+  <data name="Setting_Alerts_Email_Host" xml:space="preserve"><value>SMTP-host</value></data>
+  <data name="Setting_Alerts_Email_Port" xml:space="preserve"><value>SMTP-poort</value></data>
+  <data name="Setting_Alerts_Email_Ssl" xml:space="preserve"><value>SSL/TLS gebruiken</value></data>
+  <data name="Setting_Alerts_Email_User" xml:space="preserve"><value>SMTP-gebruikersnaam</value></data>
+  <data name="Setting_Alerts_Email_Password" xml:space="preserve"><value>SMTP-wachtwoord</value></data>
+  <data name="Setting_Alerts_Email_From" xml:space="preserve"><value>Afzenderadres</value></data>
+  <data name="Setting_Alerts_Email_To" xml:space="preserve"><value>Standaardontvangers van alarmen</value></data>
+  <data name="Setting_Alerts_SlackWebhook" xml:space="preserve"><value>Slack-webhook (standaard voor organisaties zonder eigen)</value></data>
+  <data name="Setting_Alerts_Webhook" xml:space="preserve"><value>Algemene webhook (standaard)</value></data>
+  <data name="Setting_Alerts_Telegram_BotToken" xml:space="preserve"><value>Telegram-bottoken (standaard)</value></data>
+  <data name="Setting_Alerts_Telegram_ChatId" xml:space="preserve"><value>Telegram-chat (standaard)</value></data>
+  <data name="Setting_Auth_Origin" xml:space="preserve"><value>Openbaar adres (origin) voor passkeys</value></data>
+  <data name="Setting_Auth_RpId" xml:space="preserve"><value>Relying-party-domein voor passkeys</value></data>
+  <data name="Setting_Auth_SetupCode" xml:space="preserve"><value>Code nodig om in te stellen of te registreren</value></data>
+  <data name="Setting_Sso_Authority" xml:space="preserve"><value>Adres van de identity provider (authority)</value></data>
+  <data name="Setting_Sso_ClientId" xml:space="preserve"><value>Client-ID</value></data>
+  <data name="Setting_Sso_ClientSecret" xml:space="preserve"><value>Client secret</value></data>
+  <data name="Setting_Sso_DisplayName" xml:space="preserve"><value>Naam op de inlogknop</value></data>
+  <data name="Setting_Sso_AllowedDomains" xml:space="preserve"><value>Toegestane e-maildomeinen (kommagescheiden)</value></data>
+  <data name="Setting_Sso_AutoProvision" xml:space="preserve"><value>Accounts aanmaken bij eerste login</value></data>
+  <data name="Setting_Sso_DefaultRole" xml:space="preserve"><value>Rol van automatisch aangemaakte accounts</value></data>
+  <data name="Setting_Sso_RequireHttpsMetadata" xml:space="preserve"><value>Https vereisen voor providermetadata</value></data>
+  <data name="Setting_Scanning_Enabled" xml:space="preserve"><value>Scans uitvoeren (noodknop)</value></data>
+  <data name="Setting_Scanning_Workers" xml:space="preserve"><value>Parallelle scanlussen per proces</value></data>
+  <data name="Setting_Scanning_IntervalHours" xml:space="preserve"><value>Standaard scaninterval (uren, voor plannen zonder eigen)</value></data>
+  <data name="Setting_Scanning_ManualCooldownMinutes" xml:space="preserve"><value>Standaardwachttijd tussen "nu alles controleren" (minuten)</value></data>
+  <data name="Setting_Scanning_JobTimeoutSeconds" xml:space="preserve"><value>Seconden voordat één controle wordt afgebroken</value></data>
+  <data name="Setting_Scanning_AllowPrivateAddresses" xml:space="preserve"><value>Scans van privénetwerken toestaan</value></data>
+  <data name="Setting_Dns_Server" xml:space="preserve"><value>DNS-server voor controles (leeg: systeemresolver)</value></data>
+  <data name="Setting_Dns_CompareResolvers" xml:space="preserve"><value>Openbare resolvers om mee te vergelijken (leeg: uit)</value></data>
+  <data name="Setting_PublicScan_Enabled" xml:space="preserve"><value>Gratis openbare check op /scan aanzetten</value></data>
+  <data name="Setting_PublicScan_PerHour" xml:space="preserve"><value>Checks per clientadres per uur</value></data>
+  <data name="Setting_PublicScan_Concurrent" xml:space="preserve"><value>Openbare checks tegelijk</value></data>
+  <data name="Setting_Toolbox_RequestsPerMinute" xml:space="preserve"><value>Verzoeken per gebruiker per minuut</value></data>
+  <data name="Setting_Toolbox_ConcurrentPerUser" xml:space="preserve"><value>Tools tegelijk per gebruiker</value></data>
+  <data name="Setting_Toolbox_Concurrent" xml:space="preserve"><value>Tools tegelijk in totaal</value></data>
+  <data name="Setting_Toolbox_RunSeconds" xml:space="preserve"><value>Seconden dat een tool mag draaien</value></data>
+  <data name="Setting_Toolbox_ConnectionSeconds" xml:space="preserve"><value>Seconden per netwerkverbinding</value></data>
+  <data name="Setting_Toolbox_MaxAddresses" xml:space="preserve"><value>Adressen geprobeerd per naam</value></data>
+  <data name="Setting_Toolbox_MaxMxHosts" xml:space="preserve"><value>Mailservers geprobeerd per domein</value></data>
+  <data name="Setting_Toolbox_MaxPolicyBytes" xml:space="preserve"><value>Grootste beleidsbestand dat wordt gelezen (bytes)</value></data>
+  <data name="SettingChoice_Sso_DefaultRole_Viewer" xml:space="preserve"><value>Lezer</value></data>
+  <data name="SettingChoice_Sso_DefaultRole_Member" xml:space="preserve"><value>Lid</value></data>
+  <data name="Nav_Settings" xml:space="preserve"><value>Instellingen</value></data>
+  <data name="Settings_Title" xml:space="preserve"><value>Serverinstellingen</value></data>
+  <data name="Settings_Intro" xml:space="preserve"><value>Alles wat deze installatie configureert staat hier, in de database, en geldt voor elke container (web en workers). Een waarde hier overschrijft dezelfde instelling uit de omgeving; met resetten haal je hem weer weg.</value></data>
+  <data name="Settings_Note" xml:space="preserve"><value>Wijzigingen bereiken de andere containers binnen ongeveer 15 seconden. De databaseverbinding, de hostingrol en automatische migraties blijven in de omgeving: die zijn nodig voordat de database gelezen kan worden. Geheimen worden versleuteld opgeslagen en nooit meer getoond.</value></data>
+  <data name="Settings_Source_Database" xml:space="preserve"><value>database</value></data>
+  <data name="Settings_Source_Environment" xml:space="preserve"><value>omgeving</value></data>
+  <data name="Settings_Source_Default" xml:space="preserve"><value>standaard</value></data>
+  <data name="Settings_Restart" xml:space="preserve"><value>herstart nodig</value></data>
+  <data name="Settings_RestartHelp" xml:space="preserve"><value>Deze waarde wordt één keer bij het opstarten gelezen, dus een wijziging geldt na de volgende herstart.</value></data>
+  <data name="Settings_On" xml:space="preserve"><value>Aan</value></data>
+  <data name="Settings_SecretSet" xml:space="preserve"><value>Ingesteld (verborgen). Typ om te vervangen.</value></data>
+  <data name="Settings_Default" xml:space="preserve"><value>Standaard: {0}</value></data>
+  <data name="Settings_Changed" xml:space="preserve"><value>gewijzigd {0} door {1}</value></data>
+  <data name="Settings_Reset" xml:space="preserve"><value>Databasewaarde verwijderen (omgeving of standaard weer gebruiken)</value></data>
+  <data name="Err_UnknownSetting" xml:space="preserve"><value>Deze instelling bestaat niet.</value></data>
+  <data name="Err_InvalidValue" xml:space="preserve"><value>Deze waarde is niet geldig.</value></data>
+  <data name="Err_InvalidNumber" xml:space="preserve"><value>Vul een getal in binnen het toegestane bereik.</value></data>
+  <data name="Err_InvalidChoice" xml:space="preserve"><value>Kies een van de getoonde opties.</value></data>
+  <data name="Err_TooLong" xml:space="preserve"><value>Deze waarde is te lang.</value></data>
 </root>
