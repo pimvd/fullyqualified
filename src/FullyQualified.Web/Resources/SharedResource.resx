@@ -1170,4 +1170,5 @@ You do not need this search to monitor a domain: it only helps to find hostnames
   <data name="Monitor_QueueOldest" xml:space="preserve"><value>The oldest due check has waited {0} min.</value></data>
   <data name="EmailTest_Domain" xml:space="preserve"><value>Domain</value></data>
   <data name="EmailTest_NoDomains" xml:space="preserve"><value>Add a domain you monitor first: the From address must be on a domain you monitor.</value></data>
+  <data name="Monitor_Hidden" xml:space="preserve"><value>{0} older process(es) that stopped reporting are not shown. They are removed after an hour.</value></data>
 </root>

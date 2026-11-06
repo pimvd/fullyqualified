@@ -51,6 +51,7 @@
             </table>
         }
     </section>
+    @if (snapshot.HiddenProcesses > 0) { <p class="muted"><small>@L["Monitor_Hidden", snapshot.HiddenProcesses]</small></p> }
     <p class="muted"><small>@L["Monitor_Updated", snapshot.At.ToString("HH:mm:ss")] UTC</small></p>
 </div>
 <script src="monitor.js" defer></script>

@@ -160,6 +160,33 @@ public class ServiceMonitorTests(PgFactory factory) : OrgTestBase<PgFactory>(fac
         Assert.Contains("waited 20 min", late.Detail);
     }
 
+    // ---- old processes ----
+
+    [DbFact]
+    public async Task Processes_that_have_been_silent_for_long_are_not_listed_but_counted()
+    {
+        await Beats(new P("web", 5), new P("worker", 200), new P("worker", 30 * 60), new P("web", 50 * 60));     // 3 min, 30 min, 50 min silent
+        var snapshot = await Snapshot();
+        Assert.Equal(2, snapshot.Processes.Count);                         // the ones seen within ten minutes
+        Assert.Equal(2, snapshot.HiddenProcesses);
+        Assert.Contains(snapshot.Processes, p => p.Role == "worker" && !p.Alive);   // a recent silent one is still shown, as silent
+    }
+
+    [DbFact]
+    public async Task A_beating_process_removes_the_rows_of_processes_gone_for_over_an_hour_on_its_first_beat()
+    {
+        await EnsureOwner();
+        await Beats(new P("worker", 30 * 60), new P("web", 3 * 3600), new P("worker", 2 * 24 * 3600));
+        var hb = new WorkerHeartbeat(TimeProvider.System, Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString("N")), TimeSpan.FromSeconds(60), "web");
+        hb.Start(0);
+        Assert.True(await hb.BeatAsync(Factory.Services, false, default));
+        using var scope = Scope();
+        var rows = await scope.ServiceProvider.GetRequiredService<AppDbContext>().WorkerHeartbeats.AsNoTracking().ToListAsync();
+        Assert.Equal(2, rows.Count);                                       // the 30 minute old one stays, the new one is there; the rest is gone
+        Assert.Contains(rows, r => r.WorkerId == hb.WorkerId);
+        Assert.DoesNotContain(rows, r => DateTimeOffset.UtcNow - r.BeatAt > TimeSpan.FromHours(1));
+    }
+
     // ---- the page and the heartbeat itself ----
 
     [DbFact]

@@ -11,7 +11,8 @@ public record ProcessRow(Guid Id, string Role, string Host, string Version, Date
 /// <summary>One line of the monitor: a service, how it is doing and the facts behind that, already in the reader's language.</summary>
 public record ServiceRow(string Key, Finding Status, string Replicas, DateTimeOffset? LastBeat, string Detail);
 
-public record MonitorSnapshot(DateTimeOffset At, List<ServiceRow> Services, List<ProcessRow> Processes);
+/// <param name="HiddenProcesses">Processes that have been silent for longer than <see cref="ServiceMonitor.RecentlySeen"/>: not listed, but counted.</param>
+public record MonitorSnapshot(DateTimeOffset At, List<ServiceRow> Services, List<ProcessRow> Processes, int HiddenProcesses = 0);
 
 /// <summary>
 /// What the platform owner sees on the monitor page: the web replicas and the scan workers (from their heartbeats), the database, the mail relay
@@ -36,9 +37,10 @@ public class ServiceMonitor(AppDbContext db, ServerProbes probes, IConfiguration
         var scanWindow = WorkerHeartbeat.WindowFor(cfg);
         bool Alive(WorkerHeartbeatRow r) => now - r.BeatAt <= (RoleOf(r) == "web" ? WebWindow : scanWindow);
 
-        var processes = rows.Select(r => new ProcessRow(r.WorkerId, RoleOf(r), r.Host, r.Version, r.StartedAt, r.BeatAt, r.IsScheduler, Alive(r)))
-            .OrderBy(p => p.Role).ThenBy(p => p.StartedAt).ToList();
+        // Old silent processes (a container that was replaced, a replica scaled away) are not worth a row; they are counted and removed after an hour.
         var recent = rows.Where(r => now - r.BeatAt <= RecentlySeen).ToList();
+        var processes = recent.Select(r => new ProcessRow(r.WorkerId, RoleOf(r), r.Host, r.Version, r.StartedAt, r.BeatAt, r.IsScheduler, Alive(r)))
+            .OrderBy(p => p.Role).ThenBy(p => p.StartedAt).ToList();
 
         return new MonitorSnapshot(now,
         [
@@ -47,7 +49,7 @@ public class ServiceMonitor(AppDbContext db, ServerProbes probes, IConfiguration
             await DatabaseAsync(ct),
             await MailAsync(ct),
             await QueueAsync(now, ct),
-        ], processes);
+        ], processes, rows.Count - recent.Count);
     }
 
     ServiceRow Web(List<WorkerHeartbeatRow> recent, Func<WorkerHeartbeatRow, bool> alive)

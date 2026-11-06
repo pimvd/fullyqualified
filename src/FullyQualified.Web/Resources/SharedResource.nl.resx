@@ -1170,4 +1170,5 @@ Je hebt deze zoekopdracht niet nodig om een domein te monitoren: ze helpt alleen
   <data name="Monitor_QueueOldest" xml:space="preserve"><value>De oudste controle die aan de beurt is wacht al {0} min.</value></data>
   <data name="EmailTest_Domain" xml:space="preserve"><value>Domein</value></data>
   <data name="EmailTest_NoDomains" xml:space="preserve"><value>Voeg eerst een domein toe dat je monitort: het Van-adres moet op een gemonitord domein staan.</value></data>
+  <data name="Monitor_Hidden" xml:space="preserve"><value>{0} oudere proces(sen) die zich niet meer melden worden niet getoond. Ze worden na een uur verwijderd.</value></data>
 </root>
