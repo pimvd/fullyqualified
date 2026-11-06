@@ -17,6 +17,7 @@
             <p class="muted">@L["Login_Or"]</p>
             <a class="button" href="/auth/sso/start">@L["Login_Sso", Config["Sso:DisplayName"] ?? "SSO"]</a>
         }
+        <p class="muted"><a href="/register">@L["Login_Register"]</a></p>
         @if (Error is { Length: > 0 }) { <p class="error" role="alert">@L["Err_" + string.Concat(Error.Split('_').Select(w => char.ToUpperInvariant(w[0]) + w[1..]))]</p> }
     </section>
 </PasskeyRoot>

@@ -81,9 +81,21 @@ public class PasskeyService(AppDbContext db, Session session, PlanService plans,
             if (organization.Length > 100) return Fail(400, "invalid_name");
             email = AdminService.NormalizeEmail(req.Email);
             if (string.IsNullOrEmpty(email)) return Fail(400, "invalid_email");
-            var code = cfg["Auth:SetupCode"];
-            if (!string.IsNullOrEmpty(code) && !CryptographicOperations.FixedTimeEquals(Hash(req.SetupCode ?? ""), Hash(code)))
-                return Fail(403, "invalid_setup_code");
+            if (!RegistrationCodeOk(req.SetupCode)) return Fail(403, "invalid_setup_code");
+            userId = Guid.NewGuid();
+        }
+        else if (string.IsNullOrEmpty(req.InviteToken))
+        {
+            // Self-service registration: a new organization with its first admin.
+            name = req.Name?.Trim() ?? "";
+            if (name.Length is 0 or > 100) return Fail(400, "invalid_name");
+            organization = req.Organization?.Trim() ?? "";
+            if (organization.Length is 0 or > 100) return Fail(400, "invalid_name");
+            email = AdminService.NormalizeEmail(req.Email);
+            if (string.IsNullOrEmpty(email)) return Fail(400, "invalid_email");
+            if (!RegistrationCodeOk(req.SetupCode)) return Fail(403, "invalid_setup_code");
+            if (await db.Tenants.AnyAsync(t => t.Name == organization)) return Fail(409, "tenant_exists");
+            if (await db.AcrossTenants<User>().AnyAsync(u => u.Email == email)) return Fail(409, "email_exists");
             userId = Guid.NewGuid();
         }
         else
@@ -117,6 +129,10 @@ public class PasskeyService(AppDbContext db, Session session, PlanService plans,
         SaveState(ctx, new Pending(options.ToJson(), name, userId, inviteId, organization, recovery, email));
         return Results.Content(options.ToJson(), "application/json");
     }
+
+    /// <summary>When Auth:SetupCode is configured, it guards both the first setup and self-service registration.</summary>
+    bool RegistrationCodeOk(string? given) =>
+        cfg["Auth:SetupCode"] is not { Length: > 0 } code || CryptographicOperations.FixedTimeEquals(Hash(given ?? ""), Hash(code));
 
     public async Task<IResult> AddOptions(HttpContext ctx, LabelRequest req)
     {
@@ -168,6 +184,14 @@ public class PasskeyService(AppDbContext db, Session session, PlanService plans,
             // The first account creates the first tenant, which becomes the management tenant.
             var tenant = await db.Tenants.SingleOrDefaultAsync(t => t.IsManagement); // an upgrade may already have created it for existing data
             if (tenant is null) db.Tenants.Add(tenant = new Tenant { Name = state.Organization ?? "Management", IsManagement = true, TierKey = Tiers.Custom });
+            user = new User { Id = state.UserId, TenantId = tenant.Id, Name = state.Name, Role = Role.Admin, Email = state.Email };
+            db.Users.Add(user);
+        }
+        else if (state.InviteId is null && state.Organization is { } org)
+        {
+            if (await db.Tenants.AnyAsync(t => t.Name == org)) return Fail(409, "tenant_exists");
+            var tenant = new Tenant { Name = org, TierKey = Tiers.Free };
+            db.Tenants.Add(tenant);
             user = new User { Id = state.UserId, TenantId = tenant.Id, Name = state.Name, Role = Role.Admin, Email = state.Email };
             db.Users.Add(user);
         }

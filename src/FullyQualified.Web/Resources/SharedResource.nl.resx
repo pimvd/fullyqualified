@@ -1016,4 +1016,8 @@ Je hebt deze zoekopdracht niet nodig om een domein te monitoren: ze helpt alleen
   <data name="Diag_Workers" xml:space="preserve"><value>Scanprocessen</value></data>
   <data name="Diag_WorkersNone" xml:space="preserve"><value>Er heeft de afgelopen minuten geen proces van zich laten horen als scanner.</value></data>
   <data name="Diag_WorkersAlive" xml:space="preserve"><value>{0} scanproces(sen) actief. Het proces dat controles inplant: {1}.</value></data>
+  <data name="Register_Title" xml:space="preserve"><value>Organisatie aanmaken</value></data>
+  <data name="Register_Intro" xml:space="preserve"><value>Maak een nieuwe organisatie en het eerste beheerdersaccount aan. Je logt in met een passkey; er zijn geen wachtwoorden.</value></data>
+  <data name="Register_Existing" xml:space="preserve"><value>Heb je al een account?</value></data>
+  <data name="Login_Register" xml:space="preserve"><value>Organisatie aanmaken</value></data>
 </root>
