@@ -1,3 +1,4 @@
+@inject IConfiguration Config
 <!DOCTYPE html>
 <html lang="@CultureInfo.CurrentUICulture.TwoLetterISOLanguageName">
 <head>
@@ -7,10 +8,15 @@
     <link rel="stylesheet" href="app.css" />
     <HeadOutlet />
 </head>
-<body>
+<body data-theme="@Theme">
     <Routes />
     <script src="passkey.js" defer></script>
     <script src="admin.js" defer></script>
     <script src="dig.js" defer></script>
 </body>
 </html>
+
+@code {
+    /// <summary>The seasonal theme the platform owner chose under Settings; "default" changes nothing.</summary>
+    string Theme => Config["Appearance:Theme"] is { Length: > 0 } t ? t : "default";
+}

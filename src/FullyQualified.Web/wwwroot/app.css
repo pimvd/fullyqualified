@@ -246,3 +246,11 @@ p.lead{margin:-.6rem 0 1.2rem}
 .tl-dot.bad{border-radius:0;background:var(--bad);box-shadow:0 0 0 1px var(--bad);transform:rotate(45deg)}
 .tl-scale{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted);min-width:36rem}
 .timeline-card{overflow-x:auto}
+
+/* Settings page */
+.setting{margin-bottom:1.1rem}.setting>label:first-child{display:block;font-weight:600;margin-bottom:.25rem}
+.setting input[type=text],.setting input[type=password],.setting select{width:100%;max-width:34rem}
+.setting .badge{margin-left:.4rem;font-weight:500;font-size:.72rem}
+/* Seasonal themes, chosen under Settings (Appearance:Theme). "default" has no rules. */
+body[data-theme=christmas]{--accent:#c0392b;--side-bg:#12261b;--side-hover:#1d3b2a;--side-line:#27492f;--side-edge:#2f5a3a;--side-brand:#ffd166}
+@media (prefers-color-scheme:dark){body[data-theme=christmas]{--accent:#ff7a70}}

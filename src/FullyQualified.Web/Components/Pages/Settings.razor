@@ -1,0 +1,67 @@
+@page "/settings"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Policy = Roles.Platform)]
+@inject IStringLocalizer<SharedResource> L
+@inject AppSettingsService Service
+
+<PageTitle>@L["Nav_Settings"]</PageTitle>
+<h1>@L["Settings_Title"]</h1>
+<AdminRoot>
+    <section class="card narrow wide" id="settings-form" data-saved="@L["Alerts_Saved"]">
+        <p>@L["Settings_Intro"]</p>
+        <p class="muted"><small>@L["Settings_Note"]</small></p>
+
+        @foreach (var group in AppSettingsCatalog.Groups)
+        {
+            <h2>@L["SettingGroup_" + group]</h2>
+            @foreach (var v in views.Where(x => x.Def.Group == group))
+            {
+                var id = "st-" + v.Def.Key.Replace(':', '-');
+                <div class="setting" data-key="@v.Def.Key" data-kind="@v.Def.Kind" data-initial="@Initial(v)" data-label="@L[v.Def.ResourceKey]">
+                    <label for="@id">@L[v.Def.ResourceKey]
+                        <span class="badge @SourceClass(v.Source)">@L["Settings_Source_" + v.Source]</span>
+                        @if (v.Def.Restart) { <span class="badge warning" title="@L["Settings_RestartHelp"]">@L["Settings_Restart"]</span> }
+                    </label>
+                    @switch (v.Def.Kind)
+                    {
+                        case SettingKind.Bool:
+                            <label class="check-row"><input id="@id" type="checkbox" checked="@(v.Value == "true")" /> @L["Settings_On"]</label>
+                            break;
+                        case SettingKind.Choice:
+                            <select id="@id">
+                                @foreach (var c in v.Def.Choices!) { <option value="@c" selected="@(c == v.Value)">@ChoiceLabel(v.Def, c)</option> }
+                            </select>
+                            break;
+                        case SettingKind.Secret:
+                            <input id="@id" type="password" autocomplete="new-password" placeholder="@(v.IsSet ? L["Settings_SecretSet"].Value : "")" />
+                            break;
+                        default:
+                            <input id="@id" type="text" autocomplete="off" value="@v.Value" inputmode="@(v.Def.Kind == SettingKind.Number ? "decimal" : "text")" />
+                            break;
+                    }
+                    <small class="muted">
+                        @if (v.Def.Kind != SettingKind.Secret) { @L["Settings_Default", v.Def.Default.Length == 0 ? "—" : v.Def.Default] }
+                        @if (v.UpdatedAt is { } at) { <text> · @L["Settings_Changed", at.ToString("yyyy-MM-dd HH:mm"), v.UpdatedBy ?? "—"]</text> }
+                    </small>
+                    @if (v.Source == SettingSource.Database)
+                    {
+                        <label class="check-row"><input type="checkbox" data-reset /> @L["Settings_Reset"]</label>
+                    }
+                </div>
+            }
+        }
+
+        <p class="actions"><button type="button" data-admin="settings-save">@L["Alerts_Save"]</button></p>
+        <p id="st-note" class="muted" role="status" hidden></p>
+    </section>
+</AdminRoot>
+
+@code {
+    List<SettingView> views = [];
+
+    protected override async Task OnInitializedAsync() => views = await Service.ListAsync();
+
+    static string Initial(SettingView v) => v.Def.Kind switch { SettingKind.Secret => "", SettingKind.Bool => v.Value == "true" ? "true" : "false", _ => v.Value ?? "" };
+    static string SourceClass(SettingSource s) => s switch { SettingSource.Database => "ok", SettingSource.Environment => "pending", _ => "pending" };
+    string ChoiceLabel(SettingDef def, string choice) => L["SettingChoice_" + def.Key.Replace(':', '_') + "_" + choice].Value;
+}

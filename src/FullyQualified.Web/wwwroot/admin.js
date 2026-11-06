@@ -9,11 +9,18 @@
     const r = await fetch(url, { method, headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin', body: body === undefined ? undefined : JSON.stringify(body) });
     let data = null;
     try { data = await r.json(); } catch { }
-    if (!r.ok) throw { code: data?.error ?? 'failed' };
+    if (!r.ok) throw { code: data?.error ?? 'failed', key: data?.key };
     return data;
   }
 
-  const run = async action => { show(''); try { await action(); } catch (e) { show(msg(e?.code ?? 'failed')); } };
+  const run = async action => {
+    show('');
+    try { await action(); }
+    catch (e) {
+      const label = e?.key ? document.querySelector(`.setting[data-key="${e.key}"]`)?.getAttribute('data-label') : null;
+      show((label ? label + ': ' : '') + msg(e?.code ?? 'failed'));
+    }
+  };
 
   root.querySelector('[data-admin=invite]')?.addEventListener('click', () => run(async () => {
     const panel = document.getElementById('adm-invite');
@@ -60,6 +67,25 @@
     await send('DELETE', '/admin/alerts/rules/' + button.getAttribute('data-rule-remove'));
     location.reload();
   })));
+
+  // Server settings: send only what changed; a ticked reset box removes the database value again.
+  const settings = document.getElementById('settings-form');
+  if (settings) {
+    root.querySelector('[data-admin=settings-save]').addEventListener('click', () => run(async () => {
+      const set = {}, reset = [];
+      settings.querySelectorAll('.setting').forEach(row => {
+        const key = row.getAttribute('data-key'), kind = row.getAttribute('data-kind'), field = row.querySelector('input:not([data-reset]), select');
+        if (row.querySelector('[data-reset]')?.checked) { reset.push(key); return; }
+        const value = kind === 'Bool' ? String(field.checked) : field.value.trim();
+        if (kind === 'Secret' ? value !== '' : value !== row.getAttribute('data-initial')) set[key] = value;
+      });
+      if (Object.keys(set).length === 0 && reset.length === 0) return;
+      await send('PUT', '/platform/settings/', { set, reset });
+      const note = document.getElementById('st-note');
+      note.textContent = settings.getAttribute('data-saved'); note.hidden = false;
+      setTimeout(() => location.reload(), 600);
+    }));
+  }
 
   root.querySelector('[data-admin=diag]')?.addEventListener('click', event => run(async () => {
     const button = event.currentTarget, out = document.getElementById('diag-results'), summary = document.getElementById('diag-summary');
