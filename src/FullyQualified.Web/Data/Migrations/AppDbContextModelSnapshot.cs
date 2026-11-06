@@ -56,6 +56,43 @@ namespace FullyQualified.Web.Data.Migrations
                     b.ToTable("alert_log", (string)null);
                 });
 
+            modelBuilder.Entity("FullyQualified.Web.AlertRule", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("AssetId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("CheckType")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Key")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("character varying(40)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssetId");
+
+                    b.HasIndex("TenantId", "CheckType", "Key", "AssetId")
+                        .IsUnique();
+
+                    NpgsqlIndexBuilderExtensions.AreNullsDistinct(b.HasIndex("TenantId", "CheckType", "Key", "AssetId"), false);
+
+                    b.ToTable("alert_rules", (string)null);
+                });
+
             modelBuilder.Entity("FullyQualified.Web.AlertSettings", b =>
                 {
                     b.Property<Guid>("Id")
@@ -728,6 +765,14 @@ namespace FullyQualified.Web.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("data_protection_keys", (string)null);
+                });
+
+            modelBuilder.Entity("FullyQualified.Web.AlertRule", b =>
+                {
+                    b.HasOne("FullyQualified.Web.Asset", null)
+                        .WithMany()
+                        .HasForeignKey("AssetId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("FullyQualified.Web.CertificateRecord", b =>

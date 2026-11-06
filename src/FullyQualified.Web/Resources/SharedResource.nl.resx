@@ -1020,4 +1020,32 @@ Je hebt deze zoekopdracht niet nodig om een domein te monitoren: ze helpt alleen
   <data name="Register_Intro" xml:space="preserve"><value>Maak een nieuwe organisatie en het eerste beheerdersaccount aan. Je logt in met een passkey; er zijn geen wachtwoorden.</value></data>
   <data name="Register_Existing" xml:space="preserve"><value>Heb je al een account?</value></data>
   <data name="Login_Register" xml:space="preserve"><value>Organisatie aanmaken</value></data>
+  <data name="Rules_Title" xml:space="preserve"><value>Alarmen op specifieke wijzigingen</value></data>
+  <data name="Rules_Intro" xml:space="preserve"><value>Krijg een alarm als één vastgelegde waarde van een controle verandert, bijvoorbeeld de nameservers of de mailservers van een domein. Kies alle assets of één. Deze alarmen gaan naar de kanalen hierboven, ongeacht de minimale status.</value></data>
+  <data name="Rules_DriftOn" xml:space="preserve"><value>"Alarm bij elke wijziging" staat aan, dus elke wijziging geeft al een alarm. Deze regels doen pas iets als je dat uitzet.</value></data>
+  <data name="Rules_Empty" xml:space="preserve"><value>Nog geen regels.</value></data>
+  <data name="Rules_Value" xml:space="preserve"><value>Alarm als dit verandert</value></data>
+  <data name="Rules_Asset" xml:space="preserve"><value>Op</value></data>
+  <data name="Rules_AllAssets" xml:space="preserve"><value>Alle assets</value></data>
+  <data name="Rules_AddTitle" xml:space="preserve"><value>Regel toevoegen</value></data>
+  <data name="Rules_Add" xml:space="preserve"><value>Regel toevoegen</value></data>
+  <data name="Rules_Remove" xml:space="preserve"><value>Verwijderen</value></data>
+  <data name="Rules_ConfirmRemove" xml:space="preserve"><value>Deze alarmregel verwijderen?</value></data>
+  <data name="Alert_RuleHit" xml:space="preserve"><value>Alarmregel geraakt: {0}.</value></data>
+  <data name="Err_InvalidRule" xml:space="preserve"><value>Kies een waarde van een controle om op te alarmeren.</value></data>
+  <data name="Err_RuleExists" xml:space="preserve"><value>Deze regel heb je al.</value></data>
+  <data name="Err_TooManyRules" xml:space="preserve"><value>Je hebt het maximale aantal regels bereikt.</value></data>
+  <data name="RuleKey_any" xml:space="preserve"><value>Elke wijziging</value></data>
+  <data name="RuleKey_ns" xml:space="preserve"><value>Nameservers (NS)</value></data>
+  <data name="RuleKey_mx" xml:space="preserve"><value>Mailservers (MX)</value></data>
+  <data name="RuleKey_a" xml:space="preserve"><value>IPv4-adressen (A)</value></data>
+  <data name="RuleKey_aaaa" xml:space="preserve"><value>IPv6-adressen (AAAA)</value></data>
+  <data name="RuleKey_cname" xml:space="preserve"><value>CNAME-doel</value></data>
+  <data name="RuleKey_spf" xml:space="preserve"><value>SPF-record</value></data>
+  <data name="RuleKey_dmarc" xml:space="preserve"><value>DMARC-record</value></data>
+  <data name="RuleKey_dkim" xml:space="preserve"><value>DKIM-sleutels</value></data>
+  <data name="RuleKey_caa" xml:space="preserve"><value>CAA-records</value></data>
+  <data name="RuleKey_dnssec" xml:space="preserve"><value>DNSSEC</value></data>
+  <data name="RuleKey_issuer" xml:space="preserve"><value>Uitgever van het certificaat</value></data>
+  <data name="RuleKey_protocol" xml:space="preserve"><value>TLS-protocol</value></data>
 </root>

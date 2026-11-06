@@ -96,5 +96,7 @@ public static class AlertEndpoints
         var g = app.MapGroup("/admin/alerts").RequireAuthorization(Roles.Admin);
         g.MapPut("/", (HttpContext c, AlertSettingsService s, AlertSettingsRequest r) => s.Save(c, r));
         g.MapPost("/test", (HttpContext c, AlertSettingsService s) => s.Test(c));
+        g.MapPost("/rules", (HttpContext c, AlertRuleService s, AlertRuleRequest r) => s.Create(c, r));
+        g.MapDelete("/rules/{id:guid}", (HttpContext c, AlertRuleService s, Guid id) => s.Delete(c, id));
     }
 }
