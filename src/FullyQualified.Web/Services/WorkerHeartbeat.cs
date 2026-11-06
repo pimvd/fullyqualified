@@ -6,7 +6,7 @@ namespace FullyQualified.Web;
 /// The liveness signal of a process that runs a <see cref="JobRunner"/> (ADR 0010). It beats only while every loop has finished a tick
 /// recently, so a stuck loop stops the beat. A beat upserts a <c>worker_heartbeats</c> row and touches a file the compose healthcheck reads.
 /// </summary>
-public sealed class WorkerHeartbeat(TimeProvider clock, string filePath, TimeSpan maxTickAge)
+public sealed class WorkerHeartbeat(TimeProvider clock, string filePath, TimeSpan maxTickAge, string role = "worker")
 {
     public const string DefaultFile = "/tmp/fq-worker-alive";
     public static readonly TimeSpan Interval = TimeSpan.FromSeconds(15);
@@ -16,13 +16,21 @@ public sealed class WorkerHeartbeat(TimeProvider clock, string filePath, TimeSpa
     public static readonly TimeSpan TickSlack = TimeSpan.FromSeconds(60);
     /// <summary>The window in which a loop must have started a pass: the job cap plus <see cref="TickSlack"/> (150 s by default).</summary>
     public static TimeSpan WindowFor(IConfiguration cfg) => JobTimeout(cfg) + TickSlack;
-    public static readonly TimeSpan RowLifetime = TimeSpan.FromDays(1);
+    /// <summary>A process that has been silent for this long is gone for good, and its row is removed.</summary>
+    public static readonly TimeSpan RowLifetime = TimeSpan.FromHours(1);
+    /// <summary>Every process cleans up on its first beat (a replaced container removes its predecessor's row) and then every this many beats.</summary>
+    const int PruneEveryBeats = 20;
 
     public TimeSpan MaxTickAge { get; } = maxTickAge;
+
+    /// <summary>What this process is, as it is recorded: "web", "worker" or "all".</summary>
+    public static string RoleName(HostingRole role) => role.ToString().ToLowerInvariant();
+    static readonly string Version = typeof(WorkerHeartbeat).Assembly.GetName().Version?.ToString(3) ?? "";
 
     public Guid WorkerId { get; } = Guid.NewGuid();
     readonly DateTimeOffset startedAt = clock.GetUtcNow();
     long[] ticks = [];
+    int beats;
 
     /// <summary>Starts watching this many loops; each counts as having ticked now.</summary>
     public void Start(int loops)
@@ -53,13 +61,15 @@ public sealed class WorkerHeartbeat(TimeProvider clock, string filePath, TimeSpa
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         var now = clock.GetUtcNow();
         await db.Database.ExecuteSqlAsync($"""
-            insert into worker_heartbeats ("WorkerId", "StartedAt", "BeatAt", "IsScheduler") values ({WorkerId}, {startedAt}, {now}, {isScheduler})
+            insert into worker_heartbeats ("WorkerId", "StartedAt", "BeatAt", "IsScheduler", "Role", "Host", "Version")
+            values ({WorkerId}, {startedAt}, {now}, {isScheduler}, {role}, {Environment.MachineName}, {Version})
             on conflict ("WorkerId") do update set "BeatAt" = excluded."BeatAt", "IsScheduler" = excluded."IsScheduler"
             """, ct);
+        if (beats++ % PruneEveryBeats == 0) await PruneAsync(db, ct);
         return true;
     }
 
-    /// <summary>Removes rows of processes that stopped beating long ago. The scheduler calls this.</summary>
+    /// <summary>Removes rows of processes that stopped beating long ago. Every beating process does this now and then, and the scheduler too.</summary>
     public async Task PruneAsync(AppDbContext db, CancellationToken ct)
     {
         var cutoff = clock.GetUtcNow() - RowLifetime;

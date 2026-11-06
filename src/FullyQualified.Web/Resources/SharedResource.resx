@@ -1122,6 +1122,53 @@ You do not need this search to monitor a domain: it only helps to find hostnames
   <data name="Err_InvalidNumber" xml:space="preserve"><value>Enter a number within the allowed range.</value></data>
   <data name="Err_InvalidChoice" xml:space="preserve"><value>Choose one of the listed options.</value></data>
   <data name="Err_TooLong" xml:space="preserve"><value>This value is too long.</value></data>
+  <data name="Nav_Monitor" xml:space="preserve"><value>Monitor</value></data>
+  <data name="Monitor_Title" xml:space="preserve"><value>Services</value></data>
+  <data name="Monitor_Intro" xml:space="preserve"><value>The state of every part of this installation: the web replicas and scan workers (from their heartbeats), the database, the mail relay and the scan queue. This page refreshes itself.</value></data>
+  <data name="Monitor_Svc_web" xml:space="preserve"><value>Web app</value></data>
+  <data name="Monitor_Svc_worker" xml:space="preserve"><value>Scan workers</value></data>
+  <data name="Monitor_Svc_database" xml:space="preserve"><value>Database</value></data>
+  <data name="Monitor_Svc_mail" xml:space="preserve"><value>Mail relay (SMTP)</value></data>
+  <data name="Monitor_Svc_queue" xml:space="preserve"><value>Scan queue</value></data>
+  <data name="Monitor_Col_Service" xml:space="preserve"><value>Service</value></data>
+  <data name="Monitor_Col_Status" xml:space="preserve"><value>Status</value></data>
+  <data name="Monitor_Col_Replicas" xml:space="preserve"><value>Replicas</value></data>
+  <data name="Monitor_Col_Beat" xml:space="preserve"><value>Last heartbeat</value></data>
+  <data name="Monitor_Col_Details" xml:space="preserve"><value>Details</value></data>
+  <data name="Monitor_Col_Process" xml:space="preserve"><value>Process</value></data>
+  <data name="Monitor_Col_Role" xml:space="preserve"><value>Role</value></data>
+  <data name="Monitor_Col_Host" xml:space="preserve"><value>Host</value></data>
+  <data name="Monitor_Col_Version" xml:space="preserve"><value>Version</value></data>
+  <data name="Monitor_Col_Started" xml:space="preserve"><value>Started</value></data>
+  <data name="Monitor_Col_Scheduler" xml:space="preserve"><value>Schedules</value></data>
+  <data name="Monitor_Processes" xml:space="preserve"><value>Processes</value></data>
+  <data name="Monitor_NoProcesses" xml:space="preserve"><value>No process has reported in yet.</value></data>
+  <data name="Monitor_Role_web" xml:space="preserve"><value>web</value></data>
+  <data name="Monitor_Role_worker" xml:space="preserve"><value>scan worker</value></data>
+  <data name="Monitor_Role_all" xml:space="preserve"><value>web and scans</value></data>
+  <data name="Monitor_Alive" xml:space="preserve"><value>alive</value></data>
+  <data name="Monitor_Silent" xml:space="preserve"><value>silent</value></data>
+  <data name="Monitor_AgoSeconds" xml:space="preserve"><value>{0} s ago</value></data>
+  <data name="Monitor_AgoMinutes" xml:space="preserve"><value>{0} min ago</value></data>
+  <data name="Monitor_AgoHours" xml:space="preserve"><value>{0} h ago</value></data>
+  <data name="Monitor_Updated" xml:space="preserve"><value>Updated {0}</value></data>
+  <data name="Monitor_WebWaiting" xml:space="preserve"><value>Waiting for the first heartbeat of a web process.</value></data>
+  <data name="Monitor_WebDown" xml:space="preserve"><value>No web process has beaten in the last minute.</value></data>
+  <data name="Monitor_ReplicaMissing" xml:space="preserve"><value>{0} replica(s) stopped reporting recently.</value></data>
+  <data name="Monitor_MixedVersions" xml:space="preserve"><value>Different versions are running: {0}.</value></data>
+  <data name="Monitor_Version" xml:space="preserve"><value>Version {0}.</value></data>
+  <data name="Monitor_NoScanner" xml:space="preserve"><value>No scan worker is alive: nothing is checked on a schedule.</value></data>
+  <data name="Monitor_NoScheduler" xml:space="preserve"><value>Scanners are alive, but none holds the scheduler role, so nothing schedules new checks.</value></data>
+  <data name="Monitor_SchedulerOn" xml:space="preserve"><value>Scheduling on {0}.</value></data>
+  <data name="Monitor_DbDetail" xml:space="preserve"><value>PostgreSQL {0} · {1} · {2} connections · {3} ms.</value></data>
+  <data name="Monitor_DbPending" xml:space="preserve"><value>{0} migration(s) not applied.</value></data>
+  <data name="Monitor_DbDown" xml:space="preserve"><value>The database could not be reached: {0}</value></data>
+  <data name="Monitor_MailNone" xml:space="preserve"><value>No SMTP server is configured, so no email can be sent.</value></data>
+  <data name="Monitor_MailUp" xml:space="preserve"><value>{0} accepts connections ({1} ms).</value></data>
+  <data name="Monitor_MailDown" xml:space="preserve"><value>{0} did not answer: {1}</value></data>
+  <data name="Monitor_QueueDetail" xml:space="preserve"><value>{0} waiting, {1} running.</value></data>
+  <data name="Monitor_QueueOldest" xml:space="preserve"><value>The oldest due check has waited {0} min.</value></data>
   <data name="EmailTest_Domain" xml:space="preserve"><value>Domain</value></data>
   <data name="EmailTest_NoDomains" xml:space="preserve"><value>Add a domain you monitor first: the From address must be on a domain you monitor.</value></data>
+  <data name="Monitor_Hidden" xml:space="preserve"><value>{0} older process(es) that stopped reporting are not shown. They are removed after an hour.</value></data>
 </root>

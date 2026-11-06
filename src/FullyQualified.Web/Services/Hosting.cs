@@ -67,6 +67,7 @@ public static class Hosting
         services.AddScoped<AlertSettingsService>();
         services.AddScoped<AlertRuleService>();
         services.AddScoped<AppSettingsService>();
+        services.AddScoped<ServiceMonitor>();
         services.AddScoped<SsoService>();
         services.AddMemoryCache();
         // Keys live in the database so cookies survive restarts and redeploys, and so the worker can read the secrets the web side stored.
@@ -79,6 +80,7 @@ public static class Hosting
             services.AddEmailTests();
         }
         if (role != HostingRole.Web) services.AddHostedService<JobRunner>();
+        else services.AddHostedService<WebHeartbeat>();
         return services;
     }
 }

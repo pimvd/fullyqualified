@@ -125,6 +125,10 @@ Environment variables (use `__` for `:`):
 | `Alerts:Webhook` | unset | Generic JSON webhook |
 | `Alerts:Email:Host/Port/Ssl/User/Password/From/To` | unset | SMTP |
 
+### Service monitor
+
+The platform owner sees the state of every part of the installation on the **Monitor** page (`/monitor`, refreshing itself every ten seconds): the web replicas and the scan workers (how many are alive, when each last beat, host, version and who schedules), the database (version, size, connections, response time, unapplied migrations), the mail relay (does it accept a connection) and the scan queue (waiting and running checks, and how long the oldest due check has waited). A replica that stopped reporting shows as "1 / 2" with a warning for ten minutes; different versions running side by side (a rolling deploy) are a warning too. Every web and worker process writes a heartbeat row every 15 seconds, so replicas scale without any configuration (`docker compose up -d --scale worker=2`). See [ADR 0010](docs/adr/0010-scan-worker-container.md).
+
 ### Settings in the database
 
 The platform owner can change the server settings on the **Settings** page (`/settings`): email (SMTP), the server-wide alarm channels, passkey and sign-in options, SSO, scanning, DNS resolvers, the free public check, the toolbox limits and the theme (`default` or `christmas`). They are stored in the database and apply to every container, the web side and all workers, within about 15 seconds. A value saved there overrides the same setting from the environment or `appsettings.json` (the tables above and the compose file remain the defaults); ticking *remove the database value* brings the environment value back. Each setting shows where its current value comes from, and the ones read once at startup (SSO, the number of scan loops, DNS clients) say that a restart is needed. Secrets are stored encrypted and never shown again. The database connection (`ConnectionStrings__Default`), `Hosting__Role` and `Database__AutoMigrate` stay in the environment. See [ADR 0013](docs/adr/0013-server-settings-in-the-database.md).

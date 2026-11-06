@@ -1122,6 +1122,53 @@ Je hebt deze zoekopdracht niet nodig om een domein te monitoren: ze helpt alleen
   <data name="Err_InvalidNumber" xml:space="preserve"><value>Vul een getal in binnen het toegestane bereik.</value></data>
   <data name="Err_InvalidChoice" xml:space="preserve"><value>Kies een van de getoonde opties.</value></data>
   <data name="Err_TooLong" xml:space="preserve"><value>Deze waarde is te lang.</value></data>
+  <data name="Nav_Monitor" xml:space="preserve"><value>Monitor</value></data>
+  <data name="Monitor_Title" xml:space="preserve"><value>Services</value></data>
+  <data name="Monitor_Intro" xml:space="preserve"><value>De toestand van elk onderdeel van deze installatie: de webreplica’s en scanworkers (via hun heartbeats), de database, de mailrelay en de scanwachtrij. Deze pagina ververst zichzelf.</value></data>
+  <data name="Monitor_Svc_web" xml:space="preserve"><value>Webapp</value></data>
+  <data name="Monitor_Svc_worker" xml:space="preserve"><value>Scanworkers</value></data>
+  <data name="Monitor_Svc_database" xml:space="preserve"><value>Database</value></data>
+  <data name="Monitor_Svc_mail" xml:space="preserve"><value>Mailrelay (SMTP)</value></data>
+  <data name="Monitor_Svc_queue" xml:space="preserve"><value>Scanwachtrij</value></data>
+  <data name="Monitor_Col_Service" xml:space="preserve"><value>Service</value></data>
+  <data name="Monitor_Col_Status" xml:space="preserve"><value>Status</value></data>
+  <data name="Monitor_Col_Replicas" xml:space="preserve"><value>Replica’s</value></data>
+  <data name="Monitor_Col_Beat" xml:space="preserve"><value>Laatste heartbeat</value></data>
+  <data name="Monitor_Col_Details" xml:space="preserve"><value>Details</value></data>
+  <data name="Monitor_Col_Process" xml:space="preserve"><value>Proces</value></data>
+  <data name="Monitor_Col_Role" xml:space="preserve"><value>Rol</value></data>
+  <data name="Monitor_Col_Host" xml:space="preserve"><value>Host</value></data>
+  <data name="Monitor_Col_Version" xml:space="preserve"><value>Versie</value></data>
+  <data name="Monitor_Col_Started" xml:space="preserve"><value>Gestart</value></data>
+  <data name="Monitor_Col_Scheduler" xml:space="preserve"><value>Plant in</value></data>
+  <data name="Monitor_Processes" xml:space="preserve"><value>Processen</value></data>
+  <data name="Monitor_NoProcesses" xml:space="preserve"><value>Er heeft nog geen proces van zich laten horen.</value></data>
+  <data name="Monitor_Role_web" xml:space="preserve"><value>web</value></data>
+  <data name="Monitor_Role_worker" xml:space="preserve"><value>scanworker</value></data>
+  <data name="Monitor_Role_all" xml:space="preserve"><value>web en scans</value></data>
+  <data name="Monitor_Alive" xml:space="preserve"><value>actief</value></data>
+  <data name="Monitor_Silent" xml:space="preserve"><value>stil</value></data>
+  <data name="Monitor_AgoSeconds" xml:space="preserve"><value>{0} s geleden</value></data>
+  <data name="Monitor_AgoMinutes" xml:space="preserve"><value>{0} min geleden</value></data>
+  <data name="Monitor_AgoHours" xml:space="preserve"><value>{0} u geleden</value></data>
+  <data name="Monitor_Updated" xml:space="preserve"><value>Bijgewerkt {0}</value></data>
+  <data name="Monitor_WebWaiting" xml:space="preserve"><value>Wacht op de eerste heartbeat van een webproces.</value></data>
+  <data name="Monitor_WebDown" xml:space="preserve"><value>Geen webproces heeft de afgelopen minuut een heartbeat gegeven.</value></data>
+  <data name="Monitor_ReplicaMissing" xml:space="preserve"><value>{0} replica(’s) hebben zich recent niet meer gemeld.</value></data>
+  <data name="Monitor_MixedVersions" xml:space="preserve"><value>Er draaien verschillende versies: {0}.</value></data>
+  <data name="Monitor_Version" xml:space="preserve"><value>Versie {0}.</value></data>
+  <data name="Monitor_NoScanner" xml:space="preserve"><value>Geen scanworker is actief: er wordt niets volgens schema gecontroleerd.</value></data>
+  <data name="Monitor_NoScheduler" xml:space="preserve"><value>Er zijn actieve scanners, maar geen enkele heeft de plannerrol, dus niets plant nieuwe controles in.</value></data>
+  <data name="Monitor_SchedulerOn" xml:space="preserve"><value>Inplannen gebeurt op {0}.</value></data>
+  <data name="Monitor_DbDetail" xml:space="preserve"><value>PostgreSQL {0} · {1} · {2} verbindingen · {3} ms.</value></data>
+  <data name="Monitor_DbPending" xml:space="preserve"><value>{0} migratie(s) niet toegepast.</value></data>
+  <data name="Monitor_DbDown" xml:space="preserve"><value>De database is niet bereikbaar: {0}</value></data>
+  <data name="Monitor_MailNone" xml:space="preserve"><value>Er is geen SMTP-server ingesteld, dus er kan geen e-mail worden verstuurd.</value></data>
+  <data name="Monitor_MailUp" xml:space="preserve"><value>{0} accepteert verbindingen ({1} ms).</value></data>
+  <data name="Monitor_MailDown" xml:space="preserve"><value>{0} antwoordt niet: {1}</value></data>
+  <data name="Monitor_QueueDetail" xml:space="preserve"><value>{0} wachtend, {1} bezig.</value></data>
+  <data name="Monitor_QueueOldest" xml:space="preserve"><value>De oudste controle die aan de beurt is wacht al {0} min.</value></data>
   <data name="EmailTest_Domain" xml:space="preserve"><value>Domein</value></data>
   <data name="EmailTest_NoDomains" xml:space="preserve"><value>Voeg eerst een domein toe dat je monitort: het Van-adres moet op een gemonitord domein staan.</value></data>
+  <data name="Monitor_Hidden" xml:space="preserve"><value>{0} oudere proces(sen) die zich niet meer melden worden niet getoond. Ze worden na een uur verwijderd.</value></data>
 </root>

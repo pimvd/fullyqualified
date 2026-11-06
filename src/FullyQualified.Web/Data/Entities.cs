@@ -339,4 +339,9 @@ public class WorkerHeartbeatRow
     public DateTimeOffset StartedAt { get; set; }
     public DateTimeOffset BeatAt { get; set; }
     public bool IsScheduler { get; set; }
+    /// <summary>"web", "worker" or "all": what the process does. Web processes beat too, so the monitor can count replicas.</summary>
+    public string Role { get; set; } = "worker";
+    /// <summary>The machine name, which in a container is its id.</summary>
+    public string Host { get; set; } = "";
+    public string Version { get; set; } = "";
 }
