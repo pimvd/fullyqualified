@@ -7,13 +7,14 @@
 <PageTitle>@L["Nav_Settings"]</PageTitle>
 <h1>@L["Settings_Title"]</h1>
 <AdminRoot>
-    <section class="card narrow wide" id="settings-form" data-saved="@L["Alerts_Saved"]">
+    <section class="card settings" id="settings-form" data-saved="@L["Alerts_Saved"]">
         <p>@L["Settings_Intro"]</p>
         <p class="muted"><small>@L["Settings_Note"]</small></p>
 
         @foreach (var group in AppSettingsCatalog.Groups)
         {
             <h2>@L["SettingGroup_" + group]</h2>
+            <div class="settings-grid">
             @foreach (var v in views.Where(x => x.Def.Group == group))
             {
                 var id = "st-" + v.Def.Key.Replace(':', '-');
@@ -49,6 +50,7 @@
                     }
                 </div>
             }
+            </div>
         }
 
         <p class="actions"><button type="button" data-admin="settings-save">@L["Alerts_Save"]</button></p>

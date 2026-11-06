@@ -247,10 +247,16 @@ p.lead{margin:-.6rem 0 1.2rem}
 .tl-scale{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted);min-width:36rem}
 .timeline-card{overflow-x:auto}
 
-/* Settings page */
-.setting{margin-bottom:1.1rem}.setting>label:first-child{display:block;font-weight:600;margin-bottom:.25rem}
-.setting input[type=text],.setting input[type=password],.setting select{width:100%;max-width:34rem}
+/* Settings page: the full width of the content, the settings in as many columns as fit */
+.settings>p{max-width:60rem}.settings h2{margin:1.6rem 0 .8rem;padding-bottom:.4rem;border-bottom:1px solid var(--line)}
+.settings-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(24rem,1fr));gap:1.1rem 2.5rem}
+.setting>label:first-child{display:block;font-weight:600;margin-bottom:.25rem}
+.setting input[type=text],.setting input[type=password],.setting select{width:100%}
+.setting select{padding:.55rem .7rem;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);font:inherit}
+.setting .check-row{display:flex;align-items:center;gap:.5rem;font-weight:400;color:var(--fg)}.setting .check-row input{width:auto;min-width:0}
+.setting small{display:block;margin-top:.25rem}
 .setting .badge{margin-left:.4rem;font-weight:500;font-size:.72rem}
+.settings .actions{margin-top:1.6rem}
 /* Seasonal themes, chosen under Settings (Appearance:Theme). "default" has no rules. */
 body[data-theme=christmas]{--accent:#c0392b;--side-bg:#12261b;--side-hover:#1d3b2a;--side-line:#27492f;--side-edge:#2f5a3a;--side-brand:#ffd166}
 @media (prefers-color-scheme:dark){body[data-theme=christmas]{--accent:#ff7a70}}
