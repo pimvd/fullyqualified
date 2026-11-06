@@ -1168,4 +1168,6 @@ You do not need this search to monitor a domain: it only helps to find hostnames
   <data name="Monitor_MailDown" xml:space="preserve"><value>{0} did not answer: {1}</value></data>
   <data name="Monitor_QueueDetail" xml:space="preserve"><value>{0} waiting, {1} running.</value></data>
   <data name="Monitor_QueueOldest" xml:space="preserve"><value>The oldest due check has waited {0} min.</value></data>
+  <data name="EmailTest_Domain" xml:space="preserve"><value>Domain</value></data>
+  <data name="EmailTest_NoDomains" xml:space="preserve"><value>Add a domain you monitor first: the From address must be on a domain you monitor.</value></data>
 </root>

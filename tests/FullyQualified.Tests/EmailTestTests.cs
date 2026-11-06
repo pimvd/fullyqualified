@@ -172,6 +172,39 @@ public class EmailTestIntegrationTests(PgFactory factory) : OrgTestBase<PgFactor
         await db.SaveChangesAsync();
     }
 
+    static string[] DomainOptions(string page) =>
+        new AngleSharp.Html.Parser.HtmlParser().ParseDocument(page).QuerySelectorAll("select[name=fromDomain] option").Select(o => o.GetAttribute("value")!).ToArray();
+
+    [DbFact]
+    public async Task The_domain_dropdown_offers_only_the_domains_the_organization_monitors_itself()
+    {
+        var mine = await NewOrg();
+        var other = await NewOrg();
+        await AddDomain(mine.Id, "zeta.example.org");
+        await AddDomain(mine.Id, "alpha.example.org");
+        await AddDomain(other.Id, "theirs.example.net");                          // another organization
+        using (var scope = Scope())
+        {
+            var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+            db.Assets.Add(new Asset { TenantId = mine.Id, Name = "found.example.org", Discovered = true });      // found by a search, not added by hand
+            db.Assets.Add(new Asset { TenantId = mine.Id, Name = "shop.example.org:8443" });                      // an endpoint, not a domain
+            await db.SaveChangesAsync();
+        }
+        Assert.Equal(["alpha.example.org", "zeta.example.org"], DomainOptions(await Factory.As(mine.Admin).GetStringAsync("/email-test")));
+    }
+
+    [DbFact]
+    public async Task Without_a_monitored_domain_the_form_says_so_and_cannot_be_sent()
+    {
+        var org = await NewOrg();
+        using var smtp = new TestSmtpServer();
+        ConfigureSmtp(smtp);
+        var page = await Factory.As(org.Admin).GetStringAsync("/email-test");
+        Assert.Empty(DomainOptions(page));
+        Assert.Contains("Add a domain you monitor first", page);
+        Assert.NotNull(new AngleSharp.Html.Parser.HtmlParser().ParseDocument(page).QuerySelector("button[type=submit][disabled]"));
+    }
+
     [DbFact]
     public async Task Admin_can_send_a_real_message_without_saving_history()
     {
@@ -182,7 +215,10 @@ public class EmailTestIntegrationTests(PgFactory factory) : OrgTestBase<PgFactor
         var admin = Factory.As(org.Admin);
         var page = await admin.GetStringAsync("/email-test");
         var document = new AngleSharp.Html.Parser.HtmlParser().ParseDocument(page);
-        Assert.Equal("configured@example.org", document.QuerySelector("input[name=from]")?.GetAttribute("value"));
+        Assert.Equal("configured", document.QuerySelector("input[name=fromLocal]")?.GetAttribute("value"));          // the part before the @
+        Assert.Equal(["example.org"], document.QuerySelectorAll("select[name=fromDomain] option").Select(o => o.GetAttribute("value")).ToArray());
+        Assert.Equal("example.org", document.QuerySelector("select[name=fromDomain] option[selected]")?.GetAttribute("value"));
+        Assert.Null(document.QuerySelector("input[name=from]"));
         Assert.NotNull(document.QuerySelector("input[name=to][type=email][required]"));
         Assert.NotNull(document.QuerySelector("input[name=subject][required]"));
         Assert.NotNull(document.QuerySelector("textarea[name=message][required]"));
