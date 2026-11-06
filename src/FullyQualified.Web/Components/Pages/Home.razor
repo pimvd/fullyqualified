@@ -7,7 +7,64 @@
 @inject NavigationManager Nav
 
 <PageTitle>FullyQualified</PageTitle>
-<h1>@L["Nav_Dashboard"]</h1>
+<h1>@(assets.Count == 0 ? L["Nav_Dashboard"].Value : attention.Count == 0 ? L["Attn_TitleNone"].Value : L["Attn_Title", problems].Value)</h1>
+@if (assets.Count > 0)
+{
+    <p class="lead muted">@(attention.Count == 0 ? L["Attn_SubNone", assets.Count].Value : L["Attn_Sub", Math.Max(0, assets.Count - problems)].Value)</p>
+}
+
+@if (attention.Count > 0)
+{
+    <section class="attention" aria-labelledby="attn-h">
+        <h2 id="attn-h" class="eyebrow">@L["Attn_Heading"]</h2>
+        @foreach (var st in attention)
+        {
+            var worst = st.Worst ?? CheckStatus.Warning;
+            var first = Reasons(st).FirstOrDefault();
+            <article class="attn @worst.ToString().ToLowerInvariant()">
+                <StatusBadge Status="worst" />
+                <div class="attn-body">
+                    <a class="attn-name" href="/assets/@st.Asset.Id">@st.Asset.Name</a>
+                    @if (first.Text is not null) { <div class="muted">@first.Text</div> }
+                </div>
+                @if (first.Text is not null)
+                {
+                    <a class="button" href="/fix?asset=@st.Asset.Id&check=@first.Check&code=@Uri.EscapeDataString(first.Code)">@L["Fix_Link"]</a>
+                }
+                else
+                {
+                    <a class="button secondary" href="/assets/@st.Asset.Id">@L["Attn_Open"]</a>
+                }
+            </article>
+        }
+        @if (problems > attention.Count)
+        {
+            <p class="muted"><a href="/?status=problems">@L["Attn_More", problems]</a></p>
+        }
+    </section>
+}
+
+<section class="card timeline-card" aria-labelledby="tl-h">
+    <h2 id="tl-h">@L["Timeline_Title"]</h2>
+    @if (timeline.Count == 0)
+    {
+        <p class="muted">@L["Timeline_None"]</p>
+    }
+    else
+    {
+        <div class="timeline">
+            <div class="tl-axis"></div>
+            @foreach (var m in timeline)
+            {
+                <div class="tl-mark @(m.Above ? "above" : "below")" style="left:@m.Left.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)%">
+                    <span class="tl-label">@m.Host</span>
+                    <span class="tl-dot @m.Class" title="@m.Host · @m.NotAfter.ToString("yyyy-MM-dd") · @(m.Days < 0 ? L["Timeline_Expired"].Value : L["Timeline_Left", m.Days].Value)"></span>
+                </div>
+            }
+        </div>
+        <div class="tl-scale"><span>@L["Timeline_Today"]</span><span>@L["Timeline_Plus", 30]</span><span>@L["Timeline_Plus", 60]</span><span>@L["Timeline_Plus", 90]</span></div>
+    }
+</section>
 
 <section class="tiles">
     <div class="tile"><b>@assets.Count</b><span>@L["Tile_Assets"]</span></div>
@@ -156,6 +213,9 @@
     List<Asset> assets = [];
     Dictionary<Guid, AssetStatus> board = [];
     int expiring, problems, recentChanges, pendingReview;
+    List<AssetStatus> attention = [];
+    List<TimelineMark> timeline = [];
+    record TimelineMark(string Host, DateTimeOffset NotAfter, int Days, double Left, string Class, bool Above);
     string? error;
     string? checkNotice;
     bool checkIsError;
@@ -177,6 +237,17 @@
         var pausedIds = board.Values.Where(b => b.Paused).Select(b => b.Asset.Id).ToList();
         expiring = await Db.Certificates.CountAsync(c => c.Source == "endpoint" && !(c.Muted && (c.MutedUntil == null || c.MutedUntil > now)) && c.NotAfter <= now.AddDays(30) && !pausedIds.Contains(c.AssetId));
         problems = board.Values.Count(b => b.NeedsAttention);
+        // Worst first, then by name; the full list is one click away through the problems filter.
+        attention = board.Values.Where(b => b.NeedsAttention).OrderByDescending(b => b.Worst).ThenBy(b => b.Asset.Name).Take(5).ToList();
+        var horizon = now.AddDays(ExpiryTimeline.Days);
+        var upcoming = await Db.Certificates
+            .Where(c => c.Source == "endpoint" && !(c.Muted && (c.MutedUntil == null || c.MutedUntil > now)) && c.NotAfter <= horizon && !pausedIds.Contains(c.AssetId))
+            .OrderBy(c => c.NotAfter).Take(12).ToListAsync();
+        timeline = upcoming.Select((c, i) =>
+        {
+            var days = (int)Math.Floor((c.NotAfter - now).TotalDays);
+            return new TimelineMark(c.Host, c.NotAfter, days, ExpiryTimeline.Position(days), ExpiryTimeline.Severity(days), i % 2 == 0);
+        }).ToList();
         pendingReview = await Db.ReviewHosts.CountAsync(h => h.State == ReviewState.Pending);
         recentChanges = await Db.Changes.CountAsync(c => c.DetectedAt >= now.AddDays(-7));
         shown = Filter();
