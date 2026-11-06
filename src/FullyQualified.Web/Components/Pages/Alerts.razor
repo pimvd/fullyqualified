@@ -5,6 +5,7 @@
 @inject AlertSettingsService Settings
 @inject AlertService AlertSvc
 @inject IConfiguration Config
+@inject AppDbContext Db
 
 <PageTitle>@L["Nav_Alerts"]</PageTitle>
 <h1>@L["Alerts_Title"]</h1>
@@ -72,15 +73,66 @@
         </p>
         <p id="al-note" class="muted" role="status" hidden></p>
     </section>
+
+    <section class="card narrow wide" id="alert-rules">
+        <h2>@L["Rules_Title"]</h2>
+        <p>@L["Rules_Intro"]</p>
+        @if (drift) { <p class="muted"><small>@L["Rules_DriftOn"]</small></p> }
+        @if (rules.Count == 0) { <p class="muted">@L["Rules_Empty"]</p> }
+        else
+        {
+            <table>
+                <thead><tr><th>@L["Rules_Value"]</th><th>@L["Rules_Asset"]</th><th></th></tr></thead>
+                <tbody>
+                    @foreach (var r in rules)
+                    {
+                        <tr>
+                            <td>@L["Check_" + r.CheckType]: @RuleKeyLabel(r.Key)</td>
+                            <td>@(r.AssetId is { } id && assetNames.TryGetValue(id, out var n) ? n : L["Rules_AllAssets"].Value)</td>
+                            <td><button type="button" class="secondary" data-rule-remove="@r.Id">@L["Rules_Remove"]</button></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        <h3>@L["Rules_AddTitle"]</h3>
+        <label for="rule-key">@L["Rules_Value"]</label>
+        <select id="rule-key">
+            @foreach (var group in AlertRules.CheckTypes)
+            {
+                <optgroup label="@L["Check_" + group]">
+                    <option value="@group|@AlertRules.AnyKey">@RuleKeyLabel(AlertRules.AnyKey)</option>
+                    @foreach (var c in AlertRules.Catalog.Where(c => c.CheckType == group))
+                    {
+                        <option value="@c.CheckType|@c.Key">@RuleKeyLabel(c.Key)</option>
+                    }
+                </optgroup>
+            }
+        </select>
+        <label for="rule-asset">@L["Rules_Asset"]</label>
+        <select id="rule-asset">
+            <option value="">@L["Rules_AllAssets"]</option>
+            @foreach (var a in assets) { <option value="@a.Id">@a.Name</option> }
+        </select>
+        <p class="actions"><button type="button" data-admin="rule-add">@L["Rules_Add"]</button></p>
+    </section>
 </AdminRoot>
 
 @code {
     bool enabled = true, recovery = true, drift = true, usingServerSettings;
     string? slackHost, webhookHost, emailTo, telegramBot, telegramChat;
     CheckStatus min = CheckStatus.Warning;
+    List<AlertRule> rules = [];
+    List<(Guid Id, string Name)> assets = [];
+    Dictionary<Guid, string> assetNames = [];
+
+    string RuleKeyLabel(string key) => L["RuleKey_" + (key == AlertRules.AnyKey ? "any" : key)].Value;
 
     protected override async Task OnInitializedAsync()
     {
+        rules = await Db.AlertRules.OrderBy(r => r.CheckType).ThenBy(r => r.Key).ToListAsync();
+        assets = (await Db.Assets.OrderBy(a => a.Name).Select(a => new { a.Id, a.Name }).ToListAsync()).Select(a => (a.Id, a.Name)).ToList();
+        assetNames = assets.ToDictionary(a => a.Id, a => a.Name);
         var row = await Settings.CurrentAsync();
         if (row is null)
         {

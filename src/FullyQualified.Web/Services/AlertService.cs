@@ -16,12 +16,13 @@ public record AlertConfig(bool Enabled, string? SlackWebhook, string? WebhookUrl
 public static class AlertPolicy
 {
     /// <summary>Decides whether a result is worth an alarm for this configuration.</summary>
-    public static bool ShouldAlert(AlertConfig c, CheckStatus? before, CheckStatus now, int changes)
+    /// <param name="ruleHits">Changes that one of the organization's alarm rules asked about; they alarm whatever the other settings say.</param>
+    public static bool ShouldAlert(AlertConfig c, CheckStatus? before, CheckStatus now, int changes, int ruleHits = 0)
     {
         if (!c.Enabled || !c.HasChannels) return false;
         var worsened = now >= c.MinStatus && now > (before ?? CheckStatus.Ok);
         var recovered = c.NotifyRecovery && now == CheckStatus.Ok && before >= c.MinStatus;
-        return worsened || recovered || (c.NotifyDrift && changes > 0);
+        return worsened || recovered || (c.NotifyDrift && changes > 0) || ruleHits > 0;
     }
 }
 

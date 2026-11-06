@@ -83,6 +83,7 @@ public class PlanAdminService(AppDbContext db, Session session, ILogger<PlanAdmi
         await db.AcrossTenants<Asset>().Where(x => x.TenantId == id).ExecuteDeleteAsync();
         await db.AcrossTenants<AlertLogEntry>().Where(x => x.TenantId == id).ExecuteDeleteAsync();
         await db.AcrossTenants<AlertSettings>().Where(x => x.TenantId == id).ExecuteDeleteAsync();
+        await db.AcrossTenants<AlertRule>().Where(x => x.TenantId == id).ExecuteDeleteAsync();
         await db.AcrossTenants<Invite>().Where(x => x.TenantId == id).ExecuteDeleteAsync();
         await db.AcrossTenants<ExternalLogin>().Where(x => x.TenantId == id).ExecuteDeleteAsync();
         await db.AcrossTenants<Passkey>().Where(x => x.TenantId == id).ExecuteDeleteAsync();

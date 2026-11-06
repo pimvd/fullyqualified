@@ -1020,4 +1020,32 @@ You do not need this search to monitor a domain: it only helps to find hostnames
   <data name="Register_Intro" xml:space="preserve"><value>Create a new organization and its first administrator account. You sign in with a passkey; there are no passwords.</value></data>
   <data name="Register_Existing" xml:space="preserve"><value>Already have an account?</value></data>
   <data name="Login_Register" xml:space="preserve"><value>Create an organization</value></data>
+  <data name="Rules_Title" xml:space="preserve"><value>Alarms on specific changes</value></data>
+  <data name="Rules_Intro" xml:space="preserve"><value>Get an alarm when one recorded value of a check changes, for example the name servers or the mail servers of a domain. Choose every asset or just one. These alarms go to the channels above, whatever the minimum status says.</value></data>
+  <data name="Rules_DriftOn" xml:space="preserve"><value>"Alarm on every change" is switched on, so every change already raises an alarm. These rules only matter when you switch that off.</value></data>
+  <data name="Rules_Empty" xml:space="preserve"><value>No rules yet.</value></data>
+  <data name="Rules_Value" xml:space="preserve"><value>Alarm when this changes</value></data>
+  <data name="Rules_Asset" xml:space="preserve"><value>On</value></data>
+  <data name="Rules_AllAssets" xml:space="preserve"><value>Every asset</value></data>
+  <data name="Rules_AddTitle" xml:space="preserve"><value>Add a rule</value></data>
+  <data name="Rules_Add" xml:space="preserve"><value>Add rule</value></data>
+  <data name="Rules_Remove" xml:space="preserve"><value>Remove</value></data>
+  <data name="Rules_ConfirmRemove" xml:space="preserve"><value>Remove this alarm rule?</value></data>
+  <data name="Alert_RuleHit" xml:space="preserve"><value>Alarm rule matched: {0}.</value></data>
+  <data name="Err_InvalidRule" xml:space="preserve"><value>Choose a value of a check to alarm on.</value></data>
+  <data name="Err_RuleExists" xml:space="preserve"><value>You already have this rule.</value></data>
+  <data name="Err_TooManyRules" xml:space="preserve"><value>You have reached the maximum number of rules.</value></data>
+  <data name="RuleKey_any" xml:space="preserve"><value>Any change</value></data>
+  <data name="RuleKey_ns" xml:space="preserve"><value>Name servers (NS)</value></data>
+  <data name="RuleKey_mx" xml:space="preserve"><value>Mail servers (MX)</value></data>
+  <data name="RuleKey_a" xml:space="preserve"><value>IPv4 addresses (A)</value></data>
+  <data name="RuleKey_aaaa" xml:space="preserve"><value>IPv6 addresses (AAAA)</value></data>
+  <data name="RuleKey_cname" xml:space="preserve"><value>CNAME target</value></data>
+  <data name="RuleKey_spf" xml:space="preserve"><value>SPF record</value></data>
+  <data name="RuleKey_dmarc" xml:space="preserve"><value>DMARC record</value></data>
+  <data name="RuleKey_dkim" xml:space="preserve"><value>DKIM keys</value></data>
+  <data name="RuleKey_caa" xml:space="preserve"><value>CAA records</value></data>
+  <data name="RuleKey_dnssec" xml:space="preserve"><value>DNSSEC</value></data>
+  <data name="RuleKey_issuer" xml:space="preserve"><value>Certificate issuer</value></data>
+  <data name="RuleKey_protocol" xml:space="preserve"><value>TLS protocol</value></data>
 </root>

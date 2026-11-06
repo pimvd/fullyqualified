@@ -185,7 +185,9 @@ Alarms follow what counts: muting a finding does not raise or clear an alarm, an
 
 ## Alarms and the log
 
-Admins set where alarms go on the **Alarms** page: a Slack webhook, a Telegram bot and chat, a generic webhook (PagerDuty, Opsgenie), email recipients, the lowest status that should alarm, and whether recoveries and drift are reported. Webhook addresses and the Telegram bot token are stored encrypted, a tenant cannot point them at private networks when `Scanning:AllowPrivateAddresses` is false, and *Send a test alarm* shows what happened per channel. Without settings, the server-wide `Alerts:*` configuration is used. The **Log** page shows check results and delivered or failed alarms over 7, 30 or 90 days, with charts per day, per check and for changes, filters, and a table view of the chart data.
+Admins set where alarms go on the **Alarms** page: a Slack webhook, a Telegram bot and chat, a generic webhook (PagerDuty, Opsgenie), email recipients, the lowest status that should alarm, and whether recoveries and drift are reported. Webhook addresses and the Telegram bot token are stored encrypted, a tenant cannot point them at private networks when `Scanning:AllowPrivateAddresses` is false, and *Send a test alarm* shows what happened per channel. Without settings, the server-wide `Alerts:*` configuration is used. Below the settings, **Alarms on specific changes** lets an admin pick the values to watch: for DNS the name servers (NS), mail servers (MX), A and AAAA addresses, CNAME, SPF, DMARC, DKIM, CAA and DNSSEC, for TLS the certificate issuer and protocol, or *any change* of a check. A rule applies to every asset or to one. A change that matches a rule raises an alarm through the channels above even when the minimum status would not, and when "alarm on every change" is on you already get all of them. The certificate-log search never alarms.
+
+The **Log** page shows check results and delivered or failed alarms over 7, 30 or 90 days, with charts per day, per check and for changes, filters, and a table view of the chart data.
 
 ## Website
 

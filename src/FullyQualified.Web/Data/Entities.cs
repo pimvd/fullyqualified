@@ -206,6 +206,21 @@ public class AlertSettings : ITenantOwned
     public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
 }
 
+/// <summary>
+/// An alarm the organization asked for: tell me when this value of this check changes, on every asset or on one.
+/// <see cref="Key"/> is a recorded value such as "ns", "mx" or "a", or "*" for any change of the check.
+/// </summary>
+public class AlertRule : ITenantOwned
+{
+    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid TenantId { get; set; }
+    public required string CheckType { get; set; }
+    public required string Key { get; set; }
+    /// <summary>Null: every asset of the organization.</summary>
+    public Guid? AssetId { get; set; }
+    public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+}
+
 /// <summary>One delivery attempt to one channel; feeds the log screen.</summary>
 public class AlertLogEntry : ITenantOwned
 {

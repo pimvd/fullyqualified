@@ -37,6 +37,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, TenantScope sc
     public DbSet<Tier> Tiers => Set<Tier>();
     public DbSet<AlertSettings> AlertSettings => Set<AlertSettings>();
     public DbSet<AlertLogEntry> AlertLog => Set<AlertLogEntry>();
+    public DbSet<AlertRule> AlertRules => Set<AlertRule>();
 
     public DbSet<Asset> Assets => Set<Asset>();
     public DbSet<CheckResult> Results => Set<CheckResult>();
@@ -167,6 +168,15 @@ public class AppDbContext(DbContextOptions<AppDbContext> options, TenantScope sc
             e.HasQueryFilter(x => AllTenants || x.TenantId == CurrentTenantId);
             e.HasIndex(x => x.TenantId).IsUnique();
             e.Property(x => x.MinStatus).HasConversion<string>().HasMaxLength(10);
+        });
+        b.Entity<AlertRule>(e =>
+        {
+            e.ToTable("alert_rules");
+            e.HasQueryFilter(x => AllTenants || x.TenantId == CurrentTenantId);
+            e.HasIndex(x => new { x.TenantId, x.CheckType, x.Key, x.AssetId }).IsUnique().AreNullsDistinct(false);
+            e.Property(x => x.CheckType).HasMaxLength(20);
+            e.Property(x => x.Key).HasMaxLength(40);
+            e.HasOne<Asset>().WithMany().HasForeignKey(x => x.AssetId).OnDelete(DeleteBehavior.Cascade);
         });
         b.Entity<AlertLogEntry>(e =>
         {

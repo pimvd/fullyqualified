@@ -123,15 +123,22 @@ public class CheckRunner(AppDbContext db, JobQueue queue, IEnumerable<ICheck> ch
         List<(string Key, string Before, string After)> diff, CancellationToken ct)
     {
         var config = await alerts.ConfigFor(asset.TenantId, ct);
-        if (!AlertPolicy.ShouldAlert(config, before, after, diff.Count)) return;
+        // Background work sees every tenant, so the rules are looked up for the tenant that owns the asset.
+        var rules = diff.Count == 0 ? [] : await db.AcrossTenants<AlertRule>().Where(r => r.TenantId == asset.TenantId && r.CheckType == type).ToListAsync(ct);
+        var hits = AlertRules.Hits(rules, asset.Id, type, diff);
+        if (!AlertPolicy.ShouldAlert(config, before, after, diff.Count, hits.Count)) return;
 
         // Say it in words: what was checked, what changed, and what was found.
         var lines = new List<string> { $"{asset.Name}: {l["Check_" + type].Value}: {before?.ToString() ?? "new"} → {after}", ResourceText.Summary(l, summary) };
         if (type == "dns") lines.AddRange(activeCodes.Select(code => "• " + ResourceText.IssueText(l, code)));
         lines.AddRange(diff.Select(d => $"{d.Key}: '{d.Before}' -> '{d.After}'"));
+        if (hits.Count > 0) lines.Add(l["Alert_RuleHit", string.Join(", ", hits.Select(h => h.Key))].Value);
         // Help the person who gets the alarm: a link to what to do about each finding, when we know our own address.
         if (cfg["Auth:Origin"] is { Length: > 0 } origin && after >= CheckStatus.Warning)
             lines.AddRange(activeCodes.Take(3).Select(code => $"How to fix: {Remedies.Link(origin, asset.Id, type, code)}"));
-        await alerts.SendAsync(asset.TenantId, $"FullyQualified: {asset.Name} {after}", string.Join("\n", lines), ct);
+        var subject = hits.Count > 0 && after == (before ?? CheckStatus.Ok)
+            ? $"FullyQualified: {asset.Name} changed: {string.Join(", ", hits.Select(h => h.Key))}"   // a rule fired on a change, not a worse status
+            : $"FullyQualified: {asset.Name} {after}";
+        await alerts.SendAsync(asset.TenantId, subject, string.Join("\n", lines), ct);
     }
 }

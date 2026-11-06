@@ -50,6 +50,17 @@
     }));
   }
 
+  root.querySelector('[data-admin=rule-add]')?.addEventListener('click', () => run(async () => {
+    const [checkType, key] = document.getElementById('rule-key').value.split('|');
+    await send('POST', '/admin/alerts/rules', { checkType, key, assetId: document.getElementById('rule-asset').value || null });
+    location.reload();
+  }));
+  root.querySelectorAll('[data-rule-remove]').forEach(button => button.addEventListener('click', () => run(async () => {
+    if (!confirm(root.getAttribute('data-confirm-rule'))) return;
+    await send('DELETE', '/admin/alerts/rules/' + button.getAttribute('data-rule-remove'));
+    location.reload();
+  })));
+
   root.querySelector('[data-admin=diag]')?.addEventListener('click', event => run(async () => {
     const button = event.currentTarget, out = document.getElementById('diag-results'), summary = document.getElementById('diag-summary');
     button.disabled = true;
