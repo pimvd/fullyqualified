@@ -761,11 +761,23 @@ namespace FullyQualified.Web.Data.Migrations
                     b.Property<DateTimeOffset>("BeatAt")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("Host")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<bool>("IsScheduler")
                         .HasColumnType("boolean");
 
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<DateTimeOffset>("StartedAt")
                         .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("WorkerId");
 

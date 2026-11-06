@@ -23,7 +23,7 @@
         <div class="content">
             <header class="bar">
                 <nav aria-label="@L["Nav_Account"]">
-                    @if (Roles.IsPlatformAdmin(Ctx?.User)) { <a href="/tenants" class="@Active("tenants")">@L["Nav_Tenants"]</a><a href="/limits" class="@Active("limits")">@L["Nav_Limits"]</a><a href="/settings" class="@Active("settings")">@L["Nav_Settings"]</a> }
+                    @if (Roles.IsPlatformAdmin(Ctx?.User)) { <a href="/tenants" class="@Active("tenants")">@L["Nav_Tenants"]</a><a href="/limits" class="@Active("limits")">@L["Nav_Limits"]</a><a href="/settings" class="@Active("settings")">@L["Nav_Settings"]</a><a href="/monitor" class="@Active("monitor")">@L["Nav_Monitor"]</a> }
                     @if (Roles.IsAdmin(Ctx?.User)) { <a href="/alerts" class="@Active("alerts")">@L["Nav_Alerts"]</a><a href="/users" class="@Active("users")">@L["Nav_Users"]</a><a href="/organization" class="@Active("organization")">@L["Nav_Organization"]</a> }
                     <a href="/account" class="@Active("account")">@L["Nav_Account"]</a>
                 </nav>

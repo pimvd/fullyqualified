@@ -1,0 +1,71 @@
+@page "/monitor"
+@using Microsoft.AspNetCore.Authorization
+@attribute [Authorize(Policy = Roles.Platform)]
+@inject IStringLocalizer<SharedResource> L
+@inject ServiceMonitor Services
+
+<PageTitle>@L["Nav_Monitor"]</PageTitle>
+<h1>@L["Monitor_Title"]</h1>
+<p>@L["Monitor_Intro"]</p>
+<div id="monitor" data-refresh="10">
+    <section class="card">
+        <table>
+            <thead><tr><th>@L["Monitor_Col_Service"]</th><th>@L["Monitor_Col_Status"]</th><th>@L["Monitor_Col_Replicas"]</th><th>@L["Monitor_Col_Beat"]</th><th>@L["Monitor_Col_Details"]</th></tr></thead>
+            <tbody>
+                @foreach (var s in snapshot.Services)
+                {
+                    <tr data-service="@s.Key">
+                        <td>@L["Monitor_Svc_" + s.Key]</td>
+                        <td><span class="badge @StatusClass(s.Status)">@L["Diag_Status_" + s.Status]</span></td>
+                        <td>@s.Replicas</td>
+                        <td>@Ago(s.LastBeat)</td>
+                        <td>@s.Detail</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </section>
+
+    <section class="card">
+        <h2>@L["Monitor_Processes"]</h2>
+        @if (snapshot.Processes.Count == 0) { <p class="muted">@L["Monitor_NoProcesses"]</p> }
+        else
+        {
+            <table>
+                <thead><tr><th>@L["Monitor_Col_Process"]</th><th>@L["Monitor_Col_Role"]</th><th>@L["Monitor_Col_Host"]</th><th>@L["Monitor_Col_Version"]</th><th>@L["Monitor_Col_Started"]</th><th>@L["Monitor_Col_Beat"]</th><th>@L["Monitor_Col_Scheduler"]</th><th>@L["Monitor_Col_Status"]</th></tr></thead>
+                <tbody>
+                    @foreach (var p in snapshot.Processes)
+                    {
+                        <tr data-process="@p.Id">
+                            <td><code>@p.Id.ToString("N")[..8]</code></td>
+                            <td>@L["Monitor_Role_" + p.Role]</td>
+                            <td>@(p.Host.Length == 0 ? "—" : p.Host)</td>
+                            <td>@(p.Version.Length == 0 ? "—" : p.Version)</td>
+                            <td>@Ago(p.StartedAt)</td>
+                            <td>@Ago(p.BeatAt)</td>
+                            <td>@(p.IsScheduler && p.Alive ? "✓" : "")</td>
+                            <td><span class="badge @(p.Alive ? "ok" : "error")">@L[p.Alive ? "Monitor_Alive" : "Monitor_Silent"]</span></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </section>
+    <p class="muted"><small>@L["Monitor_Updated", snapshot.At.ToString("HH:mm:ss")] UTC</small></p>
+</div>
+<script src="monitor.js" defer></script>
+
+@code {
+    MonitorSnapshot snapshot = new(DateTimeOffset.UtcNow, [], []);
+
+    protected override async Task OnInitializedAsync() => snapshot = await Services.SnapshotAsync(CancellationToken.None);
+
+    static string StatusClass(Finding f) => f switch { Finding.Ok => "ok", Finding.Warning => "warning", Finding.Fail => "error", _ => "pending" };
+
+    string Ago(DateTimeOffset? at)
+    {
+        if (at is null) return "—";
+        var seconds = (int)Math.Max(0, (snapshot.At - at.Value).TotalSeconds);
+        return seconds < 90 ? L["Monitor_AgoSeconds", seconds].Value : seconds < 5400 ? L["Monitor_AgoMinutes", seconds / 60].Value : L["Monitor_AgoHours", seconds / 3600].Value;
+    }
+}
