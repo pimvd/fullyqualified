@@ -19,19 +19,23 @@
                 <a href="/log" class="@Active("log")">@L["Nav_Log"]</a>
                 <a href="/toolbox" class="@Active("toolbox")">@L["Tool_Title"]</a>
             </nav>
-            <nav class="side-bottom" aria-label="@L["Nav_Account"]">
-                @if (Roles.IsPlatformAdmin(Ctx?.User)) { <a href="/tenants" class="@Active("tenants")">@L["Nav_Tenants"]</a><a href="/limits" class="@Active("limits")">@L["Nav_Limits"]</a> }
-                @if (Roles.IsAdmin(Ctx?.User)) { <a href="/alerts" class="@Active("alerts")">@L["Nav_Alerts"]</a><a href="/users" class="@Active("users")">@L["Nav_Users"]</a><a href="/organization" class="@Active("organization")">@L["Nav_Organization"]</a> }
-                <a href="/account" class="@Active("account")">@L["Nav_Account"]</a>
-                <div class="side-tools">
+        </aside>
+        <div class="content">
+            <header class="bar">
+                <nav aria-label="@L["Nav_Account"]">
+                    @if (Roles.IsPlatformAdmin(Ctx?.User)) { <a href="/tenants" class="@Active("tenants")">@L["Nav_Tenants"]</a><a href="/limits" class="@Active("limits")">@L["Nav_Limits"]</a> }
+                    @if (Roles.IsAdmin(Ctx?.User)) { <a href="/alerts" class="@Active("alerts")">@L["Nav_Alerts"]</a><a href="/users" class="@Active("users")">@L["Nav_Users"]</a><a href="/organization" class="@Active("organization")">@L["Nav_Organization"]</a> }
+                    <a href="/account" class="@Active("account")">@L["Nav_Account"]</a>
+                </nav>
+                <div class="bar-tools">
                     @* Loads the page again with a plain GET, so it also works on a page that came from a form post. *@
                     <button type="button" class="refresh" data-refresh title="@L["Refresh"]" aria-label="@L["Refresh"]" onclick="window.location.assign(window.location.href)">⟳</button>
                     <span class="lang"><a href="/culture?culture=en&redirect=@back">EN</a> · <a href="/culture?culture=nl&redirect=@back">NL</a></span>
                     <form method="post" action="/auth/logout"><button type="submit" class="link">@L["Nav_SignOut"]</button></form>
                 </div>
-            </nav>
-        </aside>
-        <main>@Body</main>
+            </header>
+            <main>@Body</main>
+        </div>
     </div>
     <DigDialog />
 }

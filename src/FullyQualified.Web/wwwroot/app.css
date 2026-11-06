@@ -205,22 +205,26 @@ header.top nav{flex-wrap:wrap;min-width:0}
 :root{--side-bg:#0f1722;--side-fg:#c4cddc;--side-hover:#1b2636;--side-line:#243247;--side-edge:#2a384d;--side-brand:#7aa5ff}
 /* Signed-in shell: side navigation next to the page. Signed-out pages keep the plain top bar. */
 .shell{display:flex;flex-wrap:wrap;min-height:100vh}
-.shell>main{flex:999 1 640px;min-width:0;max-width:none;margin:0;padding:1.5rem 2rem}
-aside.side{flex:0 0 14.5rem;background:var(--side-bg);color:var(--side-fg);padding:1.2rem .9rem;display:flex;flex-direction:column;gap:1.2rem}
+/* The menu is as tall as the window, not as tall as the page; the header bar with the management links stays at the top of the content. */
+.shell>.content{flex:999 1 640px;min-width:0;display:flex;flex-direction:column}
+.content>main{max-width:none;margin:0;padding:1.5rem 2rem;width:100%}
+aside.side{flex:0 0 14.5rem;position:sticky;top:0;align-self:flex-start;height:100vh;height:100dvh;overflow-y:auto;background:var(--side-bg);color:var(--side-fg);padding:1.2rem .9rem;display:flex;flex-direction:column;gap:1.2rem}
 aside.side .brand{color:#fff;padding:0 .7rem}aside.side .brand span{color:var(--side-brand)}
 aside.side nav{display:flex;flex-direction:column;flex:0 0 auto;gap:2px}
 aside.side nav a{color:var(--side-fg);padding:.55rem .7rem;border-radius:8px}
 aside.side nav a:hover{background:var(--side-hover);color:#fff;text-decoration:none}
 aside.side nav a.on{background:var(--side-hover);color:#fff;font-weight:600}
-aside.side .side-bottom{margin-top:auto;border-top:1px solid var(--side-line);padding-top:.8rem}
-aside.side .side-tools{display:flex;align-items:center;gap:.8rem;padding:.5rem .7rem;flex-wrap:wrap;font-size:.85rem}
-aside.side .side-tools a,aside.side .side-tools button.link{color:var(--side-fg);padding:0;display:inline;background:none}
-aside.side .side-tools a:hover{color:#fff}
-aside.side button.refresh{color:var(--side-fg);border-color:var(--side-edge)}
 aside.side button.side-dig{display:flex;align-items:center;gap:.5rem;background:var(--side-hover);color:var(--side-fg);border:1px solid var(--side-edge);border-radius:8px;padding:.6rem .7rem;font-size:.85rem;min-height:44px}
 aside.side button.side-dig span{flex:1;text-align:left}
 aside.side button.side-dig kbd{color:var(--side-fg);border-color:var(--side-edge)}
-@media(max-width:800px){aside.side{flex-basis:100%}aside.side nav{flex-direction:row;flex-wrap:wrap}aside.side .side-bottom{margin-top:0}}
+header.bar{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;padding:.55rem 2rem;background:var(--card);border-bottom:1px solid var(--line)}
+header.bar nav{flex:1;display:flex;flex-wrap:wrap;gap:.2rem}
+header.bar nav a{color:var(--muted);padding:.35rem .75rem;border-radius:8px}
+header.bar nav a:hover{color:var(--fg);background:color-mix(in srgb,var(--accent) 10%,transparent);text-decoration:none}
+header.bar nav a.on{color:var(--accent);font-weight:600;background:color-mix(in srgb,var(--accent) 12%,transparent)}
+header.bar .bar-tools{display:flex;align-items:center;gap:.9rem;font-size:.85rem}
+header.bar .bar-tools form{margin:0}
+@media(max-width:800px){aside.side{flex-basis:100%;position:static;height:auto;overflow:visible}aside.side nav{flex-direction:row;flex-wrap:wrap}header.bar{padding:.5rem 1rem}.content>main{padding:1.2rem 1rem}}
 
 /* Dashboard: what needs attention, then what expires next. */
 p.lead{margin:-.6rem 0 1.2rem}
