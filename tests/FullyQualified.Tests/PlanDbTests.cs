@@ -38,7 +38,7 @@ public class PlanDbTests : IClassFixture<PgFactory>
 
     record Org(Guid Id, string Name, Guid Admin, Guid Viewer);
 
-    async Task<Org> NewOrg(string tier = Tiers.Free, int domains = 0, int endpoints = 0)
+    async Task<Org> NewOrg(string tier = Tiers.Free, int assets = 0)
     {
         await Owner();
         using var scope = Scope();
@@ -49,8 +49,7 @@ public class PlanDbTests : IClassFixture<PgFactory>
         var admin = new User { TenantId = t.Id, Name = "Admin of " + name, Role = Role.Admin, Email = $"admin@{t.Id:N}.test" };
         var viewer = new User { TenantId = t.Id, Name = "Viewer of " + name, Role = Role.Viewer };
         db.Users.AddRange(admin, viewer);
-        for (var i = 0; i < domains; i++) db.Assets.Add(new Asset { TenantId = t.Id, Name = $"d{i}.{t.Id:N}.test.com", Kind = AssetKind.Domain });
-        for (var i = 0; i < endpoints; i++) db.Assets.Add(new Asset { TenantId = t.Id, Name = $"e{i}.{t.Id:N}.test.com:443", Kind = AssetKind.Endpoint });
+        for (var i = 0; i < assets; i++) db.Assets.Add(new Asset { TenantId = t.Id, Name = i % 2 == 0 ? $"d{i}.{t.Id:N}.test.com" : $"e{i}.{t.Id:N}.test.com:443" });
         await db.SaveChangesAsync();
         return new Org(t.Id, name, admin.Id, viewer.Id);
     }
@@ -77,13 +76,13 @@ public class PlanDbTests : IClassFixture<PgFactory>
     {
         var org = await NewOrg();
         var plan = await PlanOf(org.Id);
-        Assert.Equal(("free", new PlanLimits(3, 10, 2, false, 1, 1440, 60)), (plan.Tier.Key, plan.Limits));
+        Assert.Equal(("free", new PlanLimits(5, 2, false, 1, 1440, 60)), (plan.Tier.Key, plan.Limits));
 
         using var scope = Scope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         var mgmt = await db.Tenants.SingleAsync(t => t.IsManagement);
         var boss = (await scope.ServiceProvider.GetRequiredService<PlanService>().ForAsync(mgmt.Id))!;
-        Assert.Equal(new PlanLimits(null, null, null, true, null, null), boss.Limits);
+        Assert.Equal(new PlanLimits(null, null, true, null, null), boss.Limits);
         Assert.Equal(4, await db.Tiers.CountAsync());
     }
 
@@ -93,19 +92,19 @@ public class PlanDbTests : IClassFixture<PgFactory>
         var owner = await Owner();
         var org = await NewOrg(Tiers.Starter);
         var client = factory.As(owner);
-        var saved = await client.PutAsJsonAsync("/platform/tiers/starter", new { maxDomains = "40", maxEndpoints = "", maxUsers = "12", reportsEnabled = true, retentionMonths = "18", scanIntervalMinutes = "360", manualCooldownMinutes = "15" });
+        var saved = await client.PutAsJsonAsync("/platform/tiers/starter", new { maxAssets = "40", maxUsers = "12", reportsEnabled = true, retentionMonths = "18", scanIntervalMinutes = "360", manualCooldownMinutes = "15" });
         Assert.Equal(HttpStatusCode.NoContent, saved.StatusCode);
         try
         {
-            Assert.Equal(new PlanLimits(40, null, 12, true, 18, 360, 15), (await PlanOf(org.Id)).Limits);
+            Assert.Equal(new PlanLimits(40, 12, true, 18, 360, 15), (await PlanOf(org.Id)).Limits);
             // The page shows what was saved.
             Assert.Contains("value=\"40\"", await (await client.GetAsync("/limits")).Content.ReadAsStringAsync());
         }
         finally
         {
-            await client.PutAsJsonAsync("/platform/tiers/starter", new { maxDomains = "25", maxEndpoints = "100", maxUsers = "10", reportsEnabled = true, retentionMonths = "12", scanIntervalMinutes = "360", manualCooldownMinutes = "15" });
+            await client.PutAsJsonAsync("/platform/tiers/starter", new { maxAssets = "25", maxUsers = "10", reportsEnabled = true, retentionMonths = "12", scanIntervalMinutes = "360", manualCooldownMinutes = "15" });
         }
-        Assert.Equal(new PlanLimits(25, 100, 10, true, 12, 360, 15), (await PlanOf(org.Id)).Limits);
+        Assert.Equal(new PlanLimits(25, 10, true, 12, 360, 15), (await PlanOf(org.Id)).Limits);
     }
 
     [DbFact]
@@ -113,16 +112,16 @@ public class PlanDbTests : IClassFixture<PgFactory>
     {
         var owner = await Owner();
         var org = await NewOrg();
-        var body = new { maxDomains = "5", maxEndpoints = "5", maxUsers = "5", reportsEnabled = false, retentionMonths = "1" };
+        var body = new { maxAssets = "9", maxUsers = "5", reportsEnabled = false, retentionMonths = "1" };
         Assert.Equal(HttpStatusCode.Forbidden, (await factory.As(org.Admin).PutAsJsonAsync("/platform/tiers/free", body)).StatusCode);
         Assert.Equal(HttpStatusCode.Forbidden, (await factory.As(org.Admin).GetAsync("/limits")).StatusCode);
         var mia = factory.As(owner);
-        Assert.Equal(HttpStatusCode.BadRequest, (await mia.PutAsJsonAsync("/platform/tiers/free", body with { maxDomains = "many" })).StatusCode);
+        Assert.Equal(HttpStatusCode.BadRequest, (await mia.PutAsJsonAsync("/platform/tiers/free", body with { maxAssets = "many" })).StatusCode);
         Assert.Equal(HttpStatusCode.BadRequest, (await mia.PutAsJsonAsync("/platform/tiers/free", body with { maxUsers = "-4" })).StatusCode);
         Assert.Equal(HttpStatusCode.BadRequest, (await mia.PutAsJsonAsync("/platform/tiers/free", body with { retentionMonths = "0" })).StatusCode);
         Assert.Equal(HttpStatusCode.BadRequest, (await mia.PutAsJsonAsync("/platform/tiers/free", body with { retentionMonths = "999" })).StatusCode);
         Assert.Equal(HttpStatusCode.NotFound, (await mia.PutAsJsonAsync("/platform/tiers/nope", body)).StatusCode);
-        Assert.Equal(3, (await PlanOf(org.Id)).Limits.MaxDomains); // nothing changed
+        Assert.Equal(5, (await PlanOf(org.Id)).Limits.MaxAssets); // nothing changed
     }
 
     [DbFact]
@@ -131,22 +130,22 @@ public class PlanDbTests : IClassFixture<PgFactory>
         var owner = await Owner();
         var org = await NewOrg();
         var mia = factory.As(owner);
-        var put = await mia.PutAsJsonAsync($"/platform/tenants/{org.Id}/plan", new { tier = "custom", maxDomains = "7", maxEndpoints = "unlimited", maxUsers = "", reports = "no", retentionMonths = "6" });
+        var put = await mia.PutAsJsonAsync($"/platform/tenants/{org.Id}/plan", new { tier = "custom", maxAssets = "7", maxUsers = "", reports = "no", retentionMonths = "6" });
         Assert.Equal(HttpStatusCode.NoContent, put.StatusCode);
         var plan = await PlanOf(org.Id);
-        Assert.Equal(("custom", new PlanLimits(7, null, null, false, 6, null)), (plan.Tier.Key, plan.Limits));
+        Assert.Equal(("custom", new PlanLimits(7, null, false, 6, null)), (plan.Tier.Key, plan.Limits));
         Assert.True(plan.Overridden);
 
         var page = await (await mia.GetAsync($"/tenants/{org.Id}")).Content.ReadAsStringAsync();
         Assert.Contains("value=\"7\"", page);
         Assert.Contains("value=\"unlimited\"", page);
 
-        await mia.PutAsJsonAsync($"/platform/tenants/{org.Id}/plan", new { tier = "free", maxDomains = "", maxEndpoints = "", maxUsers = "", reports = "", retentionMonths = "" });
+        await mia.PutAsJsonAsync($"/platform/tenants/{org.Id}/plan", new { tier = "free", maxAssets = "", maxUsers = "", reports = "", retentionMonths = "" });
         var back = await PlanOf(org.Id);
-        Assert.Equal(("free", new PlanLimits(3, 10, 2, false, 1, 1440, 60)), (back.Tier.Key, back.Limits));
+        Assert.Equal(("free", new PlanLimits(5, 2, false, 1, 1440, 60)), (back.Tier.Key, back.Limits));
         Assert.False(back.Overridden);
 
-        foreach (var bad in new object[] { new { tier = "gold" }, new { tier = "free", maxDomains = "x" }, new { tier = "free", reports = "maybe" }, new { tier = "free", retentionMonths = "0" } })
+        foreach (var bad in new object[] { new { tier = "gold" }, new { tier = "free", maxAssets = "x" }, new { tier = "free", reports = "maybe" }, new { tier = "free", retentionMonths = "0" } })
             Assert.Equal(HttpStatusCode.BadRequest, (await mia.PutAsJsonAsync($"/platform/tenants/{org.Id}/plan", bad)).StatusCode);
         Assert.Equal(HttpStatusCode.Forbidden, (await factory.As(org.Admin).PutAsJsonAsync($"/platform/tenants/{org.Id}/plan", new { tier = "custom" })).StatusCode);
     }
@@ -154,35 +153,53 @@ public class PlanDbTests : IClassFixture<PgFactory>
     [DbFact]
     public async Task A_tenant_admin_sees_the_plan_and_usage_but_cannot_change_it()
     {
-        var org = await NewOrg(Tiers.Free, domains: 2, endpoints: 1);
-        await Edit(org.Id, t => t.OverrideMaxDomains = 9);
+        var org = await NewOrg(Tiers.Free, assets: 3);
+        await Edit(org.Id, t => t.OverrideMaxAssets = 9);
         var page = await (await factory.As(org.Admin).GetAsync("/organization")).Content.ReadAsStringAsync();
         Assert.Contains("Plan: Free", page);
         Assert.Contains("agreed for this organization", page);
-        Assert.Matches(@"Domains</td><td>2</td><td>9", page);
+        Assert.Matches(@"Assets</td><td>3</td><td>9", page);
         Assert.Equal(HttpStatusCode.Forbidden, (await factory.As(org.Viewer).GetAsync("/organization")).StatusCode);
     }
 
     // ---- enforcement ----
 
     [DbFact]
-    public async Task Assets_stop_at_the_limit_per_kind()
+    public async Task Assets_stop_at_the_one_limit_whatever_the_name()
     {
-        var org = await NewOrg(Tiers.Free, domains: 3, endpoints: 4);
+        var org = await NewOrg(Tiers.Free, assets: 5);                            // hosts and host:port names count alike
+        Assert.Equal("Limit_Assets", (await PlanOf(org.Id)).Blocks());
+        await Edit(org.Id, t => t.OverrideMaxAssets = 6);
+        Assert.Null((await PlanOf(org.Id)).Blocks());
+        await Edit(org.Id, t => t.OverrideMaxAssets = 5);
+        Assert.Equal("Limit_Assets", (await PlanOf(org.Id)).Blocks());
+        await Edit(org.Id, t => t.OverrideMaxAssets = -1);
+        Assert.Null((await PlanOf(org.Id)).Blocks());
+    }
+
+    [DbFact]
+    public async Task A_tenant_over_its_limit_keeps_every_asset_but_cannot_add()
+    {
+        var org = await NewOrg(Tiers.Free, assets: 7);                            // Free allows 5
         var plan = await PlanOf(org.Id);
-        Assert.Equal("Limit_Domains", plan.Blocks(AssetKind.Domain));
-        Assert.Null(plan.Blocks(AssetKind.Endpoint));
-        await Edit(org.Id, t => t.OverrideMaxEndpoints = 4);
-        Assert.Equal("Limit_Endpoints", (await PlanOf(org.Id)).Blocks(AssetKind.Endpoint));
-        await Edit(org.Id, t => t.OverrideMaxDomains = -1);
-        Assert.Null((await PlanOf(org.Id)).Blocks(AssetKind.Domain));
+        Assert.Equal(7, plan.Usage.Assets);
+        Assert.Equal("Limit_Assets", plan.Blocks());
+
+        var client = factory.As(org.Admin);
+        var home = await (await client.GetAsync("/")).Content.ReadAsStringAsync();
+        Assert.Contains("7 / 5", home);                                            // shown as used / limit
+
+        using var scope = Scope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        Assert.Equal(7, await db.Assets.CountAsync(a => a.TenantId == org.Id));    // nothing was deleted
+        Assert.Equal(0, await db.Assets.CountAsync(a => a.TenantId == org.Id && a.PausedAt != null));
     }
 
     [DbFact]
     public async Task Discovery_files_hosts_for_review_and_adding_stops_at_the_endpoint_limit()
     {
-        var org = await NewOrg(Tiers.Free, domains: 1, endpoints: 2);
-        await Edit(org.Id, t => t.OverrideMaxEndpoints = 5);                       // room for three more
+        var org = await NewOrg(Tiers.Free, assets: 3);
+        await Edit(org.Id, t => t.OverrideMaxAssets = 6);                       // room for three more
         Guid originId;
         using (var scope = Scope())
         {
@@ -225,7 +242,7 @@ public class PlanDbTests : IClassFixture<PgFactory>
         using var check = Scope();
         var verify = check.ServiceProvider.GetRequiredService<AppDbContext>();
         var plan = await PlanOf(org.Id);
-        Assert.Equal(5, plan.Usage.Endpoints);
+        Assert.Equal(6, plan.Usage.Assets);
         Assert.Equal(3, await verify.Assets.CountAsync(a => a.TenantId == org.Id && a.Discovered));
         Assert.All(await verify.Assets.Where(a => a.TenantId == org.Id && a.Discovered).ToListAsync(), a =>
         {
@@ -289,8 +306,8 @@ public class PlanDbTests : IClassFixture<PgFactory>
     [DbFact]
     public async Task Retention_deletes_old_history_but_keeps_the_newest_result_and_the_newest_good_one()
     {
-        var org = await NewOrg(Tiers.Free, domains: 1);                              // free keeps one month
-        var forever = await NewOrg(Tiers.Custom, domains: 1);                        // custom keeps everything
+        var org = await NewOrg(Tiers.Free, assets: 1);                              // free keeps one month
+        var forever = await NewOrg(Tiers.Custom, assets: 1);                        // custom keeps everything
         var now = new DateTimeOffset(2026, 10, 20, 12, 0, 0, TimeSpan.Zero);
         using var scope = Scope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -329,7 +346,7 @@ public class PlanDbTests : IClassFixture<PgFactory>
     [DbFact]
     public async Task A_longer_override_keeps_more_history_and_unlimited_keeps_it_all()
     {
-        var org = await NewOrg(Tiers.Free, domains: 1);
+        var org = await NewOrg(Tiers.Free, assets: 1);
         var now = new DateTimeOffset(2026, 10, 20, 12, 0, 0, TimeSpan.Zero);
         using var scope = Scope();
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();

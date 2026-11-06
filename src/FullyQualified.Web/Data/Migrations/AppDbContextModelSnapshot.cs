@@ -135,9 +135,6 @@ namespace FullyQualified.Web.Data.Migrations
                         .HasMaxLength(400)
                         .HasColumnType("character varying(400)");
 
-                    b.Property<int>("Kind")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(260)
@@ -583,10 +580,7 @@ namespace FullyQualified.Web.Data.Migrations
                     b.Property<int?>("OverrideManualCooldownMinutes")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("OverrideMaxDomains")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("OverrideMaxEndpoints")
+                    b.Property<int?>("OverrideMaxAssets")
                         .HasColumnType("integer");
 
                     b.Property<int?>("OverrideMaxUsers")
@@ -629,10 +623,7 @@ namespace FullyQualified.Web.Data.Migrations
                     b.Property<int?>("ManualCooldownMinutes")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("MaxDomains")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("MaxEndpoints")
+                    b.Property<int?>("MaxAssets")
                         .HasColumnType("integer");
 
                     b.Property<int?>("MaxUsers")

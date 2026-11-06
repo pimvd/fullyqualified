@@ -266,8 +266,7 @@ De link werkt één keer en verloopt na {2} uur. Een nieuwe passkey instellen ve
   <data name="Plan_Resource" xml:space="preserve"><value>Onderdeel</value></data>
   <data name="Plan_Used" xml:space="preserve"><value>In gebruik</value></data>
   <data name="Plan_Limit" xml:space="preserve"><value>Limiet</value></data>
-  <data name="Plan_Domains" xml:space="preserve"><value>Domeinen</value></data>
-  <data name="Plan_Endpoints" xml:space="preserve"><value>Endpoints</value></data>
+  <data name="Plan_Assets" xml:space="preserve"><value>Assets</value></data>
   <data name="Plan_Users" xml:space="preserve"><value>Gebruikers</value></data>
   <data name="Plan_Pending" xml:space="preserve"><value>uitgenodigd</value></data>
   <data name="Plan_Reports" xml:space="preserve"><value>NIS2-rapport</value></data>
@@ -288,9 +287,8 @@ De link werkt één keer en verloopt na {2} uur. Een nieuwe passkey instellen ve
   <data name="Limits_Intro" xml:space="preserve"><value>De limieten van elk pakket. Ze gelden voor elke tenant op dat pakket, tenzij de tenant een eigen afwijking heeft. Wijzigingen gelden direct; historie wordt binnen enkele uren op de nieuwe periode gebracht.</value></data>
   <data name="Limits_Tenants" xml:space="preserve"><value>Tenants</value></data>
   <data name="Limits_CustomHelp" xml:space="preserve"><value>Voor afspraken per klant; stel de waarden per tenant in.</value></data>
-  <data name="Limits_Blank" xml:space="preserve"><value>Laat een getal leeg voor onbeperkt. Historie leeg bewaart alles. Domeinen tellen assets van het type domein, endpoints tellen hosts met een poort of gevonden in certificaatlogs.</value></data>
-  <data name="Limit_Domains" xml:space="preserve"><value>De domeinlimiet van dit pakket is bereikt. Verwijder een domein of vraag om een groter pakket.</value></data>
-  <data name="Limit_Endpoints" xml:space="preserve"><value>De endpointlimiet van dit pakket is bereikt. Verwijder een endpoint of vraag om een groter pakket.</value></data>
+  <data name="Limits_Blank" xml:space="preserve"><value>Laat een getal leeg voor onbeperkt. Historie leeg bewaart alles. Assets tellen elke bewaakte naam, met of zonder poort.</value></data>
+  <data name="Limit_Assets" xml:space="preserve"><value>De assetlimiet van dit pakket is bereikt. Verwijder een asset of vraag om een groter pakket.</value></data>
   <data name="Err_UserLimit" xml:space="preserve"><value>De gebruikerslimiet van dit pakket is bereikt, openstaande uitnodigingen meegeteld.</value></data>
   <data name="Err_SsoLimit" xml:space="preserve"><value>Je organisatie heeft haar gebruikerslimiet bereikt. Vraag het een beheerder.</value></data>
   <data name="Err_InvalidTier" xml:space="preserve"><value>Kies een pakket.</value></data>

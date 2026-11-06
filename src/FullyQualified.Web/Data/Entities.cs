@@ -14,8 +14,7 @@ public class Tenant
     /// <summary>
     /// Per-tenant overrides of the tier. Null follows the tier; for the numbers, -1 means unlimited (or, for retention, keep forever).
     /// </summary>
-    public int? OverrideMaxDomains { get; set; }
-    public int? OverrideMaxEndpoints { get; set; }
+    public int? OverrideMaxAssets { get; set; }
     public int? OverrideMaxUsers { get; set; }
     public bool? OverrideReports { get; set; }
     public int? OverrideRetentionMonths { get; set; }
@@ -34,8 +33,6 @@ public interface ITenantOwned
     Guid TenantId { get; set; }
 }
 
-public enum AssetKind { Domain, Endpoint }
-
 /// <summary>Ordered by severity so the numeric value can be used to find the worst status.</summary>
 public enum CheckStatus { Ok = 0, Warning = 1, Error = 2, Critical = 3 }
 
@@ -43,7 +40,6 @@ public class Asset : ITenantOwned
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public Guid TenantId { get; set; }
-    public AssetKind Kind { get; set; }
     public required string Name { get; set; }
     public bool Discovered { get; set; }
     /// <summary>Which service listed the name: "crt.sh" or "Cert Spotter". Empty for assets discovered before this was recorded.</summary>
@@ -231,8 +227,8 @@ public class Tier
     public required string Key { get; set; }
     public required string Name { get; set; }
     public int SortOrder { get; set; }
-    public int? MaxDomains { get; set; }
-    public int? MaxEndpoints { get; set; }
+    /// <summary>How many assets (monitored names, with or without a port) the tenant may have. Null means unlimited (ADR 0011).</summary>
+    public int? MaxAssets { get; set; }
     public int? MaxUsers { get; set; }
     public bool ReportsEnabled { get; set; }
     /// <summary>How many months of results, changes and alarm history are kept. Null keeps everything.</summary>
@@ -249,13 +245,13 @@ public static class Tiers
     public const string Free = "free", Starter = "starter", Business = "business", Custom = "custom";
     public static readonly string[] Keys = [Free, Starter, Business, Custom];
 
-    /// <summary>The values a fresh install starts with. Domains and history follow docs/PLAN.md; the rest are starting points to adjust.</summary>
+    /// <summary>The values a fresh install starts with. Assets and history follow docs/PLAN.md; the rest are starting points to adjust.</summary>
     public static readonly Tier[] Defaults =
     [
-        new() { Key = Free, Name = "Free", SortOrder = 1, MaxDomains = 3, MaxEndpoints = 10, MaxUsers = 2, ReportsEnabled = false, RetentionMonths = 1, ScanIntervalMinutes = 1440, ManualCooldownMinutes = 60 },
-        new() { Key = Starter, Name = "Starter", SortOrder = 2, MaxDomains = 25, MaxEndpoints = 100, MaxUsers = 10, ReportsEnabled = true, RetentionMonths = 12, ScanIntervalMinutes = 360, ManualCooldownMinutes = 15 },
-        new() { Key = Business, Name = "Business", SortOrder = 3, MaxDomains = 100, MaxEndpoints = 500, MaxUsers = 50, ReportsEnabled = true, RetentionMonths = 24, ScanIntervalMinutes = 60, ManualCooldownMinutes = 5 },
-        new() { Key = Custom, Name = "Custom", SortOrder = 4, MaxDomains = null, MaxEndpoints = null, MaxUsers = null, ReportsEnabled = true, RetentionMonths = null, ScanIntervalMinutes = null, ManualCooldownMinutes = null },
+        new() { Key = Free, Name = "Free", SortOrder = 1, MaxAssets = 5, MaxUsers = 2, ReportsEnabled = false, RetentionMonths = 1, ScanIntervalMinutes = 1440, ManualCooldownMinutes = 60 },
+        new() { Key = Starter, Name = "Starter", SortOrder = 2, MaxAssets = 25, MaxUsers = 10, ReportsEnabled = true, RetentionMonths = 12, ScanIntervalMinutes = 360, ManualCooldownMinutes = 15 },
+        new() { Key = Business, Name = "Business", SortOrder = 3, MaxAssets = 100, MaxUsers = 50, ReportsEnabled = true, RetentionMonths = 24, ScanIntervalMinutes = 60, ManualCooldownMinutes = 5 },
+        new() { Key = Custom, Name = "Custom", SortOrder = 4, MaxAssets = null, MaxUsers = null, ReportsEnabled = true, RetentionMonths = null, ScanIntervalMinutes = null, ManualCooldownMinutes = null },
     ];
 }
 

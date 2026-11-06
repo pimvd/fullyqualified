@@ -41,7 +41,7 @@
             {
                 <tr>
                     <td><a href="/tenants/@s.Tenant.Id">@s.Tenant.Name</a> @if (s.Tenant.IsManagement) { <span class="badge pending">@L["Tenants_Management"]</span> }</td>
-                    <td>@tiers.FirstOrDefault(t => t.Key == s.Tenant.TierKey)?.Name@(s.Tenant.OverrideMaxDomains is not null || s.Tenant.OverrideMaxEndpoints is not null || s.Tenant.OverrideMaxUsers is not null || s.Tenant.OverrideReports is not null || s.Tenant.OverrideRetentionMonths is not null ? " *" : "")</td>
+                    <td>@tiers.FirstOrDefault(t => t.Key == s.Tenant.TierKey)?.Name@(s.Tenant.OverrideMaxAssets is not null || s.Tenant.OverrideMaxUsers is not null || s.Tenant.OverrideReports is not null || s.Tenant.OverrideRetentionMonths is not null ? " *" : "")</td>
                     <td>@s.Users</td>
                     <td>@s.Assets <span class="muted">(@s.Domains / @s.Endpoints)</span></td>
                     <td>@s.Certificates</td>

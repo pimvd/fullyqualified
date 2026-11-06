@@ -192,7 +192,7 @@ public class FixPageTests : IClassFixture<PgFactory>
             using var scope = Scope();
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
             var tenant = (await db.Assets.IgnoreQueryFilters().SingleAsync(a => a.Id == mine.AssetId)).TenantId;
-            var asset = new Asset { TenantId = tenant, Name = $"legacy.{tenant:N}.test", Kind = AssetKind.Domain };
+            var asset = new Asset { TenantId = tenant, Name = $"legacy.{tenant:N}.test" };
             db.Assets.Add(asset);
             var stored = new CheckResult { TenantId = tenant, AssetId = asset.Id, CheckType = "dns", Status = CheckStatus.Critical, Summary = "Sum_DnsIssues|1", ValuesJson = "{\"_issues\":\"NoNs\"}" };
             db.Results.Add(stored);
