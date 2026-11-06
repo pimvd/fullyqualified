@@ -6,7 +6,7 @@ namespace FullyQualified.Web;
 /// The liveness signal of a process that runs a <see cref="JobRunner"/> (ADR 0010). It beats only while every loop has finished a tick
 /// recently, so a stuck loop stops the beat. A beat upserts a <c>worker_heartbeats</c> row and touches a file the compose healthcheck reads.
 /// </summary>
-public sealed class WorkerHeartbeat(TimeProvider clock, string filePath, TimeSpan maxTickAge)
+public sealed class WorkerHeartbeat(TimeProvider clock, string filePath, TimeSpan maxTickAge, string role = "worker")
 {
     public const string DefaultFile = "/tmp/fq-worker-alive";
     public static readonly TimeSpan Interval = TimeSpan.FromSeconds(15);
@@ -19,6 +19,10 @@ public sealed class WorkerHeartbeat(TimeProvider clock, string filePath, TimeSpa
     public static readonly TimeSpan RowLifetime = TimeSpan.FromDays(1);
 
     public TimeSpan MaxTickAge { get; } = maxTickAge;
+
+    /// <summary>What this process is, as it is recorded: "web", "worker" or "all".</summary>
+    public static string RoleName(HostingRole role) => role.ToString().ToLowerInvariant();
+    static readonly string Version = typeof(WorkerHeartbeat).Assembly.GetName().Version?.ToString(3) ?? "";
 
     public Guid WorkerId { get; } = Guid.NewGuid();
     readonly DateTimeOffset startedAt = clock.GetUtcNow();
@@ -53,7 +57,8 @@ public sealed class WorkerHeartbeat(TimeProvider clock, string filePath, TimeSpa
         var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
         var now = clock.GetUtcNow();
         await db.Database.ExecuteSqlAsync($"""
-            insert into worker_heartbeats ("WorkerId", "StartedAt", "BeatAt", "IsScheduler") values ({WorkerId}, {startedAt}, {now}, {isScheduler})
+            insert into worker_heartbeats ("WorkerId", "StartedAt", "BeatAt", "IsScheduler", "Role", "Host", "Version")
+            values ({WorkerId}, {startedAt}, {now}, {isScheduler}, {role}, {Environment.MachineName}, {Version})
             on conflict ("WorkerId") do update set "BeatAt" = excluded."BeatAt", "IsScheduler" = excluded."IsScheduler"
             """, ct);
         return true;

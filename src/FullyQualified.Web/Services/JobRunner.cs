@@ -2,7 +2,7 @@ namespace FullyQualified.Web;
 
 public class JobRunner(IServiceProvider sp, IConfiguration cfg, ILogger<JobRunner> log, WorkerHeartbeat? heartbeat = null) : BackgroundService
 {
-    readonly WorkerHeartbeat beat = heartbeat ?? new WorkerHeartbeat(TimeProvider.System, WorkerHeartbeat.DefaultFile, WorkerHeartbeat.WindowFor(cfg));
+    readonly WorkerHeartbeat beat = heartbeat ?? new WorkerHeartbeat(TimeProvider.System, WorkerHeartbeat.DefaultFile, WorkerHeartbeat.WindowFor(cfg), WorkerHeartbeat.RoleName(Hosting.RoleOf(cfg)));
     volatile bool isScheduler;
     /// <summary>True while this process holds the scheduler lock.</summary>
     public bool IsScheduler => isScheduler;

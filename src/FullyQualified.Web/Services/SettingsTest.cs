@@ -126,7 +126,7 @@ public class SettingsTestService(AppDbContext db, PlanService plans, AlertServic
     async Task<List<WorkerHeartbeatRow>> LiveWorkers(CancellationToken ct)
     {
         var since = DateTimeOffset.UtcNow - WorkerHeartbeat.WindowFor(cfg);
-        return await db.WorkerHeartbeats.Where(w => w.BeatAt >= since).OrderBy(w => w.StartedAt).ToListAsync(ct);
+        return await db.WorkerHeartbeats.Where(w => w.BeatAt >= since && w.Role != "web").OrderBy(w => w.StartedAt).ToListAsync(ct);
     }
 
     async Task<List<TestItem>> AlarmItems(Guid tenantId, bool sendAlarm, CancellationToken ct)

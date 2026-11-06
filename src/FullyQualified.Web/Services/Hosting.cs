@@ -79,6 +79,7 @@ public static class Hosting
             services.AddEmailTests();
         }
         if (role != HostingRole.Web) services.AddHostedService<JobRunner>();
+        else services.AddHostedService<WebHeartbeat>();
         return services;
     }
 }
