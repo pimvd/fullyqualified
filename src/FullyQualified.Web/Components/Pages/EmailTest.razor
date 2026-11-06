@@ -4,6 +4,7 @@
 @inject IStringLocalizer<SharedResource> L
 @inject AlertService Alerts
 @inject IConfiguration Config
+@inject AppDbContext Db
 
 <PageTitle>@L["EmailTest_Title"]</PageTitle>
 <h1>@L["EmailTest_Title"]</h1>
@@ -16,6 +17,10 @@
     {
         <p class="error">@L["Alerts_NoSmtp"]</p>
     }
+    @if (domains.Count == 0)
+    {
+        <p class="error">@L["EmailTest_NoDomains"]</p>
+    }
     <form id="email-test-form" method="post" action="/admin/email-test" aria-describedby="email-test-help"
           data-success="@L["EmailTest_Success"]" data-failed="@L["Err_Failed"]"
           data-invalid_from="@L["EmailTest_InvalidFrom"]" data-invalid_to="@L["EmailTest_InvalidTo"]" data-from_not_owned="@L["EmailTest_FromNotOwned"]"
@@ -23,15 +28,35 @@
           data-no_smtp="@L["Alerts_NoSmtp"]" data-smtp_failed="@L["EmailTest_Failed"]" data-rate="@L["EmailTest_Rate"]" data-antiforgery="@L["Tool_Error_antiforgery"]">
         <AntiforgeryToken />
         <label for="email-test-from">@L["EmailTest_From"]</label>
-        <input id="email-test-from" name="from" type="email" maxlength="254" value="@Config["Alerts:Email:From"]" required />
+        <div class="from-row">
+            <input id="email-test-from" name="fromLocal" type="text" maxlength="64" pattern="[A-Za-z0-9._%+\-]+" autocomplete="off" value="@defaultLocal" required />
+            <span aria-hidden="true">@@</span>
+            <select id="email-test-domain" name="fromDomain" aria-label="@L["EmailTest_Domain"]" required>
+                @foreach (var d in domains) { <option value="@d" selected="@string.Equals(d, defaultDomain, StringComparison.OrdinalIgnoreCase)">@d</option> }
+            </select>
+        </div>
         <label for="email-test-to">@L["EmailTest_To"]</label>
         <input id="email-test-to" name="to" type="email" maxlength="254" required />
         <label for="email-test-subject">@L["EmailTest_Subject"]</label>
         <input id="email-test-subject" name="subject" maxlength="200" value="@L["EmailTest_DefaultSubject"]" required />
         <label for="email-test-message">@L["EmailTest_Message"]</label>
         <textarea id="email-test-message" name="message" rows="6" maxlength="10000" required>@L["EmailTest_DefaultMessage"]</textarea>
-        <button type="submit" disabled="@(!Alerts.CanMail)">@L["EmailTest_Send"]</button>
+        <button type="submit" disabled="@(!Alerts.CanMail || domains.Count == 0)">@L["EmailTest_Send"]</button>
         <p id="email-test-result" role="status" aria-live="polite" hidden></p>
     </form>
 </section>
 <script src="email-test.js" defer></script>
+
+@code {
+    /// <summary>The domains the From address may be on: the ones this organization monitors itself (the server checks this again when sending).</summary>
+    List<string> domains = [];
+    string defaultLocal = "", defaultDomain = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        domains = await Db.Assets.Where(a => !a.Discovered && !a.Name.Contains(":")).Select(a => a.Name).OrderBy(n => n).ToListAsync();
+        var configured = Config["Alerts:Email:From"] ?? "";
+        var at = configured.LastIndexOf('@');
+        if (at > 0) { defaultLocal = configured[..at]; defaultDomain = configured[(at + 1)..]; }
+    }
+}

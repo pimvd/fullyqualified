@@ -11,6 +11,19 @@ public class HealthTests(NoDbFactory factory) : IClassFixture<NoDbFactory>
         Assert.True(response.IsSuccessStatusCode);
     }
 
+    [Theory]
+    [InlineData("/email-test.js")]
+    [InlineData("/admin.js")]
+    [InlineData("/app.css")]
+    public async Task Scripts_and_styles_are_revalidated_so_an_updated_page_never_runs_an_old_script(string path)
+    {
+        // Without this a browser keeps its copy for a long time, and a new page can end up running the previous version of its script.
+        var response = await factory.CreateClient().GetAsync(path);
+        Assert.True(response.IsSuccessStatusCode);
+        Assert.True(response.Headers.CacheControl?.NoCache, $"{path} has no Cache-Control: no-cache");
+        Assert.NotNull(response.Headers.ETag);                                  // so revalidation is a cheap 304, not a download
+    }
+
     [Fact]
     public async Task Culture_endpoint_ignores_external_redirects()
     {
