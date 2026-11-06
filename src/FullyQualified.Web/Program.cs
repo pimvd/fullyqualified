@@ -95,7 +95,9 @@ app.Use(async (ctx, next) =>
     }
     await next(ctx);
 });
-app.UseStaticFiles();
+// Scripts and styles are revalidated on every use (an ETag makes that a 304 when nothing changed). Without it a browser may keep an old copy for
+// a long time, and a page that was updated can then run the previous version of its script.
+app.UseStaticFiles(new StaticFileOptions { OnPrepareResponse = ctx => ctx.Context.Response.Headers.CacheControl = "no-cache" });
 app.UseRouting();
 
 var cultures = new[] { new CultureInfo("en"), new CultureInfo("nl") };
