@@ -1011,4 +1011,8 @@ Je hebt deze zoekopdracht niet nodig om een domein te monitoren: ze helpt alleen
   <data name="Timeline_Plus" xml:space="preserve"><value>+{0} dagen</value></data>
   <data name="Timeline_Left" xml:space="preserve"><value>Resterende dagen: {0}</value></data>
   <data name="Timeline_Expired" xml:space="preserve"><value>Verlopen</value></data>
+  <data name="Register_Title" xml:space="preserve"><value>Organisatie aanmaken</value></data>
+  <data name="Register_Intro" xml:space="preserve"><value>Maak een nieuwe organisatie en het eerste beheerdersaccount aan. Je logt in met een passkey; er zijn geen wachtwoorden.</value></data>
+  <data name="Register_Existing" xml:space="preserve"><value>Heb je al een account?</value></data>
+  <data name="Login_Register" xml:space="preserve"><value>Organisatie aanmaken</value></data>
 </root>

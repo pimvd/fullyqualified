@@ -1,0 +1,36 @@
+@page "/register"
+@using Microsoft.AspNetCore.Authorization
+@attribute [AllowAnonymous]
+@inject IStringLocalizer<SharedResource> L
+@inject AppDbContext Db
+@inject NavigationManager Nav
+@inject IConfiguration Config
+
+<PageTitle>@L["Register_Title"]</PageTitle>
+<PasskeyRoot>
+    <section class="card narrow">
+        <h1>@L["Register_Title"]</h1>
+        <p>@L["Register_Intro"]</p>
+        <label for="pk-org">@L["Setup_Organization"]</label>
+        <input id="pk-org" maxlength="100" autocomplete="organization" />
+        <label for="pk-email">@L["Col_Email"]</label>
+        <input id="pk-email" type="email" maxlength="254" autocomplete="email" required />
+        <label for="pk-name">@L["Account_Name"]</label>
+        <input id="pk-name" maxlength="100" autocomplete="name" />
+        @if (!string.IsNullOrEmpty(Config["Auth:SetupCode"]))
+        {
+            <label for="pk-code">@L["Setup_Code"]</label>
+            <input id="pk-code" type="password" autocomplete="off" />
+            <small class="muted">@L["Setup_CodeHelp"]</small>
+        }
+        <button type="button" data-passkey="register">@L["Register_Button"]</button>
+        <p class="muted">@L["Register_Existing"] <a href="/login">@L["Login_Title"]</a></p>
+    </section>
+</PasskeyRoot>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        if (!await Db.AcrossTenants<User>().AnyAsync()) Nav.NavigateTo("/setup");
+    }
+}

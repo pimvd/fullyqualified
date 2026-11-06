@@ -1011,4 +1011,8 @@ You do not need this search to monitor a domain: it only helps to find hostnames
   <data name="Timeline_Plus" xml:space="preserve"><value>+{0} days</value></data>
   <data name="Timeline_Left" xml:space="preserve"><value>Days left: {0}</value></data>
   <data name="Timeline_Expired" xml:space="preserve"><value>Expired</value></data>
+  <data name="Register_Title" xml:space="preserve"><value>Create an organization</value></data>
+  <data name="Register_Intro" xml:space="preserve"><value>Create a new organization and its first administrator account. You sign in with a passkey; there are no passwords.</value></data>
+  <data name="Register_Existing" xml:space="preserve"><value>Already have an account?</value></data>
+  <data name="Login_Register" xml:space="preserve"><value>Create an organization</value></data>
 </root>
