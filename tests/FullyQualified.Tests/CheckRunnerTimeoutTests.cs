@@ -42,7 +42,7 @@ public class CheckRunnerTimeoutTests
         await db.Database.MigrateAsync();
         var tenant = new Tenant { Name = "Cap " + Guid.NewGuid().ToString("N")[..8], TierKey = Tiers.Free };
         db.Tenants.Add(tenant);
-        var asset = new Asset { TenantId = tenant.Id, Name = $"{tenant.Id:N}.test.com", Kind = AssetKind.Domain };
+        var asset = new Asset { TenantId = tenant.Id, Name = $"{tenant.Id:N}.test.com" };
         db.Assets.Add(asset);
         var now = DateTimeOffset.UtcNow;
         db.Jobs.Add(new Job { TenantId = tenant.Id, AssetId = asset.Id, CheckType = "hang", RunAt = now.AddMinutes(-2) });
