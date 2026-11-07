@@ -39,7 +39,7 @@
         }
         @if (problems > attention.Count)
         {
-            <p class="muted"><a href="/?status=problems">@L["Attn_More", problems]</a></p>
+            <p class="muted"><a href="/?status=problems#assets">@L["Attn_More", problems]</a></p>
         }
     </section>
 }
@@ -112,14 +112,14 @@
     <p class="@(gone == 0 ? "error" : "ok-text")" role="status">@(gone == 0 ? L["Bulk_None"].Value : L["Bulk_Deleted", gone].Value)</p>
 }
 
-<section class="card">
+<section class="card" id="assets">
     @if (assets.Count == 0)
     {
         <p class="muted">@L["Empty_Assets"]</p>
     }
     else
     {
-        <form method="get" action="/" class="filters">
+        <form method="get" action="/#assets" class="filters">
             <input type="search" name="q" value="@Q" placeholder="@L["Filter_Search"]" aria-label="@L["Filter_Search"]" />
             <select name="source" aria-label="@L["Col_Origin"]">
                 <option value="">@L["Filter_AllOrigins"]</option>
@@ -136,7 +136,7 @@
                 }
             </select>
             <button type="submit">@L["Filter_Apply"]</button>
-            @if (filtering) { <a class="button secondary" href="/">@L["Filter_Reset"]</a> }
+            @if (filtering) { <a class="button secondary" href="/#assets">@L["Filter_Reset"]</a> }
         </form>
         <p class="muted"><small>@L["Filter_Count", shown.Count, assets.Count]</small></p>
 
