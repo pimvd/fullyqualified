@@ -1,0 +1,29 @@
+name: infra
+on:
+  pull_request:
+    paths: ["infra/**", ".github/workflows/**", "Dockerfile", "deploy/**"]
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        root: [shared, app]
+    defaults:
+      run:
+        working-directory: infra/${{ matrix.root }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.8
+      - run: terraform fmt -check -recursive
+      - run: terraform init -backend=false -input=false
+      - run: terraform validate
+  images:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build --target web -t fq-web .
+      - run: docker build --target worker -t fq-worker .
+      - run: docker build -t fq-postfix deploy/postfix

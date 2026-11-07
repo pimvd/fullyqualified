@@ -214,3 +214,7 @@ Not built yet: cloud connectors (Azure first), multi-tenant hosting, automated r
 ## License
 
 AGPL-3.0, see [LICENSE](LICENSE).
+
+## Deploy to Azure
+
+Dev and prd run on Azure Container Apps, the marketing site on Azure Static Web Apps. All of it is Terraform under `infra/` (only the state storage is Bicep) and deployed by GitHub Actions. See [ADR 14](docs/adr/0014-azure-container-apps-deployment.md). One-time setup: `az login`, then `infra/bootstrap.sh dev`. A merge to `master` builds the web, worker and postfix images and deploys them to dev; prd deploys the tags hard-coded in `infra/app/envs/prd.tfvars`.

@@ -1,0 +1,94 @@
+name: deploy
+# Reusable: terraform apply for one environment, then bind the custom domain.
+# image_tag set: all three images use it (dev). Empty: the tags come from infra/app/envs/<environment>.tfvars (prd).
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      image_tag:
+        required: false
+        type: string
+        default: ""
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    concurrency: deploy-${{ inputs.environment }}
+    defaults:
+      run:
+        working-directory: infra/app
+    env:
+      ENV: ${{ inputs.environment }}
+      ARM_USE_OIDC: "true"
+      ARM_USE_AZUREAD: "true"
+      ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      TF_VAR_setup_code: ${{ secrets.SETUP_CODE }}
+      TF_VAR_smtp_relay_user: ${{ secrets.SMTP_RELAY_USER }}
+      TF_VAR_smtp_relay_password: ${{ secrets.SMTP_RELAY_PASSWORD }}
+      TF_IN_AUTOMATION: "true"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.8
+          terraform_wrapper: false
+
+      - name: Names
+        run: |
+          sub="${{ vars.AZURE_SUBSCRIPTION_ID }}"
+          acr="crfq${sub//-/}"; echo "ACR_NAME=${acr:0:24}" >> "$GITHUB_ENV"
+          st="stfq${sub//-/}";  echo "STATE_ACCOUNT=${st:0:24}" >> "$GITHUB_ENV"
+
+      - name: Init
+        run: |
+          terraform init -input=false \
+            -backend-config="resource_group_name=rg-fq-shared-weu" \
+            -backend-config="storage_account_name=$STATE_ACCOUNT" \
+            -backend-config="container_name=tfstate" \
+            -backend-config="key=${ENV}.tfstate"
+
+      - name: Apply
+        run: |
+          args=(-input=false -auto-approve -var-file="envs/${ENV}.tfvars" -var "acr_name=$ACR_NAME")
+          if [ -n "${{ inputs.image_tag }}" ]; then
+            args+=(-var "web_image_tag=${{ inputs.image_tag }}" -var "worker_image_tag=${{ inputs.image_tag }}" -var "postfix_image_tag=${{ inputs.image_tag }}")
+          fi
+          terraform apply "${args[@]}"
+
+      - name: Bind the domain
+        run: |
+          app=$(terraform output -raw web_app_name)
+          fqdn=$(terraform output -raw web_fqdn)
+          verification=$(terraform output -raw domain_verification_id)
+          envname=$(terraform output -raw environment_name)
+          domain=$(grep -E '^domain' "envs/${ENV}.tfvars" | cut -d'"' -f2)
+          rg="rg-fq-${ENV}-weu"
+
+          bound=$(az containerapp hostname list -g "$rg" -n "$app" --query "[?name=='$domain'].bindingType | [0]" -o tsv)
+          if [ "$bound" = "SniEnabled" ]; then
+            echo "Domain \`$domain\` is bound." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          if ! az containerapp hostname add -g "$rg" -n "$app" --hostname "$domain" -o none 2>/dev/null; then
+            echo "Domain not bound yet: is the zone delegated? (see the shared workflow output dns_name_servers). Re-run after the NS records exist." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          az containerapp hostname bind -g "$rg" -n "$app" --hostname "$domain" \
+            --environment "$envname" --validation-method CNAME -o none
+          echo "Bound \`$domain\` with a managed certificate." >> "$GITHUB_STEP_SUMMARY"

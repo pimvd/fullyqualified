@@ -1,0 +1,54 @@
+name: deploy-site
+# The marketing site (site/) goes to Azure Static Web Apps on every merge that changes it.
+on:
+  push:
+    branches: [master]
+    paths:
+      - "site/**"
+      - ".github/workflows/deploy-site.yml"
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  SITE_DOMAIN: fq.vandijkcloud.nl
+
+jobs:
+  shared:
+    uses: ./.github/workflows/shared.yml
+    secrets: inherit
+
+  site:
+    needs: shared
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID_BUILD }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Deployment token
+        run: |
+          token=$(az staticwebapp secrets list -n stapp-fq-site-weu -g rg-fq-shared-weu --query properties.apiKey -o tsv)
+          echo "::add-mask::$token"
+          echo "SWA_TOKEN=$token" >> "$GITHUB_ENV"
+      - uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ env.SWA_TOKEN }}
+          action: upload
+          app_location: site
+          skip_app_build: true
+      - name: Custom domain
+        run: |
+          default=$(az staticwebapp show -n stapp-fq-site-weu -g rg-fq-shared-weu --query defaultHostname -o tsv)
+          bound=$(az staticwebapp hostname list -n stapp-fq-site-weu -g rg-fq-shared-weu --query "[?name=='$SITE_DOMAIN'].status | [0]" -o tsv)
+          if [ "$bound" = "Ready" ]; then
+            echo "Site is live on \`$SITE_DOMAIN\`." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          az staticwebapp hostname set -n stapp-fq-site-weu -g rg-fq-shared-weu --hostname "$SITE_DOMAIN" \
+            --validation-method dns-txt-token -o none \
+            || echo "Domain not bound yet: is the zone delegated? Re-run after the NS records exist." >> "$GITHUB_STEP_SUMMARY"

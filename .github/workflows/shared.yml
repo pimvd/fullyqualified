@@ -1,0 +1,52 @@
+name: shared
+# Reusable: terraform apply for infra/shared (container registry, marketing site). Runs as the build identity.
+on:
+  workflow_call:
+    outputs:
+      acr_name:
+        value: ${{ jobs.apply.outputs.acr_name }}
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    concurrency: shared-infra
+    outputs:
+      acr_name: ${{ steps.names.outputs.acr }}
+    defaults:
+      run:
+        working-directory: infra/shared
+    env:
+      ARM_USE_OIDC: "true"
+      ARM_USE_AZUREAD: "true"
+      ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID_BUILD }}
+      ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      TF_IN_AUTOMATION: "true"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.8
+      - id: names
+        run: |
+          sub="${{ vars.AZURE_SUBSCRIPTION_ID }}"
+          acr="crfq${sub//-/}"; echo "acr=${acr:0:24}" >> "$GITHUB_OUTPUT"
+          st="stfq${sub//-/}";  echo "STATE_ACCOUNT=${st:0:24}" >> "$GITHUB_ENV"
+      - run: |
+          terraform init -input=false \
+            -backend-config="resource_group_name=rg-fq-shared-weu" \
+            -backend-config="storage_account_name=$STATE_ACCOUNT" \
+            -backend-config="container_name=tfstate" \
+            -backend-config="key=shared.tfstate"
+      - run: terraform apply -input=false -auto-approve -var "acr_name=${{ steps.names.outputs.acr }}" -var "owner=pim.vandijk@teamrockstars.nl"
+      - name: Name servers
+        run: |
+          {
+            echo "### Delegate the DNS zone"
+            echo "At the provider of vandijkcloud.nl, create NS records for \`fq\` pointing at:"
+            terraform output -json dns_name_servers | jq -r '.[] | "- `" + . + "`"'
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,76 @@
+name: release
+# Merge to master: make sure the shared infra exists, build the three images once, deploy that commit to dev.
+# Prd is never deployed from here: its image tags are hard-coded in infra/app/envs/prd.tfvars (see deploy-prd).
+on:
+  push:
+    branches: [master]
+    paths:
+      - "src/**"
+      - "Dockerfile"
+      - "deploy/postfix/**"
+      - "infra/**"
+      - ".github/workflows/release.yml"
+      - ".github/workflows/deploy.yml"
+      - ".github/workflows/shared.yml"
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  shared:
+    uses: ./.github/workflows/shared.yml
+    secrets: inherit
+
+  build:
+    needs: shared
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+    strategy:
+      matrix:
+        include:
+          - image: fq-web
+            context: .
+            file: Dockerfile
+            target: web
+          - image: fq-worker
+            context: .
+            file: Dockerfile
+            target: worker
+          - image: fq-postfix
+            context: deploy/postfix
+            file: deploy/postfix/Dockerfile
+            target: ""
+    steps:
+      - uses: actions/checkout@v4
+      - id: tag
+        run: echo "tag=${GITHUB_SHA::12}" >> "$GITHUB_OUTPUT"
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID_BUILD }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Build and push
+        run: |
+          acr="${{ needs.shared.outputs.acr_name }}"
+          az acr login -n "$acr"
+          image="$acr.azurecr.io/${{ matrix.image }}:${{ steps.tag.outputs.tag }}"
+          if docker manifest inspect "$image" >/dev/null 2>&1; then
+            echo "$image already exists"
+          else
+            target=""
+            [ -n "${{ matrix.target }}" ] && target="--target ${{ matrix.target }}"
+            docker build $target -f "${{ matrix.file }}" -t "$image" "${{ matrix.context }}"
+            docker push "$image"
+          fi
+          echo "Pushed \`$image\`" >> "$GITHUB_STEP_SUMMARY"
+
+  dev:
+    needs: build
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: dev
+      image_tag: ${{ needs.build.outputs.tag }}
+    secrets: inherit
