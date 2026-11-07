@@ -60,6 +60,10 @@ ConnectionStrings__Default="Host=localhost;Database=fullyqualified;Username=post
 
 The default development URL is http://localhost:5089. For email in this mode, configure a reachable SMTP server as described below.
 
+### Development environment on Scaleway
+
+A scale-to-zero development environment on Scaleway Serverless Containers and a Serverless SQL Database, with Terraform, a manual deploy workflow and a teardown script, is described in [deploy/scaleway/README.md](deploy/scaleway/README.md). It is for development, not production (no Postfix, no mail checks on ports 25 and 465).
+
 ### Built-in SMTP relay
 
 Docker Compose includes a private Postfix relay and connects the application to it automatically. The relay has no published SMTP port and shares a dedicated network only with the application. Its queue is stored in the `mailqueue` volume, and its delivery logs are available through `docker compose logs -f postfix`.

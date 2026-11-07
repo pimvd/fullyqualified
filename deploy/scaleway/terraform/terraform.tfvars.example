@@ -1,0 +1,6 @@
+# Copy to terraform.tfvars (ignored by git) for local runs. The pipeline passes these as TF_VAR_* from GitHub secrets instead.
+# project_id = "00000000-0000-0000-0000-000000000000"
+# image_tag  = "local"
+# setup_code = "choose-a-long-random-string"
+# smtp_host  = "smtp.example.com"
+# mail_from  = "fullyqualified@example.com"
