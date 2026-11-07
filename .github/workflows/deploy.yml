@@ -1,0 +1,103 @@
+name: deploy
+# Reusable: builds the image, pushes it to the environment's registry, deploys infra/main.bicep and binds the domain.
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      domain:
+        required: true
+        type: string
+    secrets:
+      PG_PASSWORD:
+        required: true
+      SETUP_CODE:
+        required: false
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    concurrency: deploy-${{ inputs.environment }}
+    env:
+      ENV: ${{ inputs.environment }}
+      DOMAIN: ${{ inputs.domain }}
+      RG: fq-${{ inputs.environment }}-rg
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Registry
+        run: |
+          sub="${{ vars.AZURE_SUBSCRIPTION_ID }}"
+          acr="fq${ENV}${sub//-/}"
+          acr="${acr:0:24}"
+          echo "FQ_ACR_NAME=$acr" >> "$GITHUB_ENV"
+          az group create -n "$RG" -l "${{ vars.AZURE_LOCATION || 'westeurope' }}" -o none
+          az acr show -n "$acr" -g "$RG" -o none 2>/dev/null || az acr create -n "$acr" -g "$RG" --sku Basic -o none
+
+      - name: Build and push image
+        run: |
+          az acr login -n "$FQ_ACR_NAME"
+          image="$FQ_ACR_NAME.azurecr.io/fullyqualified:${GITHUB_SHA::12}"
+          docker build -t "$image" .
+          docker push "$image"
+          echo "FQ_IMAGE=$image" >> "$GITHUB_ENV"
+
+      - name: Existing certificate
+        run: |
+          # once the domain is bound, keep passing the certificate so the deployment does not unbind it
+          cert=$(az containerapp env certificate list -g "$RG" -n "fq-${ENV}-env" \
+            --query "[?properties.subjectName=='$DOMAIN'].id | [0]" -o tsv 2>/dev/null || true)
+          echo "FQ_CERT_ID=$cert" >> "$GITHUB_ENV"
+
+      - name: Deploy infrastructure and app
+        id: infra
+        env:
+          FQ_PG_PASSWORD: ${{ secrets.PG_PASSWORD }}
+          FQ_SETUP_CODE: ${{ secrets.SETUP_CODE }}
+        run: |
+          az deployment group create -g "$RG" -f infra/main.bicep -p "infra/${ENV}.bicepparam" -o none
+          out=$(az deployment group show -g "$RG" -n main --query properties.outputs -o json)
+          echo "app=$(jq -r .appName.value <<<"$out")" >> "$GITHUB_OUTPUT"
+          echo "fqdn=$(jq -r .appFqdn.value <<<"$out")" >> "$GITHUB_OUTPUT"
+          echo "verification=$(jq -r .domainVerificationId.value <<<"$out")" >> "$GITHUB_OUTPUT"
+
+      - name: Bind the domain
+        env:
+          APP: ${{ steps.infra.outputs.app }}
+          FQDN: ${{ steps.infra.outputs.fqdn }}
+          VERIFICATION: ${{ steps.infra.outputs.verification }}
+        run: |
+          if [ -n "$FQ_CERT_ID" ]; then
+            echo "Domain $DOMAIN is already bound." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          host="${DOMAIN%%.*}"
+          zone="${DOMAIN#*.}"
+          {
+            echo "### DNS records for \`$DOMAIN\`"
+            echo "Create these in the \`$zone\` zone, then re-run this workflow:"
+            echo ""
+            echo "| Type | Name | Value |"
+            echo "|---|---|---|"
+            echo "| CNAME | \`$DOMAIN\` | \`$FQDN\` |"
+            echo "| TXT | \`asuid.$DOMAIN\` | \`$VERIFICATION\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
+          if ! az containerapp hostname add -g "$RG" -n "$APP" --hostname "$DOMAIN" -o none 2>/dev/null; then
+            echo "DNS is not ready yet. Add the records above and re-run." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          az containerapp hostname bind -g "$RG" -n "$APP" --hostname "$DOMAIN" \
+            --environment "fq-${ENV}-env" --validation-method CNAME -o none
+          echo "Bound $DOMAIN with a managed certificate." >> "$GITHUB_STEP_SUMMARY"
