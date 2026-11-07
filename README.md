@@ -214,3 +214,7 @@ Not built yet: cloud connectors (Azure first), multi-tenant hosting, automated r
 ## License
 
 AGPL-3.0, see [LICENSE](LICENSE).
+
+## Deploy to Azure
+
+Dev and prd run on Azure Container Apps, defined in Terraform under `infra/` and deployed by GitHub Actions. See [ADR 14](docs/adr/0014-azure-container-apps-deployment.md). One-time setup: `az login`, then `infra/bootstrap.sh dev`. A merge to `master` builds the image and deploys it to dev; prd deploys the image tags hard-coded in `infra/envs/prd.tfvars`.

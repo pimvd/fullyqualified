@@ -1,0 +1,54 @@
+name: release
+# Merge to master: build the image once, push it to the shared registry, deploy that commit to dev.
+# Prd is never deployed from here: its image tags are hard-coded in infra/envs/prd.tfvars (see deploy-prd).
+on:
+  push:
+    branches: [master]
+    paths:
+      - "src/**"
+      - "Dockerfile"
+      - "infra/**"
+      - ".github/workflows/release.yml"
+      - ".github/workflows/deploy.yml"
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: tag
+        run: echo "tag=${GITHUB_SHA::12}" >> "$GITHUB_OUTPUT"
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID_BUILD }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      - name: Build and push
+        run: |
+          sub="${{ vars.AZURE_SUBSCRIPTION_ID }}"
+          acr="fqacr${sub//-/}"; acr="${acr:0:24}"
+          az acr login -n "$acr"
+          image="$acr.azurecr.io/fullyqualified:${{ steps.tag.outputs.tag }}"
+          # skip the build when this commit was already pushed (re-run)
+          if docker manifest inspect "$image" >/dev/null 2>&1; then
+            echo "$image already exists"
+          else
+            docker build -t "$image" .
+            docker push "$image"
+          fi
+          echo "Pushed \`$image\`" >> "$GITHUB_STEP_SUMMARY"
+
+  dev:
+    needs: build
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: dev
+      image_tag: ${{ needs.build.outputs.tag }}
+    secrets: inherit

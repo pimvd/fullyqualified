@@ -1,33 +1,38 @@
 name: deploy
-# Reusable: builds the image, pushes it to the environment's registry, deploys infra/main.bicep and binds the domain.
+# Reusable: terraform apply for one environment, then bind the custom domain.
+# image_tag set: both containers use it (dev). Empty: the tags come from infra/envs/<environment>.tfvars (prd).
 on:
   workflow_call:
     inputs:
       environment:
         required: true
         type: string
-      domain:
-        required: true
-        type: string
-    secrets:
-      PG_PASSWORD:
-        required: true
-      SETUP_CODE:
+      image_tag:
         required: false
+        type: string
+        default: ""
 
 permissions:
   id-token: write
   contents: read
 
 jobs:
-  deploy:
+  apply:
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
     concurrency: deploy-${{ inputs.environment }}
+    defaults:
+      run:
+        working-directory: infra
     env:
       ENV: ${{ inputs.environment }}
-      DOMAIN: ${{ inputs.domain }}
-      RG: fq-${{ inputs.environment }}-rg
+      ARM_USE_OIDC: "true"
+      ARM_USE_AZUREAD: "true"
+      ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+      ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+      ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+      TF_VAR_setup_code: ${{ secrets.SETUP_CODE }}
+      TF_IN_AUTOMATION: "true"
     steps:
       - uses: actions/checkout@v4
 
@@ -37,67 +42,60 @@ jobs:
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Registry
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.8
+          terraform_wrapper: false
+
+      - name: Names
         run: |
           sub="${{ vars.AZURE_SUBSCRIPTION_ID }}"
-          acr="fq${ENV}${sub//-/}"
-          acr="${acr:0:24}"
-          echo "FQ_ACR_NAME=$acr" >> "$GITHUB_ENV"
-          az group create -n "$RG" -l "${{ vars.AZURE_LOCATION || 'westeurope' }}" -o none
-          az acr show -n "$acr" -g "$RG" -o none 2>/dev/null || az acr create -n "$acr" -g "$RG" --sku Basic -o none
+          acr="fqacr${sub//-/}"; echo "ACR_NAME=${acr:0:24}" >> "$GITHUB_ENV"
+          st="fqtf${sub//-/}";  echo "STATE_ACCOUNT=${st:0:24}" >> "$GITHUB_ENV"
 
-      - name: Build and push image
+      - name: Init
         run: |
-          az acr login -n "$FQ_ACR_NAME"
-          image="$FQ_ACR_NAME.azurecr.io/fullyqualified:${GITHUB_SHA::12}"
-          docker build -t "$image" .
-          docker push "$image"
-          echo "FQ_IMAGE=$image" >> "$GITHUB_ENV"
+          terraform init -input=false \
+            -backend-config="resource_group_name=fq-shared-rg" \
+            -backend-config="storage_account_name=$STATE_ACCOUNT" \
+            -backend-config="container_name=tfstate" \
+            -backend-config="key=${ENV}.tfstate"
 
-      - name: Existing certificate
+      - name: Apply
         run: |
-          # once the domain is bound, keep passing the certificate so the deployment does not unbind it
-          cert=$(az containerapp env certificate list -g "$RG" -n "fq-${ENV}-env" \
-            --query "[?properties.subjectName=='$DOMAIN'].id | [0]" -o tsv 2>/dev/null || true)
-          echo "FQ_CERT_ID=$cert" >> "$GITHUB_ENV"
-
-      - name: Deploy infrastructure and app
-        id: infra
-        env:
-          FQ_PG_PASSWORD: ${{ secrets.PG_PASSWORD }}
-          FQ_SETUP_CODE: ${{ secrets.SETUP_CODE }}
-        run: |
-          az deployment group create -g "$RG" -f infra/main.bicep -p "infra/${ENV}.bicepparam" -o none
-          out=$(az deployment group show -g "$RG" -n main --query properties.outputs -o json)
-          echo "app=$(jq -r .appName.value <<<"$out")" >> "$GITHUB_OUTPUT"
-          echo "fqdn=$(jq -r .appFqdn.value <<<"$out")" >> "$GITHUB_OUTPUT"
-          echo "verification=$(jq -r .domainVerificationId.value <<<"$out")" >> "$GITHUB_OUTPUT"
+          args=(-input=false -auto-approve -var-file="envs/${ENV}.tfvars" -var "acr_name=$ACR_NAME")
+          if [ -n "${{ inputs.image_tag }}" ]; then
+            args+=(-var "web_image_tag=${{ inputs.image_tag }}" -var "worker_image_tag=${{ inputs.image_tag }}")
+          fi
+          terraform apply "${args[@]}"
 
       - name: Bind the domain
-        env:
-          APP: ${{ steps.infra.outputs.app }}
-          FQDN: ${{ steps.infra.outputs.fqdn }}
-          VERIFICATION: ${{ steps.infra.outputs.verification }}
         run: |
-          if [ -n "$FQ_CERT_ID" ]; then
-            echo "Domain $DOMAIN is already bound." >> "$GITHUB_STEP_SUMMARY"
+          app=$(terraform output -raw web_app_name)
+          fqdn=$(terraform output -raw web_fqdn)
+          verification=$(terraform output -raw domain_verification_id)
+          envname=$(terraform output -raw environment_name)
+          domain=$(grep -E '^domain' "envs/${ENV}.tfvars" | cut -d'"' -f2)
+          rg="fq-${ENV}-rg"
+
+          bound=$(az containerapp hostname list -g "$rg" -n "$app" --query "[?name=='$domain'].bindingType | [0]" -o tsv)
+          if [ "$bound" = "SniEnabled" ]; then
+            echo "Domain \`$domain\` is bound." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
-          host="${DOMAIN%%.*}"
-          zone="${DOMAIN#*.}"
           {
-            echo "### DNS records for \`$DOMAIN\`"
-            echo "Create these in the \`$zone\` zone, then re-run this workflow:"
+            echo "### DNS records for \`$domain\`"
+            echo "Create these, then re-run this workflow:"
             echo ""
             echo "| Type | Name | Value |"
             echo "|---|---|---|"
-            echo "| CNAME | \`$DOMAIN\` | \`$FQDN\` |"
-            echo "| TXT | \`asuid.$DOMAIN\` | \`$VERIFICATION\` |"
+            echo "| CNAME | \`$domain\` | \`$fqdn\` |"
+            echo "| TXT | \`asuid.$domain\` | \`$verification\` |"
           } >> "$GITHUB_STEP_SUMMARY"
-          if ! az containerapp hostname add -g "$RG" -n "$APP" --hostname "$DOMAIN" -o none 2>/dev/null; then
-            echo "DNS is not ready yet. Add the records above and re-run." >> "$GITHUB_STEP_SUMMARY"
+          if ! az containerapp hostname add -g "$rg" -n "$app" --hostname "$domain" -o none 2>/dev/null; then
+            echo "DNS is not ready yet." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
-          az containerapp hostname bind -g "$RG" -n "$APP" --hostname "$DOMAIN" \
-            --environment "fq-${ENV}-env" --validation-method CNAME -o none
-          echo "Bound $DOMAIN with a managed certificate." >> "$GITHUB_STEP_SUMMARY"
+          az containerapp hostname bind -g "$rg" -n "$app" --hostname "$domain" \
+            --environment "$envname" --validation-method CNAME -o none
+          echo "Bound \`$domain\` with a managed certificate." >> "$GITHUB_STEP_SUMMARY"
