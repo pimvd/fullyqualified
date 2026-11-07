@@ -84,6 +84,27 @@ public class EmailTestValidationTests
 }
 
 /// <summary>A loopback SMTP sink: accepts one message and captures the envelope and DATA actually sent on the wire.</summary>
+public class EmailTestSenderDomainTests
+{
+    [Fact]
+    public void Offers_monitored_domains_and_discovered_subdomains_under_them()
+    {
+        var offered = EmailTestEndpoints.SenderDomains([
+            ("zeta.example.org", false), ("Alpha.example.org", false),
+            ("found.alpha.example.org", true), ("deep.found.alpha.example.org", true),
+            ("*.alpha.example.org", true),          // wildcard: not an address domain
+            ("stranger.example.net", true),         // found, but under no monitored domain
+            ("notalpha.example.org", true),         // lookalike: a suffix match is not a subdomain
+            ("shop.example.org:8443", false),       // an endpoint
+            ("alpha.example.org", true)]);          // duplicate of a monitored domain
+        Assert.Equal(["alpha.example.org", "deep.found.alpha.example.org", "found.alpha.example.org", "zeta.example.org"], offered);
+    }
+
+    [Fact]
+    public void Offers_nothing_without_a_monitored_domain() =>
+        Assert.Empty(EmailTestEndpoints.SenderDomains([("found.example.org", true)]));
+}
+
 public sealed class TestSmtpServer : IDisposable
 {
     readonly TcpListener listener = new(IPAddress.Loopback, 0);
@@ -176,7 +197,7 @@ public class EmailTestIntegrationTests(PgFactory factory) : OrgTestBase<PgFactor
         new AngleSharp.Html.Parser.HtmlParser().ParseDocument(page).QuerySelectorAll("select[name=fromDomain] option").Select(o => o.GetAttribute("value")!).ToArray();
 
     [DbFact]
-    public async Task The_domain_dropdown_offers_only_the_domains_the_organization_monitors_itself()
+    public async Task The_domain_dropdown_offers_monitored_domains_and_their_discovered_subdomains()
     {
         var mine = await NewOrg();
         var other = await NewOrg();
@@ -186,11 +207,13 @@ public class EmailTestIntegrationTests(PgFactory factory) : OrgTestBase<PgFactor
         using (var scope = Scope())
         {
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-            db.Assets.Add(new Asset { TenantId = mine.Id, Name = "found.example.org", Discovered = true });      // found by a search, not added by hand
+            db.Assets.Add(new Asset { TenantId = mine.Id, Name = "found.alpha.example.org", Discovered = true }); // a subdomain found by a search
+            db.Assets.Add(new Asset { TenantId = mine.Id, Name = "*.alpha.example.org", Discovered = true });     // a wildcard name is not an address domain
+            db.Assets.Add(new Asset { TenantId = mine.Id, Name = "stranger.example.net", Discovered = true });    // found, but under no monitored domain
             db.Assets.Add(new Asset { TenantId = mine.Id, Name = "shop.example.org:8443" });                      // an endpoint, not a domain
             await db.SaveChangesAsync();
         }
-        Assert.Equal(["alpha.example.org", "zeta.example.org"], DomainOptions(await Factory.As(mine.Admin).GetStringAsync("/email-test")));
+        Assert.Equal(["alpha.example.org", "found.alpha.example.org", "zeta.example.org"], DomainOptions(await Factory.As(mine.Admin).GetStringAsync("/email-test")));
     }
 
     [DbFact]

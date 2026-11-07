@@ -38,6 +38,20 @@ public static class EmailTestEndpoints
         return domains.Any(d => host == d.ToLowerInvariant() || host.EndsWith("." + d.ToLowerInvariant(), StringComparison.Ordinal));
     }
 
+    /// <summary>
+    /// The From domains offered for a tenant: the domains it monitors itself, plus the hosts found by certificate searches that
+    /// sit under one of them (subdomains). A found host outside every monitored domain is not offered, as sending from it
+    /// would be spoofing. Endpoints (<c>host:port</c>) and wildcard names are never offered. This mirrors <see cref="OwnsDomain"/>.
+    /// </summary>
+    public static List<string> SenderDomains(IEnumerable<(string Name, bool Discovered)> assets)
+    {
+        var all = assets.Where(a => a.Name.Length > 0 && !a.Name.Contains(':') && !a.Name.Contains('*')).ToList();
+        var own = all.Where(a => !a.Discovered).Select(a => a.Name.ToLowerInvariant()).Distinct().ToList();
+        var found = all.Where(a => a.Discovered).Select(a => a.Name.ToLowerInvariant())
+            .Where(n => own.Any(d => n.EndsWith("." + d, StringComparison.Ordinal)));
+        return own.Concat(found).Distinct().OrderBy(n => n, StringComparer.Ordinal).ToList();
+    }
+
     public static void AddEmailTests(this IServiceCollection services) => services.AddRateLimiter(options =>
     {
         options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;

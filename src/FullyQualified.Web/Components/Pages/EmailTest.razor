@@ -48,13 +48,14 @@
 <script src="email-test.js" defer></script>
 
 @code {
-    /// <summary>The domains the From address may be on: the ones this organization monitors itself (the server checks this again when sending).</summary>
+    /// <summary>The domains the From address may be on: the ones this organization monitors itself plus their discovered subdomains (the server checks this again when sending).</summary>
     List<string> domains = [];
     string defaultLocal = "", defaultDomain = "";
 
     protected override async Task OnInitializedAsync()
     {
-        domains = await Db.Assets.Where(a => !a.Discovered && !a.Name.Contains(":")).Select(a => a.Name).OrderBy(n => n).ToListAsync();
+        var assets = await Db.Assets.Where(a => !a.Name.Contains(":")).Select(a => new { a.Name, a.Discovered }).ToListAsync();
+        domains = EmailTestEndpoints.SenderDomains(assets.Select(a => (a.Name, a.Discovered)));
         var configured = Config["Alerts:Email:From"] ?? "";
         var at = configured.LastIndexOf('@');
         if (at > 0) { defaultLocal = configured[..at]; defaultDomain = configured[(at + 1)..]; }
