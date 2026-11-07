@@ -21,7 +21,7 @@ public static class Remedies
     /// <summary>Every finding the checks can report, as codes (with an example argument where the code carries one). A test holds the catalogue to this list.</summary>
     public static readonly string[] AllCodes =
     [
-        "NoSpf", "NoNullMx", "NoDmarc", "DmarcNone", "DmarcQuarantine", "DmarcSubdomainNotReject", "NoCaa", "DanglingCname", "ResolverMismatch:ns", "DkimMissing:s1", "DkimRevoked:s1", "DkimInvalid:s1", "DkimWeak:s1:512", "DnsError",
+        "NoSpf", "SpfTooManyLookups:14", "NoNullMx", "NoDmarc", "DmarcNone", "DmarcQuarantine", "DmarcSubdomainNotReject", "NoCaa", "DanglingCname", "ResolverMismatch:ns", "DkimMissing:s1", "DkimRevoked:s1", "DkimInvalid:s1", "DkimWeak:s1:512", "DnsError",
         "TlsExpired", "TlsExpiring", "TlsTrust", "TlsError", "CtError",
     ];
 
@@ -46,6 +46,9 @@ public static class Remedies
             case "NoSpf":
                 return new("NoSpf", [domain], [Steps("Fix_NoSpf_Steps")], [$"dig +short TXT {domain}"],
                     "v=spf1 include:_spf.your-mail-provider.example ~all", Dig((domain, "TXT")));
+            case "SpfTooManyLookups":
+                return new("SpfTooManyLookups", [domain, parts.Length > 1 ? parts[1] : ""], [Steps("Fix_SpfTooManyLookups_Steps")], [$"dig +short TXT {domain}"],
+                    "v=spf1 ip4:192.0.2.0/24 include:_spf.one-mail-provider.example ~all", Dig((domain, "TXT")));
             case "NoDmarc":
                 return new("NoDmarc", [domain], [Steps("Fix_NoDmarc_Steps")], [$"dig +short TXT _dmarc.{domain}"],
                     $"_dmarc.{domain}  TXT  \"v=DMARC1; p=none; rua=mailto:dmarc@{domain}\"", Dig(($"_dmarc.{domain}", "TXT")));

@@ -75,6 +75,29 @@ public static partial class AssetControlEndpoints
             return Results.Redirect(Back(back, $"/assets/{id}"));
         });
 
+        // Alarm rules are an admin setting (like the rules screen), so these are admin-only even though muting is not.
+        var alarms = app.MapGroup("/assets").RequireAuthorization(Roles.Admin);
+
+        alarms.MapPost("{id:guid}/alarm", async (HttpContext ctx, Guid id, AppDbContext db, [FromForm] string? check, [FromForm] string? key, [FromForm] string? back) =>
+        {
+            if (!AlertRules.IsKnown(check, key)) return Results.BadRequest(new { error = "invalid_rule" });
+            if (!await db.Assets.AnyAsync(a => a.Id == id)) return Results.NotFound();
+            if (await db.AlertRules.CountAsync() >= AlertRuleService.MaxRules) return Results.Conflict(new { error = "too_many_rules" });
+            if (!await db.AlertRules.AnyAsync(r => r.CheckType == check && r.Key == key && r.AssetId == id))
+            {
+                db.AlertRules.Add(new AlertRule { TenantId = Roles.TenantId(ctx.User)!.Value, CheckType = check!, Key = key!, AssetId = id });
+                await db.SaveChangesAsync();
+            }
+            return Results.Redirect(Back(back, $"/assets/{id}"));
+        });
+
+        alarms.MapPost("{id:guid}/unalarm", async (Guid id, AppDbContext db, [FromForm] string? check, [FromForm] string? key, [FromForm] string? back) =>
+        {
+            if (!await db.Assets.AnyAsync(a => a.Id == id)) return Results.NotFound();
+            await db.AlertRules.Where(r => r.AssetId == id && r.CheckType == check && r.Key == key).ExecuteDeleteAsync();
+            return Results.Redirect(Back(back, $"/assets/{id}"));
+        });
+
         var c = app.MapGroup("/certificates").RequireAuthorization(Roles.Edit);
         c.MapPost("{id:guid}/mute", async (Guid id, AppDbContext db, [FromForm] string? until, [FromForm] string? reason, [FromForm] string? back) =>
             TryEnd(until, out var end) ? await MuteCertificate(id, db, true, end, Clean(reason), back) : Results.BadRequest(new { error = "invalid_date" }));

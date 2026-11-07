@@ -71,6 +71,7 @@
   <data name="Issue_NoSpf" xml:space="preserve"><value>Geen SPF-record</value></data>
   <data name="Issue_NoDmarc" xml:space="preserve"><value>Geen DMARC-record</value></data>
   <data name="Issue_DmarcNone" xml:space="preserve"><value>DMARC-beleid is 'none'</value></data>
+  <data name="Issue_SpfTooManyLookups" xml:space="preserve"><value>SPF-record vraagt {0} DNS-opzoekingen: boven de grens van 10, dus ontvangers behandelen het record als fout (permerror)</value></data>
   <data name="Issue_NoNullMx" xml:space="preserve"><value>Geen MX-record: publiceer een null-MX als deze naam geen mail verstuurt</value></data>
   <data name="Issue_DmarcQuarantine" xml:space="preserve"><value>DMARC-beleid is 'quarantine' (reject is het doel)</value></data>
   <data name="Issue_DmarcSubdomainNotReject" xml:space="preserve"><value>DMARC-beleid voor subdomeinen (sp) is niet 'reject'</value></data>
@@ -550,6 +551,13 @@ Publiceer één TXT-record op {0} dat begint met v=spf1, die includes noemt en e
 Een naam mag maar één SPF-record hebben. Bestaat er al een, voeg ze dan samen in plaats van een tweede toe te voegen.
 Houd het bij in totaal 10 DNS-opzoekingen, anders negeren ontvangers het record.
 Controleer het resultaat met de opdracht hieronder en scan daarna opnieuw.</value></data>
+  <data name="Fix_SpfTooManyLookups_What" xml:space="preserve"><value>Het SPF-record van {0} vraagt {1} DNS-opzoekingen: elke include, redirect, a, mx, exists en ptr telt mee, net als alles binnen de includes. Ontvangende servers stoppen bij 10 en geven permerror, en behandelen je mail dan vaak alsof SPF is mislukt. Daardoor komt echte mail eerder in de spam, en bij een DMARC-beleid van quarantine of reject kan mail worden geweigerd als DKIM het niet redt.</value></data>
+  <data name="Fix_SpfTooManyLookups_Steps" xml:space="preserve"><value>Open de SPF-boom op de assetpagina om te zien welke include de meeste opzoekingen kost.
+Verwijder includes van diensten die geen mail meer als {0} versturen.
+Vervang a-, mx- en ptr-termen door de ip4- en ip6-adressen waar ze naar wijzen, als die adressen stabiel zijn. ip4 en ip6 kosten geen opzoeking.
+Verplaats een afzender met een eigen mailstroom naar een subdomein met een eigen SPF-record, bijvoorbeeld nieuws.{0}, en verstuur die mail vanaf die naam.
+Vermijd SPF-flattening-diensten tenzij je ze actueel kunt houden: een verouderd afgevlakt record blokkeert echte mail.
+Controleer het resultaat met het commando hieronder, open de SPF-boom voor het nieuwe aantal en scan daarna opnieuw.</value></data>
   <data name="Fix_NoDmarc_What" xml:space="preserve"><value>{0} heeft geen DMARC-beleid. DMARC vertelt ontvangende servers wat ze moeten doen met mail die de SPF- en DKIM-controle niet doorstaat, en stuurt je rapporten over wie mail verstuurt als je domein. Zonder DMARC wordt vervalste mail geaccepteerd en zie je misbruik niet.</value></data>
   <data name="Fix_NoDmarc_Steps" xml:space="preserve"><value>Zorg dat SPF en DKIM al werken voor al je mail, anders weigert DMARC later echte berichten.
 Maak een mailbox aan, of gebruik een DMARC-rapportagedienst, die de rapporten ontvangt.
@@ -1035,6 +1043,44 @@ Je hebt deze zoekopdracht niet nodig om een domein te monitoren: ze helpt alleen
   <data name="Err_InvalidRule" xml:space="preserve"><value>Kies een waarde van een controle om op te alarmeren.</value></data>
   <data name="Err_RuleExists" xml:space="preserve"><value>Deze regel heb je al.</value></data>
   <data name="Err_TooManyRules" xml:space="preserve"><value>Je hebt het maximale aantal regels bereikt.</value></data>
+  <data name="Alarm_Add" xml:space="preserve"><value>Alarm bij wijziging</value></data>
+  <data name="Alarm_On" xml:space="preserve"><value>Alarm aan</value></data>
+  <data name="Alarm_AddHint" xml:space="preserve"><value>Krijg een alarm als deze waarde bij dit asset wijzigt</value></data>
+  <data name="Alarm_RemoveHint" xml:space="preserve"><value>Stop met alarmeren als deze waarde bij dit asset wijzigt</value></data>
+  <data name="Alarm_Everywhere" xml:space="preserve"><value>Alarm aan voor alle assets</value></data>
+  <data name="Alarm_AnyChange" xml:space="preserve"><value>Alarm aan voor elke wijziging van deze check</value></data>
+  <data name="Spf_Tree" xml:space="preserve"><value>SPF-boom</value></data>
+  <data name="Spf_Loading" xml:space="preserve"><value>SPF-record wordt opgezocht…</value></data>
+  <data name="Spf_Error" xml:space="preserve"><value>De SPF-boom kon niet worden opgehaald. Probeer het zo nog eens.</value></data>
+  <data name="Spf_Truncated" xml:space="preserve"><value>De boom is afgekapt bij een veiligheidsgrens, dus sommige items worden niet getoond.</value></data>
+  <data name="Spf_Lookups" xml:space="preserve"><value>{0} DNS-opzoekingen (de grens is 10)</value></data>
+  <data name="Spf_LookupsOver" xml:space="preserve"><value>{0} DNS-opzoekingen: boven de grens van 10, dus ontvangers behandelen het record als fout (permerror)</value></data>
+  <data name="Spf_K_domain" xml:space="preserve"><value>SPF-record</value></data>
+  <data name="Spf_K_include" xml:space="preserve"><value>include</value></data>
+  <data name="Spf_K_redirect" xml:space="preserve"><value>redirect</value></data>
+  <data name="Spf_K_a" xml:space="preserve"><value>a</value></data>
+  <data name="Spf_K_mx" xml:space="preserve"><value>mx</value></data>
+  <data name="Spf_K_host" xml:space="preserve"><value>mailserver</value></data>
+  <data name="Spf_K_ip4" xml:space="preserve"><value>ip4</value></data>
+  <data name="Spf_K_ip6" xml:space="preserve"><value>ip6</value></data>
+  <data name="Spf_K_all" xml:space="preserve"><value>all</value></data>
+  <data name="Spf_K_exists" xml:space="preserve"><value>exists</value></data>
+  <data name="Spf_K_ptr" xml:space="preserve"><value>ptr</value></data>
+  <data name="Spf_K_unknown" xml:space="preserve"><value>onbekende term</value></data>
+  <data name="Spf_Q_pass" xml:space="preserve"><value>pass</value></data>
+  <data name="Spf_Q_fail" xml:space="preserve"><value>fail</value></data>
+  <data name="Spf_Q_softfail" xml:space="preserve"><value>softfail</value></data>
+  <data name="Spf_Q_neutral" xml:space="preserve"><value>neutral</value></data>
+  <data name="Spf_N_no_record" xml:space="preserve"><value>geen SPF-record</value></data>
+  <data name="Spf_N_multiple" xml:space="preserve"><value>meer dan één SPF-record (een fout: het eerste wordt getoond)</value></data>
+  <data name="Spf_N_loop" xml:space="preserve"><value>lus: dit record staat al hierboven</value></data>
+  <data name="Spf_N_macro" xml:space="preserve"><value>gebruikt macro’s: niet uitgewerkt</value></data>
+  <data name="Spf_N_dns_error" xml:space="preserve"><value>DNS-opzoeking mislukt</value></data>
+  <data name="Spf_N_depth" xml:space="preserve"><value>te diep genest: niet uitgewerkt</value></data>
+  <data name="Spf_N_limit" xml:space="preserve"><value>afgekapt bij een veiligheidsgrens</value></data>
+  <data name="Spf_N_no_addresses" xml:space="preserve"><value>geen adressen gevonden</value></data>
+  <data name="Spf_N_exists" xml:space="preserve"><value>niet uitgewerkt: hangt af van de afzender</value></data>
+  <data name="Spf_N_ptr" xml:space="preserve"><value>niet uitgewerkt: ptr wordt afgeraden</value></data>
   <data name="RuleKey_any" xml:space="preserve"><value>Elke wijziging</value></data>
   <data name="RuleKey_ns" xml:space="preserve"><value>Nameservers (NS)</value></data>
   <data name="RuleKey_mx" xml:space="preserve"><value>Mailservers (MX)</value></data>

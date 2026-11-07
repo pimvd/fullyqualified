@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.RegularExpressions;
 using FullyQualified.Web;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -174,5 +175,84 @@ public class AlertRuleDbTests(PgFactory factory) : OrgTestBase<PgFactory>(factor
         await Run(asset.Id, Dns(ns: "ns9.example"));
         Assert.Empty(await Alarms(globex.Id));
         Assert.Empty(await Alarms(acme.Id));
+    }
+    // ---- the alarm button on the asset page ----
+
+    async Task<HttpResponseMessage> PostForm(HttpClient client, string tokenPage, string path, params (string, string)[] fields)
+    {
+        var page = await (await client.GetAsync(tokenPage)).Content.ReadAsStringAsync();
+        var token = Regex.Match(page, "name=\"__RequestVerificationToken\" value=\"([^\"]+)\"").Groups[1].Value;
+        var form = new List<KeyValuePair<string, string>> { new("__RequestVerificationToken", token) };
+        form.AddRange(fields.Select(f => new KeyValuePair<string, string>(f.Item1, f.Item2)));
+        return await client.PostAsync(path, new FormUrlEncodedContent(form));
+    }
+
+    async Task<Asset> AssetWithDns(Guid tenant)
+    {
+        var asset = await AddAsset(tenant, $"p.{tenant:N}.test.com");
+        using var scope = Scope();
+        var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+        db.Results.Add(new CheckResult { TenantId = tenant, AssetId = asset.Id, CheckType = "dns", Status = CheckStatus.Ok, Summary = "Sum_DnsOk", ValuesJson = "{\"ns\":\"ns1.example\",\"mx\":\"10 mail.example\"}" });
+        await db.SaveChangesAsync();
+        return asset;
+    }
+
+    async Task<List<AlertRule>> RulesOf(Guid tenant)
+    {
+        using var scope = Scope();
+        return await scope.ServiceProvider.GetRequiredService<AppDbContext>().AcrossTenants<AlertRule>().Where(r => r.TenantId == tenant).ToListAsync();
+    }
+
+    [DbFact]
+    public async Task An_admin_turns_an_alarm_on_and_off_for_one_dns_value_from_the_asset_page()
+    {
+        var org = await NewOrg();
+        var asset = await AssetWithDns(org.Id);
+        var admin = Factory.As(org.Admin);
+        var page = $"/assets/{asset.Id}";
+
+        Assert.Contains("Alarm on change", await admin.GetStringAsync(page));
+        var on = await PostForm(admin, page, $"{page}/alarm", ("check", "dns"), ("key", "ns"));
+        Assert.Equal(HttpStatusCode.Redirect, on.StatusCode);
+        var rule = Assert.Single(await RulesOf(org.Id));
+        Assert.Equal(("dns", "ns", asset.Id), (rule.CheckType, rule.Key, rule.AssetId));
+        Assert.Contains("Alarm on<", await admin.GetStringAsync(page));
+
+        await PostForm(admin, page, $"{page}/alarm", ("check", "dns"), ("key", "ns"));        // pressing it twice adds nothing
+        Assert.Single(await RulesOf(org.Id));
+
+        Assert.Equal(HttpStatusCode.Redirect, (await PostForm(admin, page, $"{page}/unalarm", ("check", "dns"), ("key", "ns"))).StatusCode);
+        Assert.Empty(await RulesOf(org.Id));
+    }
+
+    [DbFact]
+    public async Task The_alarm_button_is_for_admins_and_refuses_unknown_values_and_other_organizations()
+    {
+        var org = await NewOrg();
+        var other = await NewOrg();
+        var asset = await AssetWithDns(org.Id);
+        var theirs = await AssetWithDns(other.Id);
+        var page = $"/assets/{asset.Id}";
+
+        var viewer = Factory.As(org.Viewer);
+        Assert.DoesNotContain("Alarm on change", await viewer.GetStringAsync(page));
+        Assert.Equal(HttpStatusCode.Forbidden, (await PostForm(viewer, "/", $"{page}/alarm", ("check", "dns"), ("key", "ns"))).StatusCode);
+
+        var admin = Factory.As(org.Admin);
+        Assert.Equal(HttpStatusCode.BadRequest, (await PostForm(admin, page, $"{page}/alarm", ("check", "dns"), ("key", "bogus"))).StatusCode);
+        Assert.Equal(HttpStatusCode.NotFound, (await PostForm(admin, page, $"/assets/{theirs.Id}/alarm", ("check", "dns"), ("key", "ns"))).StatusCode);
+        Assert.Empty(await RulesOf(org.Id));
+        Assert.Empty(await RulesOf(other.Id));
+    }
+
+    [DbFact]
+    public async Task A_rule_for_every_asset_is_shown_on_the_asset_page_instead_of_a_button()
+    {
+        var org = await NewOrg();
+        var asset = await AssetWithDns(org.Id);
+        await Rule(org.Id, "dns", "ns");
+        var page = await Factory.As(org.Admin).GetStringAsync($"/assets/{asset.Id}");
+        Assert.Contains("Alarm on for every asset", page);
+        Assert.Single(Regex.Matches(page, "Alarm on change"));       // only the mail servers still offer the button
     }
 }

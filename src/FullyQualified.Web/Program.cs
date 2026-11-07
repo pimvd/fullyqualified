@@ -166,6 +166,7 @@ app.MapAlerts();
 app.MapAppSettings();
 app.MapEmailTests();
 app.MapToolbox();
+app.MapSpfTree();
 app.MapPlans();
 app.MapDiagnostics();
 app.MapSso();

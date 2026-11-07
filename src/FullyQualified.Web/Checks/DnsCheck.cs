@@ -63,6 +63,7 @@ public class DnsCheck(IConfiguration cfg) : ICheck
             values["dmarc.source"] = dmarc?.Source ?? "";
 
             if (spf == "") issues.Add("NoSpf");
+            else if (await SpfLookupsAsync(name, spf, ct) is { } lookups and > SpfLookupLimit) issues.Add($"SpfTooManyLookups:{lookups}");
             if (!sendsMail && mx.Count == 0) issues.Add("NoNullMx");
             if (dmarc is null) issues.Add("NoDmarc");
             else switch (MailRules.AppliedPolicy(dmarc, name))
@@ -128,6 +129,25 @@ public class DnsCheck(IConfiguration cfg) : ICheck
         values["_issues"] = string.Join(",", issues);
         var status = issues.Contains("DanglingCname") ? CheckStatus.Critical : issues.Count > 0 ? CheckStatus.Warning : CheckStatus.Ok;
         return new(status, issues.Count == 0 ? "Sum_DnsOk" : $"Sum_DnsIssues|{issues.Count}", values);
+    }
+
+    /// <summary>RFC 7208 section 4.6.4: more DNS lookups than this in one SPF evaluation and receivers answer permerror.</summary>
+    public const int SpfLookupLimit = 10;
+
+    /// <summary>
+    /// How many DNS lookups the SPF record needs, counting every include and redirect down the tree. Null when it was not worth following
+    /// (a record without includes or redirects needs no more than its own terms) or could not be followed in time. Partial answers only ever
+    /// undercount, so a count above the limit is always real.
+    /// </summary>
+    async Task<int?> SpfLookupsAsync(string name, string spf, CancellationToken ct)
+    {
+        var words = spf.Split([' ', '\t'], StringSplitOptions.RemoveEmptyEntries);
+        if (words.Length <= SpfLookupLimit && !words.Any(w => w.StartsWith("include:", StringComparison.OrdinalIgnoreCase) || w.StartsWith("redirect=", StringComparison.OrdinalIgnoreCase)))
+            return null;
+        using var budget = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        budget.CancelAfter(TimeSpan.FromSeconds(15));
+        try { return (await new SpfTreeBuilder(QueryAsync, expandAddresses: false).BuildAsync(name, budget.Token)).Lookups; }
+        catch (OperationCanceledException) when (!ct.IsCancellationRequested) { return null; }
     }
 
     /// <summary>The one place the primary resolver is asked; tests replace it with canned answers.</summary>

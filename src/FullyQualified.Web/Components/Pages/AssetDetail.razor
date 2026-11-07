@@ -143,6 +143,14 @@ else
                                 }
                             }
                             else { @kv.Value }
+                            @if (kv.Key == "spf")
+                            {
+                                <details class="spf-tree" data-url="/assets/@Id/spf-tree" data-labels="@SpfLabels">
+                                    <summary class="chip">@L["Spf_Tree"]</summary>
+                                    <div class="spf-tree-body" aria-live="polite"></div>
+                                </details>
+                            }
+                            @if (isAdmin && AlertRules.IsKnown("dns", kv.Key) && kv.Key != AlertRules.AnyKey) { @AlarmControl("dns", kv.Key) }
                         </dd>
                     }
                     </dl>
@@ -203,9 +211,12 @@ else
     </section>
 }
 
+<script src="/spf-tree.js" defer></script>
+
 @code {
     [CascadingParameter] HttpContext? Ctx { get; set; }
     bool canEdit => Roles.CanEdit(Ctx?.User);
+    bool isAdmin => Roles.IsAdmin(Ctx?.User);
     [Parameter] public Guid Id { get; set; }
     [SupplyParameterFromForm] DkimModel? Dkim { get; set; }
     bool dkimError;
@@ -217,6 +228,7 @@ else
     Asset? parent;
     List<CheckResult> results = [];
     List<CheckMute> mutes = [];
+    List<AlertRule> alarms = [];
     AssetStatus? status;
     readonly DateTimeOffset now = DateTimeOffset.UtcNow;
     static string Tomorrow => DateTime.UtcNow.AddDays(1).ToString("yyyy-MM-dd");
@@ -242,6 +254,7 @@ else
         results = (await Db.LatestResultsAsync()).Where(r => r.AssetId == Id).ToList();
         certs = await Db.Certificates.Where(c => c.AssetId == Id).OrderBy(c => c.NotAfter).ToListAsync();
         mutes = await Db.Mutes.Where(m => m.AssetId == Id).ToListAsync();
+        alarms = await Db.AlertRules.Where(r => r.AssetId == Id || r.AssetId == null).ToListAsync();
         reviewCounts = (await Db.ReviewHosts.CountAsync(h => h.ParentAssetId == Id && h.State == ReviewState.Pending), await Db.ReviewHosts.CountAsync(h => h.ParentAssetId == Id));
         discoverQueued = await Db.Jobs.AnyAsync(j => j.AssetId == Id && j.CheckType == "ct");
         status = StatusBoard.Build([asset], results, mutes, certs, now)[asset.Id];
@@ -299,6 +312,39 @@ else
             <button type="submit">@label</button>
         </form>
     </details>;
+
+    /// <summary>The words the SPF tree script puts on the page, as JSON: it only builds the tree, all text comes from the resource files.</summary>
+    string SpfLabels => System.Text.Json.JsonSerializer.Serialize(new Dictionary<string, string>
+    {
+        ["loading"] = L["Spf_Loading"], ["error"] = L["Spf_Error"], ["truncated"] = L["Spf_Truncated"],
+        ["lookups"] = L["Spf_Lookups"], ["lookupsOver"] = L["Spf_LookupsOver"],
+        ["k_domain"] = L["Spf_K_domain"], ["k_include"] = L["Spf_K_include"], ["k_redirect"] = L["Spf_K_redirect"], ["k_a"] = L["Spf_K_a"],
+        ["k_mx"] = L["Spf_K_mx"], ["k_host"] = L["Spf_K_host"], ["k_ip4"] = L["Spf_K_ip4"], ["k_ip6"] = L["Spf_K_ip6"], ["k_all"] = L["Spf_K_all"],
+        ["k_exists"] = L["Spf_K_exists"], ["k_ptr"] = L["Spf_K_ptr"], ["k_unknown"] = L["Spf_K_unknown"],
+        ["q_+"] = L["Spf_Q_pass"], ["q_-"] = L["Spf_Q_fail"], ["q_~"] = L["Spf_Q_softfail"], ["q_?"] = L["Spf_Q_neutral"],
+        ["n_no_record"] = L["Spf_N_no_record"], ["n_multiple"] = L["Spf_N_multiple"], ["n_loop"] = L["Spf_N_loop"], ["n_macro"] = L["Spf_N_macro"],
+        ["n_dns_error"] = L["Spf_N_dns_error"], ["n_depth"] = L["Spf_N_depth"], ["n_limit"] = L["Spf_N_limit"], ["n_no_addresses"] = L["Spf_N_no_addresses"],
+        ["n_exists"] = L["Spf_N_exists"], ["n_ptr"] = L["Spf_N_ptr"],
+    });
+
+    /// <summary>"Alarm on change" for one recorded value: adds a rule for this asset, or removes it. A rule for every asset is shown, not changed here.</summary>
+    RenderFragment AlarmControl(string check, string key)
+    {
+        var own = alarms.Any(r => r.AssetId == Id && r.CheckType == check && r.Key == key);
+        var everywhere = alarms.Any(r => r.AssetId is null && r.CheckType == check && (r.Key == key || r.Key == AlertRules.AnyKey));
+        var anyOnThis = alarms.Any(r => r.AssetId == Id && r.CheckType == check && r.Key == AlertRules.AnyKey);
+        return @<span class="alarm-ctl">
+            @if (everywhere || anyOnThis) { <span class="muted"><small>🔔 @(everywhere ? L["Alarm_Everywhere"].Value : L["Alarm_AnyChange"].Value)</small></span> }
+            else
+            {
+                <form method="post" action="/assets/@Id/@(own ? "unalarm" : "alarm")" class="mini">
+                    <AntiforgeryToken />
+                    <input type="hidden" name="check" value="@check" /><input type="hidden" name="key" value="@key" />
+                    <button class="chip @(own ? "on" : "")" title="@L[own ? "Alarm_RemoveHint" : "Alarm_AddHint"]">🔔 @L[own ? "Alarm_On" : "Alarm_Add"]</button>
+                </form>
+            }
+        </span>;
+    }
 
     RenderFragment UnmuteForm(string check, string code, string label) => @<form method="post" action="/assets/@asset!.Id/unmute" class="mini">
         <AntiforgeryToken />

@@ -71,6 +71,7 @@
   <data name="Issue_NoSpf" xml:space="preserve"><value>No SPF record</value></data>
   <data name="Issue_NoDmarc" xml:space="preserve"><value>No DMARC record</value></data>
   <data name="Issue_DmarcNone" xml:space="preserve"><value>DMARC policy is 'none'</value></data>
+  <data name="Issue_SpfTooManyLookups" xml:space="preserve"><value>SPF record needs {0} DNS lookups, over the limit of 10, so receivers treat it as an error (permerror)</value></data>
   <data name="Issue_NoNullMx" xml:space="preserve"><value>No MX record: publish a null MX if this name sends no mail</value></data>
   <data name="Issue_DmarcQuarantine" xml:space="preserve"><value>DMARC policy is 'quarantine' (reject is the goal)</value></data>
   <data name="Issue_DmarcSubdomainNotReject" xml:space="preserve"><value>DMARC subdomain policy (sp) is not 'reject'</value></data>
@@ -550,6 +551,13 @@ Publish one TXT record on {0} that starts with v=spf1, lists those includes, and
 A name may have only one SPF record. If one exists, merge the two instead of adding a second.
 Keep it to 10 DNS lookups in total, or receivers will ignore the record.
 Check the result with the command below, then scan again.</value></data>
+  <data name="Fix_SpfTooManyLookups_What" xml:space="preserve"><value>The SPF record of {0} needs {1} DNS lookups: every include, redirect, a, mx, exists and ptr counts, and so does everything inside the includes. Receiving servers stop at 10 and answer permerror, and many then treat all your mail as if SPF failed. That makes real mail more likely to land in spam, and with a DMARC policy of quarantine or reject it can be rejected when DKIM does not save it.</value></data>
+  <data name="Fix_SpfTooManyLookups_Steps" xml:space="preserve"><value>Open the SPF tree on the asset page to see which include costs the most lookups.
+Remove includes for services that no longer send mail as {0}.
+Replace a, mx and ptr terms with the ip4 and ip6 addresses they point to, if those addresses are stable. ip4 and ip6 cost no lookup.
+Move a sender that has its own mail stream to a subdomain with its own SPF record, for example news.{0}, and send its mail from that name.
+Avoid SPF flattening services unless you can keep them up to date: a flattened record that goes stale blocks real mail.
+Check the result with the command below, open the SPF tree to see the new count, then scan again.</value></data>
   <data name="Fix_NoDmarc_What" xml:space="preserve"><value>{0} has no DMARC policy. DMARC tells receiving servers what to do with mail that fails the SPF and DKIM checks, and sends you reports about who sends mail as your domain. Without it, spoofed mail is accepted and you cannot see abuse.</value></data>
   <data name="Fix_NoDmarc_Steps" xml:space="preserve"><value>Make sure SPF and DKIM already work for all your mail, or DMARC will reject real messages later.
 Create a mailbox, or use a DMARC reporting service, that receives the reports.
@@ -1035,6 +1043,44 @@ You do not need this search to monitor a domain: it only helps to find hostnames
   <data name="Err_InvalidRule" xml:space="preserve"><value>Choose a value of a check to alarm on.</value></data>
   <data name="Err_RuleExists" xml:space="preserve"><value>You already have this rule.</value></data>
   <data name="Err_TooManyRules" xml:space="preserve"><value>You have reached the maximum number of rules.</value></data>
+  <data name="Alarm_Add" xml:space="preserve"><value>Alarm on change</value></data>
+  <data name="Alarm_On" xml:space="preserve"><value>Alarm on</value></data>
+  <data name="Alarm_AddHint" xml:space="preserve"><value>Get an alarm when this value changes on this asset</value></data>
+  <data name="Alarm_RemoveHint" xml:space="preserve"><value>Stop alarming when this value changes on this asset</value></data>
+  <data name="Alarm_Everywhere" xml:space="preserve"><value>Alarm on for every asset</value></data>
+  <data name="Alarm_AnyChange" xml:space="preserve"><value>Alarm on any change of this check</value></data>
+  <data name="Spf_Tree" xml:space="preserve"><value>SPF tree</value></data>
+  <data name="Spf_Loading" xml:space="preserve"><value>Resolving the SPF record…</value></data>
+  <data name="Spf_Error" xml:space="preserve"><value>Could not resolve the SPF tree. Try again in a moment.</value></data>
+  <data name="Spf_Truncated" xml:space="preserve"><value>The tree was cut off at a safety limit, so some entries are not shown.</value></data>
+  <data name="Spf_Lookups" xml:space="preserve"><value>{0} DNS lookups (the limit is 10)</value></data>
+  <data name="Spf_LookupsOver" xml:space="preserve"><value>{0} DNS lookups: over the limit of 10, so receivers treat the record as an error (permerror)</value></data>
+  <data name="Spf_K_domain" xml:space="preserve"><value>SPF record</value></data>
+  <data name="Spf_K_include" xml:space="preserve"><value>include</value></data>
+  <data name="Spf_K_redirect" xml:space="preserve"><value>redirect</value></data>
+  <data name="Spf_K_a" xml:space="preserve"><value>a</value></data>
+  <data name="Spf_K_mx" xml:space="preserve"><value>mx</value></data>
+  <data name="Spf_K_host" xml:space="preserve"><value>mail server</value></data>
+  <data name="Spf_K_ip4" xml:space="preserve"><value>ip4</value></data>
+  <data name="Spf_K_ip6" xml:space="preserve"><value>ip6</value></data>
+  <data name="Spf_K_all" xml:space="preserve"><value>all</value></data>
+  <data name="Spf_K_exists" xml:space="preserve"><value>exists</value></data>
+  <data name="Spf_K_ptr" xml:space="preserve"><value>ptr</value></data>
+  <data name="Spf_K_unknown" xml:space="preserve"><value>unknown term</value></data>
+  <data name="Spf_Q_pass" xml:space="preserve"><value>pass</value></data>
+  <data name="Spf_Q_fail" xml:space="preserve"><value>fail</value></data>
+  <data name="Spf_Q_softfail" xml:space="preserve"><value>softfail</value></data>
+  <data name="Spf_Q_neutral" xml:space="preserve"><value>neutral</value></data>
+  <data name="Spf_N_no_record" xml:space="preserve"><value>no SPF record</value></data>
+  <data name="Spf_N_multiple" xml:space="preserve"><value>more than one SPF record (an error: the first is shown)</value></data>
+  <data name="Spf_N_loop" xml:space="preserve"><value>loop: this record is already above</value></data>
+  <data name="Spf_N_macro" xml:space="preserve"><value>uses macros: not expanded</value></data>
+  <data name="Spf_N_dns_error" xml:space="preserve"><value>DNS lookup failed</value></data>
+  <data name="Spf_N_depth" xml:space="preserve"><value>nested too deep: not expanded</value></data>
+  <data name="Spf_N_limit" xml:space="preserve"><value>cut off at a safety limit</value></data>
+  <data name="Spf_N_no_addresses" xml:space="preserve"><value>no addresses found</value></data>
+  <data name="Spf_N_exists" xml:space="preserve"><value>not expanded: depends on the sender</value></data>
+  <data name="Spf_N_ptr" xml:space="preserve"><value>not expanded: ptr is discouraged</value></data>
   <data name="RuleKey_any" xml:space="preserve"><value>Any change</value></data>
   <data name="RuleKey_ns" xml:space="preserve"><value>Name servers (NS)</value></data>
   <data name="RuleKey_mx" xml:space="preserve"><value>Mail servers (MX)</value></data>

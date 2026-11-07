@@ -63,6 +63,50 @@ public class DnsCheckTests
         Assert.Equal("", outcome.Values["dkim"]); // a sender is probed for the common selectors
     }
 
+    /// <summary>An apex whose SPF record includes <paramref name="includes"/> names, each of which includes <paramref name="nested"/> more.</summary>
+    static Stub WithSpfTree(int includes, int nested)
+    {
+        var dns = new Stub().Ns("example.com").Caa("example.com").Mx("example.com", (10, "mail.example.com")).Txt("_dmarc.example.com", "v=DMARC1; p=reject")
+            .Txt("example.com", "v=spf1 " + string.Join(' ', Enumerable.Range(0, includes).Select(i => $"include:i{i}.example.net")) + " ~all");
+        for (var i = 0; i < includes; i++)
+            dns.Txt($"i{i}.example.net", "v=spf1 " + string.Join(' ', Enumerable.Range(0, nested).Select(j => $"include:n{i}-{j}.example.net")) + " ~all");
+        for (var i = 0; i < includes; i++)
+            for (var j = 0; j < nested; j++) dns.Txt($"n{i}-{j}.example.net", $"v=spf1 ip4:192.0.2.{i + 1} ~all");
+        return dns;
+    }
+
+    [Fact]
+    public async Task An_spf_record_that_needs_more_than_ten_lookups_gets_a_warning_with_the_count()
+    {
+        // 3 includes, each with 3 nested includes: 3 + 9 = 12 lookups, although the record itself only names three.
+        var (outcome, issues) = await Run(WithSpfTree(3, 3), "example.com");
+        Assert.Equal(["SpfTooManyLookups:12"], issues);
+        Assert.Equal(CheckStatus.Warning, outcome.Status);
+    }
+
+    [Fact]
+    public async Task An_spf_record_at_exactly_ten_lookups_is_fine()
+    {
+        // 2 includes, each with 4 nested includes: 2 + 8 = 10.
+        var (_, issues) = await Run(WithSpfTree(2, 4), "example.com");
+        Assert.Empty(issues);
+    }
+
+    [Fact]
+    public async Task The_lookup_count_does_not_resolve_a_and_mx_and_a_plain_record_is_not_followed()
+    {
+        var plain = new Stub().Ns("example.com").Caa("example.com").Mx("example.com", (10, "mail.example.com"))
+            .Txt("example.com", "v=spf1 a mx ip4:192.0.2.1 ~all").Txt("_dmarc.example.com", "v=DMARC1; p=reject");
+        var (_, issues) = await Run(plain, "example.com");
+        Assert.Empty(issues);
+        Assert.Equal(1, plain.Queries.Count(q => q == "TXT example.com"));      // read once for the check, no second walk
+
+        var nested = new Stub().Ns("example.com").Caa("example.com").Mx("example.com", (10, "mail.example.com"))
+            .Txt("example.com", "v=spf1 include:i.example.net ~all").Txt("i.example.net", "v=spf1 a mx -all").Txt("_dmarc.example.com", "v=DMARC1; p=reject");
+        await Run(nested, "example.com");
+        Assert.DoesNotContain(nested.Queries, q => q.StartsWith("A ") && q.Contains("i.example.net") || q.StartsWith("MX i.example.net"));
+    }
+
     [Fact]
     public async Task Apex_with_sp_none_gets_the_subdomain_warning()
     {

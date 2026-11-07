@@ -44,7 +44,7 @@ public static class ToolboxEndpoints
 
     public static IServiceCollection AddToolbox(this IServiceCollection services) => services
         .AddSingleton<ToolNetwork>().AddSingleton<ToolLimits>().AddTransient<TlsTools>()
-        .AddTransient<MailTools>().AddTransient<SpfTools>();
+        .AddTransient<MailTools>().AddTransient<SpfTools>().AddTransient<SpfTreeBuilder>();
 
     public static void MapToolbox(this WebApplication app) => app.MapPost("/api/toolbox", Execute).RequireAuthorization();
 
