@@ -24,7 +24,7 @@ variable "dns_zone_name" {
 
 variable "acr_resource_group" {
   type    = string
-  default = "fq-shared-rg"
+  default = "rg-fq-shared-weu"
 }
 
 # Image tags. Dev gets the commit that was just built from the workflow (-var). Prd hard-codes them in envs/prd.tfvars,
@@ -117,4 +117,28 @@ variable "smtp_relay_password" {
   type      = string
   default   = ""
   sensitive = true
+}
+
+# Naming follows the Azure Cloud Adoption Framework: <type>-<workload>-<component>-<environment>-<region>.
+variable "region_short" {
+  description = "Short region code used in names (westeurope = weu)"
+  type        = string
+  default     = "weu"
+}
+
+# Tags (CAF recommended set): every resource carries Workload, Environment, Owner, Criticality, ManagedBy, Repository.
+variable "owner" {
+  type = string
+}
+
+variable "criticality" {
+  description = "Business criticality tag: low, medium, high or mission-critical"
+  type        = string
+  default     = "low"
+}
+
+variable "cost_center" {
+  description = "Optional CostCenter tag"
+  type        = string
+  default     = ""
 }

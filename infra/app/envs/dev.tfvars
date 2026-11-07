@@ -6,4 +6,5 @@ mail_from           = "fullyqualified@dev.fq.vandijkcloud.nl"
 smtp_relay_host     = "" # e.g. email-smtp.eu-west-1.amazonaws.com; set it to deliver real mail
 worker_max_replicas = 1
 budget_amount       = 75
+owner               = "pim.vandijk@teamrockstars.nl"
 budget_email        = "pim.vandijk@teamrockstars.nl"

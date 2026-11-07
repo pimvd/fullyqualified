@@ -52,13 +52,13 @@ jobs:
       - name: Names
         run: |
           sub="${{ vars.AZURE_SUBSCRIPTION_ID }}"
-          acr="fqacr${sub//-/}"; echo "ACR_NAME=${acr:0:24}" >> "$GITHUB_ENV"
-          st="fqtf${sub//-/}";  echo "STATE_ACCOUNT=${st:0:24}" >> "$GITHUB_ENV"
+          acr="crfq${sub//-/}"; echo "ACR_NAME=${acr:0:24}" >> "$GITHUB_ENV"
+          st="stfq${sub//-/}";  echo "STATE_ACCOUNT=${st:0:24}" >> "$GITHUB_ENV"
 
       - name: Init
         run: |
           terraform init -input=false \
-            -backend-config="resource_group_name=fq-shared-rg" \
+            -backend-config="resource_group_name=rg-fq-shared-weu" \
             -backend-config="storage_account_name=$STATE_ACCOUNT" \
             -backend-config="container_name=tfstate" \
             -backend-config="key=${ENV}.tfstate"
@@ -78,7 +78,7 @@ jobs:
           verification=$(terraform output -raw domain_verification_id)
           envname=$(terraform output -raw environment_name)
           domain=$(grep -E '^domain' "envs/${ENV}.tfvars" | cut -d'"' -f2)
-          rg="fq-${ENV}-rg"
+          rg="rg-fq-${ENV}-weu"
 
           bound=$(az containerapp hostname list -g "$rg" -n "$app" --query "[?name=='$domain'].bindingType | [0]" -o tsv)
           if [ "$bound" = "SniEnabled" ]; then

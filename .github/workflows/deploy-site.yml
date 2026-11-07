@@ -32,7 +32,7 @@ jobs:
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       - name: Deployment token
         run: |
-          token=$(az staticwebapp secrets list -n fq-site -g fq-shared-rg --query properties.apiKey -o tsv)
+          token=$(az staticwebapp secrets list -n stapp-fq-site-weu -g rg-fq-shared-weu --query properties.apiKey -o tsv)
           echo "::add-mask::$token"
           echo "SWA_TOKEN=$token" >> "$GITHUB_ENV"
       - uses: Azure/static-web-apps-deploy@v1
@@ -43,12 +43,12 @@ jobs:
           skip_app_build: true
       - name: Custom domain
         run: |
-          default=$(az staticwebapp show -n fq-site -g fq-shared-rg --query defaultHostname -o tsv)
-          bound=$(az staticwebapp hostname list -n fq-site -g fq-shared-rg --query "[?name=='$SITE_DOMAIN'].status | [0]" -o tsv)
+          default=$(az staticwebapp show -n stapp-fq-site-weu -g rg-fq-shared-weu --query defaultHostname -o tsv)
+          bound=$(az staticwebapp hostname list -n stapp-fq-site-weu -g rg-fq-shared-weu --query "[?name=='$SITE_DOMAIN'].status | [0]" -o tsv)
           if [ "$bound" = "Ready" ]; then
             echo "Site is live on \`$SITE_DOMAIN\`." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
-          az staticwebapp hostname set -n fq-site -g fq-shared-rg --hostname "$SITE_DOMAIN" \
+          az staticwebapp hostname set -n stapp-fq-site-weu -g rg-fq-shared-weu --hostname "$SITE_DOMAIN" \
             --validation-method dns-txt-token -o none \
             || echo "Domain not bound yet: is the zone delegated? Re-run after the NS records exist." >> "$GITHUB_STEP_SUMMARY"

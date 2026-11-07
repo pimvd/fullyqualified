@@ -1,10 +1,12 @@
 // Storage for the Terraform state. This is the only Bicep in the repository: Terraform cannot create its own state store.
 param name string
 param location string = resourceGroup().location
+param tags object = {}
 
 resource storage 'Microsoft.Storage/storageAccounts@2023-05-01' = {
   name: name
   location: location
+  tags: tags
   kind: 'StorageV2'
   sku: { name: 'Standard_LRS' }
   properties: {

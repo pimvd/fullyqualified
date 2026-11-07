@@ -34,15 +34,15 @@ jobs:
       - id: names
         run: |
           sub="${{ vars.AZURE_SUBSCRIPTION_ID }}"
-          acr="fqacr${sub//-/}"; echo "acr=${acr:0:24}" >> "$GITHUB_OUTPUT"
-          st="fqtf${sub//-/}";  echo "STATE_ACCOUNT=${st:0:24}" >> "$GITHUB_ENV"
+          acr="crfq${sub//-/}"; echo "acr=${acr:0:24}" >> "$GITHUB_OUTPUT"
+          st="stfq${sub//-/}";  echo "STATE_ACCOUNT=${st:0:24}" >> "$GITHUB_ENV"
       - run: |
           terraform init -input=false \
-            -backend-config="resource_group_name=fq-shared-rg" \
+            -backend-config="resource_group_name=rg-fq-shared-weu" \
             -backend-config="storage_account_name=$STATE_ACCOUNT" \
             -backend-config="container_name=tfstate" \
             -backend-config="key=shared.tfstate"
-      - run: terraform apply -input=false -auto-approve -var "acr_name=${{ steps.names.outputs.acr }}"
+      - run: terraform apply -input=false -auto-approve -var "acr_name=${{ steps.names.outputs.acr }}" -var "owner=pim.vandijk@teamrockstars.nl"
       - name: Name servers
         run: |
           {

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # One-time setup, safe to re-run. Creates what Terraform itself needs before it can run:
-#   - the Terraform state storage in fq-shared-rg (Bicep: infra/bootstrap/state.bicep). The registry is Terraform (infra/shared).
-#   - the environment resource group (fq-<env>-rg)
+#   - the Terraform state storage in rg-fq-shared-weu (Bicep: infra/bootstrap/state.bicep). The registry is Terraform (infra/shared).
+#   - the environment resource group (rg-fq-<env>-weu)
 #   - passwordless GitHub -> Azure access (OIDC): one identity that builds images, one per environment
 # Usage: infra/bootstrap.sh dev       (az login first, as someone who may create app registrations and role assignments)
 #        infra/bootstrap.sh prd       (later)
@@ -12,19 +12,20 @@ REPO="pimvd/fullyqualified"
 LOCATION="${AZURE_LOCATION:-westeurope}"
 SUB=$(az account show --query id -o tsv)
 TENANT=$(az account show --query tenantId -o tsv)
-SHARED_RG="fq-shared-rg"
-ENV_RG="fq-${ENV}-rg"
+SHARED_RG="rg-fq-shared-weu"
+ENV_RG="rg-fq-${ENV}-weu"
 # the same name the workflows derive from the subscription id
-STATE="fqtf${SUB//-/}"; STATE="${STATE:0:24}"
+STATE="stfq${SUB//-/}"; STATE="${STATE:0:24}"
 
 for p in Microsoft.App Microsoft.OperationalInsights Microsoft.DBforPostgreSQL Microsoft.ContainerRegistry \
          Microsoft.ManagedIdentity Microsoft.Consumption Microsoft.Storage Microsoft.Network Microsoft.Web; do
   az provider register -n "$p" --wait -o none
 done
 
-az group create -n "$SHARED_RG" -l "$LOCATION" -o none
-az group create -n "$ENV_RG" -l "$LOCATION" -o none
-az deployment group create -g "$SHARED_RG" -f "$(dirname "$0")/bootstrap/state.bicep" -p name="$STATE" -o none
+TAGS_BASE="Workload=fullyqualified ManagedBy=bootstrap Repository=${REPO} Owner=$(az account show --query user.name -o tsv)"
+az group create -n "$SHARED_RG" -l "$LOCATION" --tags $TAGS_BASE Environment=shared Criticality=low -o none
+az group create -n "$ENV_RG" -l "$LOCATION" --tags $TAGS_BASE Environment="$ENV" Criticality=low -o none
+az deployment group create -g "$SHARED_RG" -f "$(dirname "$0")/bootstrap/state.bicep" -p name="$STATE" tags="{\"Workload\":\"fullyqualified\",\"Environment\":\"shared\",\"ManagedBy\":\"bootstrap\"}" -o none
 STATE_ID=$(az storage account show -n "$STATE" -g "$SHARED_RG" --query id -o tsv)
 SHARED_ID=$(az group show -n "$SHARED_RG" --query id -o tsv)
 

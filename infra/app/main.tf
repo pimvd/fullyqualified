@@ -1,5 +1,5 @@
 # FullyQualified on Azure Container Apps (ADR 0014). One state and one resource group per environment.
-# The resource group (fq-<env>-rg), the shared container registry and the state storage are created by infra/bootstrap.sh.
+# The resource group (rg-fq-<env>-weu), the shared container registry and the state storage are created by infra/bootstrap.sh.
 
 terraform {
   required_version = ">= 1.9"
@@ -23,7 +23,7 @@ provider "azurerm" {
 }
 
 data "azurerm_resource_group" "this" {
-  name = "fq-${var.environment}-rg"
+  name = "rg-fq-${var.environment}-${var.region_short}"
 }
 
 data "azurerm_container_registry" "shared" {
@@ -38,9 +38,9 @@ data "azurerm_dns_zone" "fq" {
 
 locals {
   record_name = trimsuffix(var.domain, ".${var.dns_zone_name}")
-  prefix   = "fq-${var.environment}"
-  location = data.azurerm_resource_group.this.location
-  registry = data.azurerm_container_registry.shared.login_server
+  suffix      = "${var.environment}-${var.region_short}"
+  location    = data.azurerm_resource_group.this.location
+  registry    = data.azurerm_container_registry.shared.login_server
 
   connection_string = "Host=${azurerm_postgresql_flexible_server.pg.fqdn};Database=fullyqualified;Username=fqadmin;Password=${random_password.pg.result};SSL Mode=Require"
 
@@ -49,11 +49,22 @@ locals {
     ASPNETCORE_FORWARDEDHEADERS_ENABLED = "true"
     Scanning__AllowPrivateAddresses     = "false"
     Dns__CompareResolvers               = "1.1.1.1,9.9.9.9,8.8.8.8"
-    Alerts__Email__Host                 = "${local.prefix}-postfix"
+    Alerts__Email__Host                 = "ca-fq-postfix-${local.suffix}"
     Alerts__Email__Port                 = "25"
     Alerts__Email__Ssl                  = "false"
     Alerts__Email__From                 = var.mail_from
   }
+}
+
+locals {
+  tags = merge({
+    Workload    = "fullyqualified"
+    Environment = var.environment
+    Owner       = var.owner
+    Criticality = var.criticality
+    ManagedBy   = "terraform"
+    Repository  = "pimvd/fullyqualified"
+  }, var.cost_center == "" ? {} : { CostCenter = var.cost_center })
 }
 
 resource "random_string" "suffix" {
@@ -70,9 +81,11 @@ resource "random_password" "pg" {
 # ---- identity: lets the container apps pull from the shared registry ----
 
 resource "azurerm_user_assigned_identity" "apps" {
-  name                = "${local.prefix}-id"
+  name                = "id-fq-${local.suffix}"
   resource_group_name = data.azurerm_resource_group.this.name
   location            = local.location
+
+  tags = local.tags
 }
 
 resource "azurerm_role_assignment" "acr_pull" {
@@ -84,18 +97,20 @@ resource "azurerm_role_assignment" "acr_pull" {
 # ---- logs: the first 5 GB a month are free, the daily cap stops ingestion above 0.2 GB a day ----
 
 resource "azurerm_log_analytics_workspace" "law" {
-  name                = "${local.prefix}-law"
+  name                = "log-fq-${local.suffix}"
   resource_group_name = data.azurerm_resource_group.this.name
   location            = local.location
   sku                 = "PerGB2018"
   retention_in_days   = 30
   daily_quota_gb      = 0.2
+
+  tags = local.tags
 }
 
 # ---- database: reached over its public endpoint with TLS (see ADR 0014 for the trade-off) ----
 
 resource "azurerm_postgresql_flexible_server" "pg" {
-  name                          = "${local.prefix}-pg-${random_string.suffix.result}"
+  name                          = "psql-fq-${local.suffix}-${random_string.suffix.result}"
   resource_group_name           = data.azurerm_resource_group.this.name
   location                      = local.location
   version                       = "17"
@@ -110,6 +125,8 @@ resource "azurerm_postgresql_flexible_server" "pg" {
   lifecycle {
     ignore_changes = [zone]
   }
+
+  tags = local.tags
 }
 
 resource "azurerm_postgresql_flexible_server_database" "fq" {
@@ -130,14 +147,16 @@ resource "azurerm_postgresql_flexible_server_firewall_rule" "azure" {
 # ---- container apps: web (UI + migrations) and worker (scans, scheduler, retention, alarms) ----
 
 resource "azurerm_container_app_environment" "env" {
-  name                       = "${local.prefix}-env"
+  name                       = "cae-fq-${local.suffix}"
   resource_group_name        = data.azurerm_resource_group.this.name
   location                   = local.location
   log_analytics_workspace_id = azurerm_log_analytics_workspace.law.id
+
+  tags = local.tags
 }
 
 resource "azurerm_container_app" "web" {
-  name                         = "${local.prefix}-web"
+  name                         = "ca-fq-web-${local.suffix}"
   resource_group_name          = data.azurerm_resource_group.this.name
   container_app_environment_id = azurerm_container_app_environment.env.id
   revision_mode                = "Single"
@@ -219,10 +238,12 @@ resource "azurerm_container_app" "web" {
     # the custom domain is bound by the deploy workflow (az containerapp hostname bind)
     ignore_changes = [ingress[0].custom_domain]
   }
+
+  tags = local.tags
 }
 
 resource "azurerm_container_app" "worker" {
-  name                         = "${local.prefix}-worker"
+  name                         = "ca-fq-worker-${local.suffix}"
   resource_group_name          = data.azurerm_resource_group.this.name
   container_app_environment_id = azurerm_container_app_environment.env.id
   revision_mode                = "Single"
@@ -269,12 +290,14 @@ resource "azurerm_container_app" "worker" {
 
   # the web app runs the migrations on startup; the worker comes up after the database exists
   depends_on = [azurerm_role_assignment.acr_pull, azurerm_container_app.web]
+
+  tags = local.tags
 }
 
 # Private mail relay (deploy/postfix): reachable inside the environment only, on TCP 25. Azure blocks outbound port 25,
 # so it needs a smarthost (smtp_relay_host, port 587) to deliver anything. The queue is not persisted across restarts.
 resource "azurerm_container_app" "postfix" {
-  name                         = "${local.prefix}-postfix"
+  name                         = "ca-fq-postfix-${local.suffix}"
   resource_group_name          = data.azurerm_resource_group.this.name
   container_app_environment_id = azurerm_container_app_environment.env.id
   revision_mode                = "Single"
@@ -339,6 +362,8 @@ resource "azurerm_container_app" "postfix" {
   }
 
   depends_on = [azurerm_role_assignment.acr_pull]
+
+  tags = local.tags
 }
 
 # ---- DNS: the records Container Apps needs to bind the custom domain ----
@@ -349,6 +374,8 @@ resource "azurerm_dns_cname_record" "web" {
   resource_group_name = data.azurerm_dns_zone.fq.resource_group_name
   ttl                 = 300
   record              = azurerm_container_app.web.ingress[0].fqdn
+
+  tags = local.tags
 }
 
 resource "azurerm_dns_txt_record" "web_verification" {
@@ -360,12 +387,14 @@ resource "azurerm_dns_txt_record" "web_verification" {
   record {
     value = azurerm_container_app_environment.env.custom_domain_verification_id
   }
+
+  tags = local.tags
 }
 
 # ---- cost guard ----
 
 resource "azurerm_consumption_budget_resource_group" "budget" {
-  name              = "${local.prefix}-budget"
+  name              = "budget-fq-${local.suffix}"
   resource_group_id = data.azurerm_resource_group.this.id
   amount            = var.budget_amount
   time_grain        = "Monthly"

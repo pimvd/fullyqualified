@@ -12,4 +12,6 @@ smtp_relay_host     = ""
 web_max_replicas    = 2
 worker_max_replicas = 2
 budget_amount       = 75
+owner               = "pim.vandijk@teamrockstars.nl"
 budget_email        = "pim.vandijk@teamrockstars.nl"
+criticality         = "medium"

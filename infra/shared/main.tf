@@ -1,5 +1,5 @@
 # Shared by all environments (ADR 0014): the container registry and the marketing site.
-# The resource group fq-shared-rg and the state storage are created by infra/bootstrap.sh (Bicep for the state).
+# The resource group rg-fq-shared-weu and the state storage are created by infra/bootstrap.sh (Bicep for the state).
 
 terraform {
   required_version = ">= 1.9"
@@ -27,8 +27,23 @@ variable "acr_name" {
   type        = string
 }
 
+locals {
+  tags = {
+    Workload    = "fullyqualified"
+    Environment = "shared"
+    Owner       = var.owner
+    Criticality = "low"
+    ManagedBy   = "terraform"
+    Repository  = "pimvd/fullyqualified"
+  }
+}
+
+variable "owner" {
+  type = string
+}
+
 data "azurerm_resource_group" "shared" {
-  name = "fq-shared-rg"
+  name = "rg-fq-shared-weu"
 }
 
 resource "azurerm_container_registry" "acr" {
@@ -37,21 +52,27 @@ resource "azurerm_container_registry" "acr" {
   location            = data.azurerm_resource_group.shared.location
   sku                 = "Basic"
   admin_enabled       = false
+
+  tags = local.tags
 }
 
 # Marketing site (the static files in site/). Free tier: no cost. The custom domain is bound by the deploy-site workflow.
 resource "azurerm_static_web_app" "site" {
-  name                = "fq-site"
+  name                = "stapp-fq-site-weu"
   resource_group_name = data.azurerm_resource_group.shared.name
   location            = "westeurope"
   sku_tier            = "Free"
   sku_size            = "Free"
+
+  tags = local.tags
 }
 
 # DNS: delegate this zone once, at the provider of vandijkcloud.nl, with NS records for the name servers in the output.
 resource "azurerm_dns_zone" "fq" {
   name                = var.dns_zone_name
   resource_group_name = data.azurerm_resource_group.shared.name
+
+  tags = local.tags
 }
 
 # The zone apex cannot hold a CNAME, so the marketing site is an alias record to the Static Web App.
