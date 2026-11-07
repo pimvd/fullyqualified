@@ -16,7 +16,7 @@ The existing admin authorization, per-tenant send limits and tenant-scoped test 
 
 ## Consequences
 
-External delivery requires outbound TCP port 25, a suitable public IP and hostname, reverse DNS and any provider-specific SMTP enablement. Network or reputation failures can prevent delivery independently of DMARC. Submission on the private Docker network is plaintext; outbound delivery uses opportunistic TLS. There is no public inbound mail service or mailbox hosting.
+External delivery requires outbound TCP port 25 unless an authenticated relay is configured (`FQ_RELAY_HOST`, with `FQ_RELAY_PORT` 587, 465 or 2525; TLS is always required to the relay), a suitable public IP and hostname, reverse DNS and any provider-specific SMTP enablement. Network or reputation failures can prevent delivery independently of DMARC. Submission on the private Docker network is plaintext; outbound delivery uses opportunistic TLS. There is no public inbound mail service or mailbox hosting.
 
 The relay is also the default SMTP route for alarms and invitations. Operators can override the server-wide SMTP settings to use an external provider instead. A dedicated test route and a production alarm provider can be considered separately if both are needed simultaneously.
 

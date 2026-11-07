@@ -68,7 +68,20 @@ For external delivery, copy `.env.example` to `.env` and set `FQ_MAIL_HOSTNAME` 
 
 Admins can open **Alerts → Send a DMARC test email**, enter From, To, Subject and Message, and submit the message. Postfix preserves the sender and does not add DKIM signatures, so it can test unauthorized sending for domains you are authorized to test. For that test, do not authorize this test relay in the tested domain's SPF record. Check the receiving server's `Authentication-Results` header for the DMARC result: a queued message or a rejection alone does not establish that result. A message may also be delayed or rejected because of IP reputation, reverse DNS or network restrictions. Queue acceptance is not confirmation of delivery.
 
-This relay is also the default route for alarm emails and invitations. You can use an external SMTP service by setting `FQ_SMTP_HOST`, `FQ_SMTP_PORT`, `FQ_SMTP_SSL`, `FQ_SMTP_USER` and `FQ_SMTP_PASSWORD` in `.env`. `Ssl=true` enables STARTTLS; use the provider's STARTTLS port. Change `FQ_SMTP_SUBNET` if the default `172.30.25.0/29` overlaps an existing network. SMTP is unencrypted inside this dedicated Docker network; outgoing delivery uses opportunistic TLS.
+This relay is also the default route for alarm emails and invitations. You can use an external SMTP service by setting `FQ_SMTP_HOST`, `FQ_SMTP_PORT`, `FQ_SMTP_SSL`, `FQ_SMTP_USER` and `FQ_SMTP_PASSWORD` in `.env`. `Ssl=true` enables STARTTLS; use the provider's STARTTLS port (implicit TLS on port 465 is supported only on the Postfix relay route below). Change `FQ_SMTP_SUBNET` if the default `172.30.25.0/29` overlaps an existing network. SMTP is unencrypted inside this dedicated Docker network; outgoing delivery uses opportunistic TLS.
+
+#### Delivering through a relay when port 25 is blocked
+
+Without a relay, Postfix delivers directly to the recipient's mail server on outbound TCP port 25, which many ISPs and hosts block (the queue then shows `Connection timed out`). To send through an authenticated relay instead, set these in `.env` and run `docker compose up -d postfix`:
+
+```
+FQ_RELAY_HOST=smtp.example.com
+FQ_RELAY_PORT=587        # 587 (STARTTLS, default), 465 (implicit TLS) or 2525 (STARTTLS)
+FQ_RELAY_USER=...
+FQ_RELAY_PASSWORD=...
+```
+
+The application still submits to Postfix as before; only the outbound route changes, and Postfix always requires TLS to the relay. This is separate from `FQ_SMTP_HOST`, which replaces Postfix entirely. Check `docker compose exec postfix postqueue -p` and `docker compose logs postfix` for delivery results. Relays often require a verified sender domain, and some sign messages with their own DKIM and SPF, so a DMARC test may pass unexpectedly: use a relay that preserves a sender it does not authorize. A relay that blocks your IP after failed logins answers with `554 5.7.1 ... blocked`; stop retrying (`postsuper -h ALL`) until it is lifted.
 
 When running the application outside Docker, configure its existing `Alerts__Email__*` environment variables with a reachable SMTP server. The Compose hostname `postfix` is available only to containers on the mail network; the relay is deliberately not exposed on the host.
 
