@@ -1,6 +1,6 @@
 name: deploy
 # Reusable: terraform apply for one environment, then bind the custom domain.
-# image_tag set: both containers use it (dev). Empty: the tags come from infra/envs/<environment>.tfvars (prd).
+# image_tag set: all three images use it (dev). Empty: the tags come from infra/app/envs/<environment>.tfvars (prd).
 on:
   workflow_call:
     inputs:
@@ -23,7 +23,7 @@ jobs:
     concurrency: deploy-${{ inputs.environment }}
     defaults:
       run:
-        working-directory: infra
+        working-directory: infra/app
     env:
       ENV: ${{ inputs.environment }}
       ARM_USE_OIDC: "true"
@@ -32,6 +32,8 @@ jobs:
       ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
       ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       TF_VAR_setup_code: ${{ secrets.SETUP_CODE }}
+      TF_VAR_smtp_relay_user: ${{ secrets.SMTP_RELAY_USER }}
+      TF_VAR_smtp_relay_password: ${{ secrets.SMTP_RELAY_PASSWORD }}
       TF_IN_AUTOMATION: "true"
     steps:
       - uses: actions/checkout@v4
@@ -65,7 +67,7 @@ jobs:
         run: |
           args=(-input=false -auto-approve -var-file="envs/${ENV}.tfvars" -var "acr_name=$ACR_NAME")
           if [ -n "${{ inputs.image_tag }}" ]; then
-            args+=(-var "web_image_tag=${{ inputs.image_tag }}" -var "worker_image_tag=${{ inputs.image_tag }}")
+            args+=(-var "web_image_tag=${{ inputs.image_tag }}" -var "worker_image_tag=${{ inputs.image_tag }}" -var "postfix_image_tag=${{ inputs.image_tag }}")
           fi
           terraform apply "${args[@]}"
 

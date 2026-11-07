@@ -34,7 +34,7 @@ data "azurerm_container_registry" "shared" {
 locals {
   prefix   = "fq-${var.environment}"
   location = data.azurerm_resource_group.this.location
-  image    = "${data.azurerm_container_registry.shared.login_server}/fullyqualified"
+  registry = data.azurerm_container_registry.shared.login_server
 
   connection_string = "Host=${azurerm_postgresql_flexible_server.pg.fqdn};Database=fullyqualified;Username=fqadmin;Password=${random_password.pg.result};SSL Mode=Require"
 
@@ -43,6 +43,10 @@ locals {
     ASPNETCORE_FORWARDEDHEADERS_ENABLED = "true"
     Scanning__AllowPrivateAddresses     = "false"
     Dns__CompareResolvers               = "1.1.1.1,9.9.9.9,8.8.8.8"
+    Alerts__Email__Host                 = "${local.prefix}-postfix"
+    Alerts__Email__Port                 = "25"
+    Alerts__Email__Ssl                  = "false"
+    Alerts__Email__From                 = var.mail_from
   }
 }
 
@@ -170,17 +174,13 @@ resource "azurerm_container_app" "web" {
 
     container {
       name   = "web"
-      image  = "${local.image}:${var.web_image_tag}"
+      image  = "${local.registry}/fq-web:${var.web_image_tag}"
       cpu    = 0.5
       memory = "1Gi"
 
       env {
         name        = "ConnectionStrings__Default"
         secret_name = "db-connection"
-      }
-      env {
-        name  = "Hosting__Role"
-        value = "web"
       }
       env {
         name  = "Auth__Origin"
@@ -207,7 +207,7 @@ resource "azurerm_container_app" "web" {
     }
   }
 
-  depends_on = [azurerm_role_assignment.acr_pull, azurerm_postgresql_flexible_server_database.fq]
+  depends_on = [azurerm_role_assignment.acr_pull, azurerm_postgresql_flexible_server_database.fq, azurerm_container_app.postfix]
 
   lifecycle {
     # the custom domain is bound by the deploy workflow (az containerapp hostname bind)
@@ -243,17 +243,13 @@ resource "azurerm_container_app" "worker" {
 
     container {
       name   = "worker"
-      image  = "${local.image}:${var.worker_image_tag}"
+      image  = "${local.registry}/fq-worker:${var.worker_image_tag}"
       cpu    = 0.5
       memory = "1Gi"
 
       env {
         name        = "ConnectionStrings__Default"
         secret_name = "db-connection"
-      }
-      env {
-        name  = "Hosting__Role"
-        value = "worker"
       }
       dynamic "env" {
         for_each = local.common_env
@@ -267,6 +263,76 @@ resource "azurerm_container_app" "worker" {
 
   # the web app runs the migrations on startup; the worker comes up after the database exists
   depends_on = [azurerm_role_assignment.acr_pull, azurerm_container_app.web]
+}
+
+# Private mail relay (deploy/postfix): reachable inside the environment only, on TCP 25. Azure blocks outbound port 25,
+# so it needs a smarthost (smtp_relay_host, port 587) to deliver anything. The queue is not persisted across restarts.
+resource "azurerm_container_app" "postfix" {
+  name                         = "${local.prefix}-postfix"
+  resource_group_name          = data.azurerm_resource_group.this.name
+  container_app_environment_id = azurerm_container_app_environment.env.id
+  revision_mode                = "Single"
+
+  identity {
+    type         = "UserAssigned"
+    identity_ids = [azurerm_user_assigned_identity.apps.id]
+  }
+
+  registry {
+    server   = data.azurerm_container_registry.shared.login_server
+    identity = azurerm_user_assigned_identity.apps.id
+  }
+
+  secret {
+    name  = "relay-password"
+    value = var.smtp_relay_password == "" ? "unset" : var.smtp_relay_password
+  }
+
+  ingress {
+    external_enabled = false
+    target_port      = 25
+    exposed_port     = 25
+    transport        = "tcp"
+    traffic_weight {
+      latest_revision = true
+      percentage      = 100
+    }
+  }
+
+  template {
+    min_replicas = 1
+    max_replicas = 1
+
+    container {
+      name   = "postfix"
+      image  = "${local.registry}/fq-postfix:${var.postfix_image_tag}"
+      cpu    = 0.25
+      memory = "0.5Gi"
+
+      env {
+        name  = "POSTFIX_HOSTNAME"
+        value = var.mail_hostname
+      }
+      env {
+        name  = "POSTFIX_MYNETWORKS"
+        value = var.postfix_networks
+      }
+      env {
+        name  = "POSTFIX_RELAY_HOST"
+        value = var.smtp_relay_host
+      }
+      env {
+        name  = "POSTFIX_RELAY_USER"
+        value = var.smtp_relay_user
+      }
+      env {
+        name        = "POSTFIX_RELAY_PASSWORD"
+        secret_name = "relay-password"
+      }
+    }
+  }
+
+  depends_on = [azurerm_role_assignment.acr_pull]
 }
 
 # ---- cost guard ----

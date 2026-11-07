@@ -1,12 +1,12 @@
 name: deploy-prd
-# Prd deploys exactly the image tags written in infra/envs/prd.tfvars. A release is a reviewed PR that changes them.
+# Prd deploys exactly the image tags written in infra/app/envs/prd.tfvars. A release is a reviewed PR that changes them.
 # Add required reviewers to the `prd` GitHub environment so every run waits for approval.
 # Disabled until the repository variable PRD_ENABLED is set to true.
 on:
   push:
     branches: [master]
     paths:
-      - "infra/envs/prd.tfvars"
+      - "infra/app/envs/prd.tfvars"
   workflow_dispatch:
 
 permissions:

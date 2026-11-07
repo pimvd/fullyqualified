@@ -1,15 +1,17 @@
 name: release
-# Merge to master: build the image once, push it to the shared registry, deploy that commit to dev.
-# Prd is never deployed from here: its image tags are hard-coded in infra/envs/prd.tfvars (see deploy-prd).
+# Merge to master: make sure the shared infra exists, build the three images once, deploy that commit to dev.
+# Prd is never deployed from here: its image tags are hard-coded in infra/app/envs/prd.tfvars (see deploy-prd).
 on:
   push:
     branches: [master]
     paths:
       - "src/**"
       - "Dockerfile"
+      - "deploy/postfix/**"
       - "infra/**"
       - ".github/workflows/release.yml"
       - ".github/workflows/deploy.yml"
+      - ".github/workflows/shared.yml"
   workflow_dispatch:
 
 permissions:
@@ -17,10 +19,30 @@ permissions:
   contents: read
 
 jobs:
+  shared:
+    uses: ./.github/workflows/shared.yml
+    secrets: inherit
+
   build:
+    needs: shared
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.tag.outputs.tag }}
+    strategy:
+      matrix:
+        include:
+          - image: fq-web
+            context: .
+            file: Dockerfile
+            target: web
+          - image: fq-worker
+            context: .
+            file: Dockerfile
+            target: worker
+          - image: fq-postfix
+            context: deploy/postfix
+            file: deploy/postfix/Dockerfile
+            target: ""
     steps:
       - uses: actions/checkout@v4
       - id: tag
@@ -32,15 +54,15 @@ jobs:
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
       - name: Build and push
         run: |
-          sub="${{ vars.AZURE_SUBSCRIPTION_ID }}"
-          acr="fqacr${sub//-/}"; acr="${acr:0:24}"
+          acr="${{ needs.shared.outputs.acr_name }}"
           az acr login -n "$acr"
-          image="$acr.azurecr.io/fullyqualified:${{ steps.tag.outputs.tag }}"
-          # skip the build when this commit was already pushed (re-run)
+          image="$acr.azurecr.io/${{ matrix.image }}:${{ steps.tag.outputs.tag }}"
           if docker manifest inspect "$image" >/dev/null 2>&1; then
             echo "$image already exists"
           else
-            docker build -t "$image" .
+            target=""
+            [ -n "${{ matrix.target }}" ] && target="--target ${{ matrix.target }}"
+            docker build $target -f "${{ matrix.file }}" -t "$image" "${{ matrix.context }}"
             docker push "$image"
           fi
           echo "Pushed \`$image\`" >> "$GITHUB_STEP_SUMMARY"

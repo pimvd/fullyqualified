@@ -40,6 +40,14 @@ variable "worker_image_tag" {
   }
 }
 
+variable "postfix_image_tag" {
+  type = string
+  validation {
+    condition     = length(var.postfix_image_tag) > 0 && !startswith(var.postfix_image_tag, "REPLACE")
+    error_message = "Set postfix_image_tag to a tag that exists in the registry."
+  }
+}
+
 variable "web_max_replicas" {
   type    = number
   default = 1
@@ -70,4 +78,38 @@ variable "budget_start_date" {
   description = "First day of a month, RFC3339"
   type        = string
   default     = "2026-11-01T00:00:00Z"
+}
+
+variable "mail_hostname" {
+  description = "Public host name the mail relay announces (should match its outbound IP and reverse DNS, or that of the smarthost)"
+  type        = string
+}
+
+variable "mail_from" {
+  description = "Sender address of alert mail"
+  type        = string
+}
+
+variable "postfix_networks" {
+  description = "IPv4 ranges allowed to submit mail. The relay is only reachable inside the container app environment."
+  type        = string
+  default     = "10.0.0.0/8 100.64.0.0/10 172.16.0.0/12"
+}
+
+variable "smtp_relay_host" {
+  description = "Smarthost the relay delivers through on port 587 (SES, Brevo, Mailgun, ...). Empty: try direct delivery, which Azure blocks."
+  type        = string
+  default     = ""
+}
+
+variable "smtp_relay_user" {
+  type      = string
+  default   = ""
+  sensitive = true
+}
+
+variable "smtp_relay_password" {
+  type      = string
+  default   = ""
+  sensitive = true
 }
