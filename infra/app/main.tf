@@ -31,7 +31,13 @@ data "azurerm_container_registry" "shared" {
   resource_group_name = var.acr_resource_group
 }
 
+data "azurerm_dns_zone" "fq" {
+  name                = var.dns_zone_name
+  resource_group_name = var.acr_resource_group # the zone lives in the shared resource group
+}
+
 locals {
+  record_name = trimsuffix(var.domain, ".${var.dns_zone_name}")
   prefix   = "fq-${var.environment}"
   location = data.azurerm_resource_group.this.location
   registry = data.azurerm_container_registry.shared.login_server
@@ -333,6 +339,27 @@ resource "azurerm_container_app" "postfix" {
   }
 
   depends_on = [azurerm_role_assignment.acr_pull]
+}
+
+# ---- DNS: the records Container Apps needs to bind the custom domain ----
+
+resource "azurerm_dns_cname_record" "web" {
+  name                = local.record_name
+  zone_name           = data.azurerm_dns_zone.fq.name
+  resource_group_name = data.azurerm_dns_zone.fq.resource_group_name
+  ttl                 = 300
+  record              = azurerm_container_app.web.ingress[0].fqdn
+}
+
+resource "azurerm_dns_txt_record" "web_verification" {
+  name                = "asuid.${local.record_name}"
+  zone_name           = data.azurerm_dns_zone.fq.name
+  resource_group_name = data.azurerm_dns_zone.fq.resource_group_name
+  ttl                 = 300
+
+  record {
+    value = azurerm_container_app_environment.env.custom_domain_verification_id
+  }
 }
 
 # ---- cost guard ----

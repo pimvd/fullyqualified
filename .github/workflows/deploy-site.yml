@@ -49,14 +49,6 @@ jobs:
             echo "Site is live on \`$SITE_DOMAIN\`." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
-          {
-            echo "### DNS record for \`$SITE_DOMAIN\`"
-            echo "| Type | Name | Value |"
-            echo "|---|---|---|"
-            echo "| CNAME | \`$SITE_DOMAIN\` | \`$default\` |"
-            echo ""
-            echo "Add it and re-run this workflow."
-          } >> "$GITHUB_STEP_SUMMARY"
           az staticwebapp hostname set -n fq-site -g fq-shared-rg --hostname "$SITE_DOMAIN" \
-            --validation-method cname-delegation -o none \
-            || echo "DNS is not ready yet." >> "$GITHUB_STEP_SUMMARY"
+            --validation-method dns-txt-token -o none \
+            || echo "Domain not bound yet: is the zone delegated? Re-run after the NS records exist." >> "$GITHUB_STEP_SUMMARY"

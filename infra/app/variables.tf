@@ -17,6 +17,11 @@ variable "acr_name" {
   type        = string
 }
 
+variable "dns_zone_name" {
+  type    = string
+  default = "fq.vandijkcloud.nl"
+}
+
 variable "acr_resource_group" {
   type    = string
   default = "fq-shared-rg"

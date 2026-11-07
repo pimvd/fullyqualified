@@ -85,17 +85,8 @@ jobs:
             echo "Domain \`$domain\` is bound." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
-          {
-            echo "### DNS records for \`$domain\`"
-            echo "Create these, then re-run this workflow:"
-            echo ""
-            echo "| Type | Name | Value |"
-            echo "|---|---|---|"
-            echo "| CNAME | \`$domain\` | \`$fqdn\` |"
-            echo "| TXT | \`asuid.$domain\` | \`$verification\` |"
-          } >> "$GITHUB_STEP_SUMMARY"
           if ! az containerapp hostname add -g "$rg" -n "$app" --hostname "$domain" -o none 2>/dev/null; then
-            echo "DNS is not ready yet." >> "$GITHUB_STEP_SUMMARY"
+            echo "Domain not bound yet: is the zone delegated? (see the shared workflow output dns_name_servers). Re-run after the NS records exist." >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
           az containerapp hostname bind -g "$rg" -n "$app" --hostname "$domain" \

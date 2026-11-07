@@ -18,7 +18,7 @@ ENV_RG="fq-${ENV}-rg"
 STATE="fqtf${SUB//-/}"; STATE="${STATE:0:24}"
 
 for p in Microsoft.App Microsoft.OperationalInsights Microsoft.DBforPostgreSQL Microsoft.ContainerRegistry \
-         Microsoft.ManagedIdentity Microsoft.Consumption Microsoft.Storage; do
+         Microsoft.ManagedIdentity Microsoft.Consumption Microsoft.Storage Microsoft.Network Microsoft.Web; do
   az provider register -n "$p" --wait -o none
 done
 
@@ -59,6 +59,7 @@ grant "$ENV_ID" Owner "/subscriptions/${SUB}/resourceGroups/${ENV_RG}"
 # the apps pull from the shared registry: Terraform assigns AcrPull on it and reads it
 grant "$ENV_ID" "User Access Administrator" "$SHARED_ID"
 grant "$ENV_ID" Reader "$SHARED_ID"
+grant "$ENV_ID" "DNS Zone Contributor" "$SHARED_ID"
 grant "$ENV_ID" "Storage Blob Data Contributor" "$STATE_ID"
 
 if command -v gh >/dev/null && gh auth status >/dev/null 2>&1; then

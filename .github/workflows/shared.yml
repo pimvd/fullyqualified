@@ -43,3 +43,10 @@ jobs:
             -backend-config="container_name=tfstate" \
             -backend-config="key=shared.tfstate"
       - run: terraform apply -input=false -auto-approve -var "acr_name=${{ steps.names.outputs.acr }}"
+      - name: Name servers
+        run: |
+          {
+            echo "### Delegate the DNS zone"
+            echo "At the provider of vandijkcloud.nl, create NS records for \`fq\` pointing at:"
+            terraform output -json dns_name_servers | jq -r '.[] | "- `" + . + "`"'
+          } >> "$GITHUB_STEP_SUMMARY"
